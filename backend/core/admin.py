@@ -1,0 +1,246 @@
+from django.contrib import admin
+from .models import (
+    DictionaryEntry,
+    Machine,
+    Maintenance,
+    Claim,
+)
+
+
+@admin.register(DictionaryEntry)
+class DictionaryEntryAdmin(admin.ModelAdmin):
+    list_display = [
+        "entity",
+        "name",
+        "description",
+    ]
+    list_filter = [
+        "entity",
+    ]
+    search_fields = [
+        "name",
+        "description",
+    ]
+    ordering = [
+        "entity",
+        "name",
+    ]
+
+    fieldsets = (
+        (
+            "Основная информация",
+            {
+                "fields": (
+                    "entity",
+                    "name",
+                ),
+            },
+        ),
+        (
+            "Описание",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "description",
+                ),
+            },
+        ),
+    )
+
+
+
+@admin.register(Machine)
+class MachineAdmin(admin.ModelAdmin):
+    list_display = [
+        "factory_number",
+        "model_tech",
+        "client",
+        "service_company",
+        "shipment_date",
+    ]
+    list_filter = [
+        "model_tech",
+        "client",
+        "service_company",
+        "shipment_date",
+    ]
+    search_fields = [
+        "factory_number",
+        "consignee",
+    ]
+    ordering = [
+        "-shipment_date",  # новые машины сверху
+    ]
+
+    fieldsets = (
+        (
+            "Основные данные",
+            {
+                "fields": (
+                    "factory_number",
+                    "model_tech",
+                    "shipment_date",
+                    "client",
+                    "service_company",
+                ),
+            },
+        ),
+        (
+            "Компоненты",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "engine_model",
+                    "engine_factory_number",
+                    "transmission_model",
+                    "transmission_factory_number",
+                    "drive_axle_model",
+                    "drive_axle_factory_number",
+                    "steering_axle_model",
+                    "steering_axle_factory_number",
+                ),
+            },
+        ),
+        (
+            "Доставка и комплектация",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "delivery_contract",
+                    "consignee",
+                    "delivery_address",
+                    "configuration",
+                ),
+            },
+        ),
+    )
+
+
+
+@admin.register(Maintenance)
+class MaintenanceAdmin(admin.ModelAdmin):
+    list_display = [
+        "machine",
+        "maintenance_type",
+        "maintenance_date",
+        "operating_hours",
+        "work_order_number",
+        "service_organization",
+    ]
+    list_filter = [
+        "maintenance_type",
+        "maintenance_date",
+        "service_organization",
+        "service_company",
+        "machine__model_tech",
+    ]
+    search_fields = [
+        "work_order_number",
+        "machine__factory_number",
+    ]
+    date_hierarchy = "maintenance_date"
+    ordering = [
+        "-maintenance_date",
+    ]
+
+    fieldsets = (
+        (
+            "Основная информация",
+            {
+                "fields": (
+                    "machine",
+                    "maintenance_type",
+                    "maintenance_date",
+                    "operating_hours",
+                ),
+            },
+        ),
+        (
+            "Заказ-наряд",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "work_order_number",
+                    "work_order_date",
+                ),
+            },
+        ),
+        (
+            "Организации",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "service_organization",
+                    "service_company",
+                ),
+            },
+        ),
+    )
+
+
+
+@admin.register(Claim)
+class ClaimAdmin(admin.ModelAdmin):
+    list_display = [
+        "machine",
+        "failure_node",
+        "failure_date",
+        "recovery_date",
+        "downtime_days",
+        "service_company",
+    ]
+    list_filter = [
+        "failure_node",
+        "failure_date",
+        "recovery_date",
+        "service_company",
+        "machine__model_tech",
+    ]
+    search_fields = [
+        "failure_description",
+        "spare_parts",
+        "machine__factory_number",
+    ]
+    date_hierarchy = "failure_date"
+    ordering = [
+        "-failure_date",
+    ]
+
+    readonly_fields = [
+        "downtime_days",
+    ]
+
+    fieldsets = (
+        (
+            "Отказ",
+            {
+                "fields": (
+                    "machine",
+                    "failure_date",
+                    "operating_hours",
+                    "failure_node",
+                    "failure_description",
+                ),
+            },
+        ),
+        (
+            "Восстановление",
+            {
+                "fields": (
+                    "recovery_method",
+                    "spare_parts",
+                    "recovery_date",
+                    "downtime_days",
+                ),
+            },
+        ),
+        (
+            "Организации",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "service_company",
+                ),
+            },
+        ),
+    )
