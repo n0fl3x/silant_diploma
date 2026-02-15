@@ -1,9 +1,32 @@
 import datetime
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator
 from django.core.exceptions import ValidationError
+
+
+class CustomUser(AbstractUser):
+    """
+    Класс управления доступами.
+    """
+    groups = models.ManyToManyField(
+        to="auth.Group",
+        verbose_name="Группы",
+        blank=True,
+        help_text="Группы, к которым принадлежит пользователь.",
+        related_name="customuser_groups",
+        related_query_name="customuser",
+    )
+
+    user_permissions = models.ManyToManyField(
+        to="auth.Permission",
+        verbose_name="Разрешения пользователя",
+        blank=True,
+        help_text="Специфические разрешения для этого пользователя.",
+        related_name="customuser_permissions",
+        related_query_name="customuser",
+    )
 
 
 class DictionaryEntry(models.Model):
@@ -232,7 +255,7 @@ class Machine(models.Model):
 
     # 16. Клиент (справочник пользователей)
     client = models.ForeignKey(
-        to=User,
+        to=CustomUser,
         on_delete=models.CASCADE,
         related_name="machines",
         verbose_name="Клиент",
@@ -252,6 +275,13 @@ class Machine(models.Model):
         verbose_name_plural = "Машины"
         ordering = [
             "shipment_date",
+        ]
+
+        permissions = [
+            (
+                "view_machine_limited",
+                "Просмотр ограниченных полей машины",
+            ),
         ]
 
     def __str__(self):
@@ -296,7 +326,7 @@ class Maintenance(models.Model):
 
     # 6. Организация, проводившая ТО (справочник пользователей)
     service_organization = models.ForeignKey(
-        to=User,
+        to=CustomUser,
         on_delete=models.CASCADE,
         limit_choices_to={
             "groups__name": "Сервисные организации",
@@ -315,7 +345,7 @@ class Maintenance(models.Model):
 
     # 8. Сервисная компания (справочник пользователей с правами)
     service_company = models.ForeignKey(
-        to=User,
+        to=CustomUser,
         on_delete=models.CASCADE,
         limit_choices_to={
             "groups__name": "Сервисные компании",
@@ -329,6 +359,13 @@ class Maintenance(models.Model):
         verbose_name_plural = "Технические обслуживания (ТО)"
         ordering = [
             "maintenance_date",
+        ]
+
+        permissions = [
+            (
+                "approve_maintenance",
+                "Подтверждать ТО",
+            ),
         ]
 
     def __str__(self):
@@ -408,7 +445,7 @@ class Claim(models.Model):
 
     # 10. Сервисная компания (справочник пользователей с правами)
     service_company = models.ForeignKey(
-        to=User,
+        to=CustomUser,
         on_delete=models.CASCADE,
         limit_choices_to={
             "groups__name": "Сервисные компании",
@@ -424,13 +461,21 @@ class Claim(models.Model):
             "failure_date",
         ]
 
+        permissions = [
+            (
+                "close_claim",
+                "Закрывать рекламацию",
+            ),
+            (
+                "reopen_claim",
+                "Переоткрывать рекламацию",
+            ),
+        ]
+
     def __str__(self):
         return f"Рекламация {self.failure_node.name} для {self.machine.factory_number}"
     
     def clean(self):
-        """
-        Валидация: дата восстановления не может быть раньше даты отказа.
-        """
         if self.recovery_date and self.failure_date and self.recovery_date < self.failure_date:
             raise ValidationError(
                 message="Дата восстановления не может быть раньше даты отказа.",

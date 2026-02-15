@@ -1,5 +1,5 @@
 """
-Кастомная команда: python manage.py fill_db_from_excel
+Кастомная команда - python manage.py db-import-machines
 """
 
 import os
@@ -7,20 +7,14 @@ import pandas as pd
 
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction, IntegrityError
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 
-from core.models import (
-    Machine,
-    Maintenance,
-    Claim,
-    DictionaryEntry,
-    ServiceCompany,
-)
+from core.models import Machine, DictionaryEntry, ServiceCompany
 
 
 class Command(BaseCommand):
-    help = "Импортирует тестовые данные из Excel в БД."
+    help = "Import test data about machines from XLS file to DB"
 
     def add_arguments(
         self,
@@ -29,7 +23,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--file",
             type=str,
-            help="Путь к Excel-файлу.",
+            help="Excel file full path",
             default=os.path.join(
                 os.path.dirname(os.path.abspath(__file__)),
                 "..\..\..\\basic_data.xlsx",
@@ -44,18 +38,16 @@ class Command(BaseCommand):
         excel_path = options["file"]
 
         if not os.path.exists(excel_path):
-            raise CommandError(f"Файл не найден: {excel_path}")
+            raise CommandError(f"File not found: {excel_path}")
 
         self.stdout.write(
-            self.style.SUCCESS(f"Начинаем импорт из {excel_path}...")
+            self.style.SUCCESS(f"Starting import machines data from {excel_path}...")
         )
 
         self.load_machines(excel_path)
-        # self.load_maintenance(excel_path)
-        # self.load_claims(excel_path)
 
         self.stdout.write(
-            self.style.SUCCESS("Импорт завершён!")
+            self.style.SUCCESS("Machines import successfully completed!")
         )
 
     def load_machines(
@@ -63,9 +55,9 @@ class Command(BaseCommand):
         excel_path,
     ):
         """
-        Загрузка машин из листа machines
+        Загрузка машин из xls листа machines
         """
-        self.stdout.write("Загрузка машин...")
+        self.stdout.write("Loading machines...")
         
         try:
             df = pd.read_excel(
@@ -75,7 +67,7 @@ class Command(BaseCommand):
                 skiprows=0,
             )
         except Exception as e:
-            raise CommandError(f"Ошибка чтения листа machines: {e}")
+            raise CommandError(f"Error reading xls list machines: {e}")
 
         for idx, row in df.iterrows():
             """
@@ -131,7 +123,7 @@ class Command(BaseCommand):
                         shipment_date = pd.to_datetime(shipment_date).date()
                 except (ValueError, TypeError) as e:
                     self.stderr.write(
-                        f"✗ Строка {idx + 4}: Не удалось преобразовать дату отгрузки: {shipment_date} ({e})",
+                        f"Row {idx + 4}: Cannot process shipment date: {shipment_date} ({e})",
                     )
                 
                 # Ищем или создаём сервисную компанию
@@ -143,7 +135,7 @@ class Command(BaseCommand):
                     },
                 )
                 if sc_created:
-                    self.stdout.write(f"Создана новая сервисная компания {service_company_name}")
+                    self.stdout.write(f"Created new service company {service_company_name}")
 
                 # Ищем или создаём модель техники
                 model_tech_name = row["Модель техники"].strip()
@@ -155,7 +147,7 @@ class Command(BaseCommand):
                     },
                 )
                 if mt_created:
-                    self.stdout.write(f"Создан справочник: machine_model -> {model_tech_name}")
+                    self.stdout.write(f"New dictionary entry created: machine_model -> {model_tech_name}")
 
                 # Ищем или создаём модель двигателя
                 engine_model = row["Модель двигателя"].strip()
@@ -167,7 +159,7 @@ class Command(BaseCommand):
                     },
                 )
                 if em_created:
-                    self.stdout.write(f"Создан справочник: engine_model -> {engine_model}")
+                    self.stdout.write(f"New dictionary entry created: engine_model -> {engine_model}")
 
                 # Ищем или создаём модель трансмиссии
                 transmission_model = row["Модель трансмиссии"].strip()
@@ -179,7 +171,7 @@ class Command(BaseCommand):
                     },
                 )
                 if tm_created:
-                    self.stdout.write(f"Создан справочник: transmission_model -> {transmission_model}")
+                    self.stdout.write(f"New dictionary entry created: transmission_model -> {transmission_model}")
 
                 # Ищем или создаём модель ведущего моста
                 drive_axle_model = row["Модель ведущего моста"].strip()
@@ -191,7 +183,7 @@ class Command(BaseCommand):
                     },
                 )
                 if dam_created:
-                    self.stdout.write(f"Создан справочник: drive_axle_model -> {drive_axle_model}")
+                    self.stdout.write(f"New dictionary entry created: drive_axle_model -> {drive_axle_model}")
 
                 # Ищем или создаём модель управляемого моста
                 steering_axle_model = row["Модель управляемого моста"]
@@ -203,7 +195,7 @@ class Command(BaseCommand):
                     },
                 )
                 if sam_created:
-                    self.stdout.write(f"Создан справочник: steering_axle_model -> {steering_axle_model}")
+                    self.stdout.write(f"New dictionary entry created: steering_axle_model -> {steering_axle_model}")
 
                 machine = Machine.objects.create(
                     factory_number=factory_number,
@@ -224,17 +216,17 @@ class Command(BaseCommand):
                     client=client,
                     service_company=sc,
                 )
-                self.stdout.write(f"Машина {machine.factory_number} создана.")
+                self.stdout.write(f"Machine {machine.factory_number} created in DB")
 
             except IntegrityError as e:
-                self.stderr.write(f"Ошибка уникальности объектов: {e}")
+                self.stderr.write(f"Unique objects error: {e}")
                 continue
             except DictionaryEntry.DoesNotExist as e:
-                self.stderr.write(f"Строка {idx + 4}: Не найден объект DictionaryEntry: {e}")
+                self.stderr.write(f"Row {idx + 4}: DictionaryEntry object not found: {e}")
                 continue
             except User.DoesNotExist as e:
-                self.stderr.write(f"Строка {idx + 4}: Пользователь не найден: {e}")
+                self.stderr.write(f"Row {idx + 4}: User not found: {e}")
                 continue
             except Exception as e:
-                self.stderr.write(f"Строка {idx + 4}: Ошибка сохранения машины {row['Зав. номер машины']}: {e}")
+                self.stderr.write(f"Row {idx + 4}: Machine {row['Зав. номер машины']} saving error: {e}")
                 continue
