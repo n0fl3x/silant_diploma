@@ -74,6 +74,30 @@ class DictionaryEntry(models.Model):
         return f"{self.name} ({self.entity})"
 
 
+class ServiceCompany(models.Model):
+    name = models.CharField(
+        max_length=255,
+        verbose_name="Название",
+        help_text="Обязательное поле. Максимальное количество символов — 255.",
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Описание",
+        help_text="Необязательное поле. Можно оставить пустым.",
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Сервисная компания"
+        verbose_name_plural = "Сервисные компании"
+        ordering = [
+            "name",
+        ]
+
+
 class Machine(models.Model):
     # 1. Зав. № машины (уникальный номер)
     factory_number = models.CharField(
@@ -82,7 +106,7 @@ class Machine(models.Model):
         validators=[
             MinLengthValidator(3),
         ],
-        verbose_name="Зав. № машины",
+        verbose_name="Зав. номер машины",
     )
 
     # 2. Модель техники (справочник)
@@ -111,7 +135,7 @@ class Machine(models.Model):
         max_length=50,
         blank=True,
         null=True,
-        verbose_name="Зав. № двигателя",
+        verbose_name="Зав. номер двигателя",
     )
 
     # 5. Модель трансмиссии (справочник)
@@ -130,7 +154,7 @@ class Machine(models.Model):
         max_length=50,
         blank=True,
         null=True,
-        verbose_name="Зав. № трансмиссии",
+        verbose_name="Зав. номер трансмиссии",
     )
 
     # 7. Модель ведущего моста (справочник)
@@ -149,7 +173,7 @@ class Machine(models.Model):
         max_length=50,
         blank=True,
         null=True,
-        verbose_name="Зав. № ведущего моста",
+        verbose_name="Зав. номер ведущего моста",
     )
 
     # 9. Модель управляемого моста (справочник)
@@ -168,7 +192,7 @@ class Machine(models.Model):
         max_length=50,
         blank=True,
         null=True,
-        verbose_name="Зав. № управляемого моста",
+        verbose_name="Зав. номер управляемого моста",
     )
 
     # 11. Договор поставки №, дата (свободный ввод)
@@ -176,7 +200,7 @@ class Machine(models.Model):
         max_length=100,
         blank=True,
         null=True,
-        verbose_name="Договор поставки №, дата",
+        verbose_name="Договор поставки номер, дата",
     )
 
     # 12. Дата отгрузки с завода (календарь)
@@ -212,11 +236,12 @@ class Machine(models.Model):
         on_delete=models.CASCADE,
         related_name="machines",
         verbose_name="Клиент",
+        null=True,
     )
 
     # 17. Сервисная компания (справочник пользователей)
     service_company = models.ForeignKey(
-        to=User,
+        to=ServiceCompany,
         on_delete=models.CASCADE,
         related_name="serviced_machines",
         verbose_name="Сервисная компания",

@@ -4,6 +4,7 @@ from .models import (
     Machine,
     Maintenance,
     Claim,
+    ServiceCompany,
 )
 
 
@@ -244,3 +245,15 @@ class ClaimAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+
+@admin.register(ServiceCompany)
+class ServiceCompanyAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "description",
+    ]
+    search_fields = [
+        "name",
+    ]
+    list_filter = ()

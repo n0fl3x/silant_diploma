@@ -18,6 +18,7 @@ class DictionaryEntryViewSet(viewsets.ModelViewSet):
     queryset = DictionaryEntry.objects.all()
     serializer_class = DictionaryEntrySerializer
 
+
 class MachineViewSet(viewsets.ModelViewSet):
     queryset = Machine.objects.all()
     serializer_class = MachineSerializer
