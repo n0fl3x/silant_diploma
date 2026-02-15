@@ -10,7 +10,7 @@ urlpatterns = [
     ),
     path(
         "api/v1/",
-        include("core.urls"),
+        include("api.urls"),
         name="api",
     ),
 ]

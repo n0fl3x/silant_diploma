@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
     # Сторонние
     "rest_framework",
+    "rest_framework.authtoken",
     "django_filters",
     "allauth",
 

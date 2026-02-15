@@ -1,8 +1,22 @@
 from rest_framework import viewsets
 
-from core.models import Machine, Maintenance, Claim
-from api.serializers import MachineSerializer, MaintenanceSerializer, ClaimSerializer
+from core.models import (
+    Machine,
+    Maintenance,
+    Claim,
+    DictionaryEntry,
+)
+from api.serializers import (
+    MachineSerializer,
+    MaintenanceSerializer,
+    ClaimSerializer,
+    DictionaryEntrySerializer,
+)
 
+
+class DictionaryEntryViewSet(viewsets.ModelViewSet):
+    queryset = DictionaryEntry.objects.all()
+    serializer_class = DictionaryEntrySerializer
 
 class MachineViewSet(viewsets.ModelViewSet):
     queryset = Machine.objects.all()

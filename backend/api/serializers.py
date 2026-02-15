@@ -1,6 +1,17 @@
 from rest_framework import serializers
 
-from core.models import Machine, Maintenance, Claim
+from core.models import (
+    Machine,
+    Maintenance,
+    Claim,
+    DictionaryEntry,
+)
+
+
+class DictionaryEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DictionaryEntry
+        fields = "__all__"
 
 
 class MachineSerializer(serializers.ModelSerializer):

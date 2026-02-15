@@ -1,7 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import MachineViewSet, MaintenanceViewSet, ClaimViewSet
+from .views import (
+    MachineViewSet,
+    MaintenanceViewSet,
+    ClaimViewSet,
+    DictionaryEntryViewSet,
+)
 
 
 router = DefaultRouter()
@@ -17,6 +22,10 @@ router.register(
 router.register(
     prefix=r"claims",
     viewset=ClaimViewSet,
+)
+router.register(
+    prefix=r"dictionary-entries",
+    viewset=DictionaryEntryViewSet,
 )
 
 urlpatterns = [
