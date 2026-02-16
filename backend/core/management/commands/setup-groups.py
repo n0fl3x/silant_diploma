@@ -6,7 +6,7 @@ from core.models import Machine, Maintenance, Claim
 
 
 class Command(BaseCommand):
-    help = "Create permission groups"
+    help = "Creates permission groups"
 
     def handle(
         self,
@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
         client_perms = [
             (
-                "view_machine_limited",
+                "view_machine",
                 machine_ct,
             ),
             (
@@ -44,6 +44,10 @@ class Command(BaseCommand):
             ),
             (
                 "add_maintenance",
+                maintenance_ct,
+            ),
+            (
+                "change_maintenance",
                 maintenance_ct,
             ),
             (
@@ -60,7 +64,7 @@ class Command(BaseCommand):
 
         service_perms = [
             (
-                "view_machine_limited",
+                "view_machine",
                 machine_ct,
             ),
             (
@@ -69,6 +73,10 @@ class Command(BaseCommand):
             ),
             (
                 "add_maintenance",
+                maintenance_ct,
+            ),
+            (
+                "change_maintenance",
                 maintenance_ct,
             ),
             (

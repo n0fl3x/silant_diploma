@@ -134,3 +134,5 @@ REST_FRAMEWORK = {
     ],
     "PAGE_SIZE": 20,
 }
+
+AUTH_USER_MODEL = "core.CustomUser"

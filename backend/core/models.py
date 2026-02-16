@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 
 class CustomUser(AbstractUser):
     """
-    Класс управления доступами.
+    Кастомный класс пользователя для управления доступами.
     """
     groups = models.ManyToManyField(
         to="auth.Group",
@@ -23,10 +23,26 @@ class CustomUser(AbstractUser):
         to="auth.Permission",
         verbose_name="Разрешения пользователя",
         blank=True,
-        help_text="Специфические разрешения для этого пользователя.",
+        help_text="Специфические разрешения для этого пользователя",
         related_name="customuser_permissions",
         related_query_name="customuser",
     )
+
+    user_description = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="Опциональное описание пользователя",
+    )
+
+    class Meta:
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
+    
+    def __str__(self):
+        if self.user_description:
+            return f"{self.username} - {self.user_description}"
+        return f"{self.username}"
 
 
 class DictionaryEntry(models.Model):
@@ -95,30 +111,6 @@ class DictionaryEntry(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.entity})"
-
-
-class ServiceCompany(models.Model):
-    name = models.CharField(
-        max_length=255,
-        verbose_name="Название",
-        help_text="Обязательное поле. Максимальное количество символов — 255.",
-    )
-    description = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name="Описание",
-        help_text="Необязательное поле. Можно оставить пустым.",
-    )
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Сервисная компания"
-        verbose_name_plural = "Сервисные компании"
-        ordering = [
-            "name",
-        ]
 
 
 class Machine(models.Model):
@@ -264,7 +256,7 @@ class Machine(models.Model):
 
     # 17. Сервисная компания (справочник пользователей)
     service_company = models.ForeignKey(
-        to=ServiceCompany,
+        to=CustomUser,
         on_delete=models.CASCADE,
         related_name="serviced_machines",
         verbose_name="Сервисная компания",
@@ -275,13 +267,6 @@ class Machine(models.Model):
         verbose_name_plural = "Машины"
         ordering = [
             "shipment_date",
-        ]
-
-        permissions = [
-            (
-                "view_machine_limited",
-                "Просмотр ограниченных полей машины",
-            ),
         ]
 
     def __str__(self):
@@ -359,13 +344,6 @@ class Maintenance(models.Model):
         verbose_name_plural = "Технические обслуживания (ТО)"
         ordering = [
             "maintenance_date",
-        ]
-
-        permissions = [
-            (
-                "approve_maintenance",
-                "Подтверждать ТО",
-            ),
         ]
 
     def __str__(self):
@@ -459,17 +437,6 @@ class Claim(models.Model):
         verbose_name_plural = "Рекламации"
         ordering = [
             "failure_date",
-        ]
-
-        permissions = [
-            (
-                "close_claim",
-                "Закрывать рекламацию",
-            ),
-            (
-                "reopen_claim",
-                "Переоткрывать рекламацию",
-            ),
         ]
 
     def __str__(self):

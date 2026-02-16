@@ -7,10 +7,10 @@ import pandas as pd
 
 from datetime import datetime
 from django.core.management.base import BaseCommand, CommandError
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from django.db import IntegrityError
 
-from core.models import Machine, DictionaryEntry, ServiceCompany
+from core.models import Machine, DictionaryEntry, CustomUser
 
 
 class Command(BaseCommand):
@@ -70,28 +70,6 @@ class Command(BaseCommand):
             raise CommandError(f"Error reading xls list machines: {e}")
 
         for idx, row in df.iterrows():
-            """
-            ПОЛЯ ЭКСЕЛЬКИ:
-
-            - factory_number (Зав. номер машины)
-            - model_tech (Модель техники) <-> DictionaryEntry
-            - engine_model (Модель двигателя) <-> DictionaryEntry
-            - engine_factory_number (Зав. номер двигателя)
-            - transmission_model (Модель трансмиссии) <-> DictionaryEntry
-            - transmission_factory_number (Зав. номер трансмиссии)
-            - drive_axle_model (Модель ведущего моста) <-> DictionaryEntry
-            - drive_axle_factory_number (Зав. номер ведущего моста)
-            - steering_axle_model (Модель управляемого моста) <-> DictionaryEntry
-            - steering_axle_factory_number (Зав. номер управляемого моста)
-            - delivery_contract (   ЭТОГО ПОЛЯ НЕТ В ЭКСЕЛЬКЕ   )
-            - shipment_date (Дата отгрузки с завода)
-            - consignee (Грузополучатель (конечный потребитель))
-            - delivery_address (Адрес поставки (эксплуатации))
-            - configuration (Комплектация (доп. опции))
-            - client (   ЭТОГО ПОЛЯ НЕТ В ЭКСЕЛЬКЕ   )
-            - service_company (Сервисная компания)
-            """
-
             try:
                 factory_number = str(row["Зав. номер машины"])
                 engine_factory_number = row["Зав. номер двигателя"].strip()
@@ -128,13 +106,21 @@ class Command(BaseCommand):
                 
                 # Ищем или создаём сервисную компанию
                 service_company_name = row["Сервисная компания"].strip()
-                sc, sc_created = ServiceCompany.objects.get_or_create(
-                    name=service_company_name,
+                login = f"user-login-{idx + 4}"
+                service_group= Group.objects.get(
+                    name="Сервисная организация",
+                )
+                sc, sc_created = CustomUser.objects.get_or_create(
+                    user_description=service_company_name,
                     defaults={
-                        "description": f"Автосоздано для машины {factory_number}",
+                        "username": login,
+                        "user_description": f"{service_company_name}",
                     },
                 )
                 if sc_created:
+                    sc.groups.add(service_group.pk)
+                    sc.set_password(f"temp-password-{idx + 4}")
+                    sc.save()
                     self.stdout.write(f"Created new service company {service_company_name}")
 
                 # Ищем или создаём модель техники
@@ -224,9 +210,9 @@ class Command(BaseCommand):
             except DictionaryEntry.DoesNotExist as e:
                 self.stderr.write(f"Row {idx + 4}: DictionaryEntry object not found: {e}")
                 continue
-            except User.DoesNotExist as e:
+            except CustomUser.DoesNotExist as e:
                 self.stderr.write(f"Row {idx + 4}: User not found: {e}")
                 continue
-            except Exception as e:
-                self.stderr.write(f"Row {idx + 4}: Machine {row['Зав. номер машины']} saving error: {e}")
-                continue
+            # except Exception as e:
+            #     self.stderr.write(f"Row {idx + 4}: Machine {row['Зав. номер машины']} saving error: {e}")
+            #     continue

@@ -1,11 +1,125 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+
 from .models import (
     DictionaryEntry,
     Machine,
     Maintenance,
     Claim,
-    ServiceCompany,
+    CustomUser,
 )
+
+
+@admin.register(CustomUser)
+class CustomUserAdmin(UserAdmin):
+    list_display = [
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "is_staff",
+        "is_active",
+        "user_description",
+    ]
+    list_filter = [
+        "is_staff",
+        "is_superuser",
+        "is_active",
+        "groups",
+    ]
+    search_fields = [
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+    ]
+    ordering = [
+        "username",
+    ]
+    list_editable = []
+
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "username",
+                    "password",
+                ),
+            },
+        ),
+        (
+            "Персональная информация",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "user_description",
+                ),
+            },
+        ),
+        (
+            "Права",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                ),
+            },
+        ),
+        (
+            "Даты", {
+                "fields": (
+                    "last_login",
+                    "date_joined",
+                ),
+                "classes": ("collapse", ),
+            },
+        ),
+    )
+
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide", ),
+                "fields": (
+                    "username",
+                    "password1",
+                    "password2",
+                ),
+            },
+        ),
+        (
+            "Персональная информация", {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "user_description",
+                ),
+            },
+        ),
+        (
+            "Права", {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                ),
+            },
+        ),
+    )
+
+    readonly_fields = [
+        "last_login",
+        "date_joined",
+    ]
 
 
 @admin.register(DictionaryEntry)
@@ -70,7 +184,7 @@ class MachineAdmin(admin.ModelAdmin):
         "consignee",
     ]
     ordering = [
-        "-shipment_date",  # новые машины сверху
+        "-shipment_date",
     ]
 
     fieldsets = (
@@ -245,15 +359,3 @@ class ClaimAdmin(admin.ModelAdmin):
             },
         ),
     )
-
-
-@admin.register(ServiceCompany)
-class ServiceCompanyAdmin(admin.ModelAdmin):
-    list_display = [
-        "name",
-        "description",
-    ]
-    search_fields = [
-        "name",
-    ]
-    list_filter = ()
