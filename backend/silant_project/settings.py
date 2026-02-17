@@ -32,13 +32,20 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "allauth",
+    "corsheaders",
+    # ---
 
     # Своё
     "core.apps.CoreConfig",
     "api.apps.ApiConfig",
+    # ---
 ]
 
 MIDDLEWARE = [
+    # CORS
+    "corsheaders.middleware.CorsMiddleware",
+    # ---
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -124,15 +131,24 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_RENDER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": None,
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
+        # "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ],
-    "PAGE_SIZE": 20,
+    # "PAGE_SIZE": 20,
 }
 
 AUTH_USER_MODEL = "core.CustomUser"
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]

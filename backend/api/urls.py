@@ -12,20 +12,20 @@ from .views import (
 router = DefaultRouter()
 
 router.register(
-    prefix=r"machines",
-    viewset=MachineViewSet,
+    r"machines",
+    MachineViewSet,
 )
 router.register(
-    prefix=r"maintenance",
-    viewset=MaintenanceViewSet,
+    r"maintenance",
+    MaintenanceViewSet,
 )
 router.register(
-    prefix=r"claims",
-    viewset=ClaimViewSet,
+    r"claims",
+    ClaimViewSet,
 )
 router.register(
-    prefix=r"dictionary-entries",
-    viewset=DictionaryEntryViewSet,
+    "dictionary-entries",
+    DictionaryEntryViewSet,
 )
 
 urlpatterns = [
