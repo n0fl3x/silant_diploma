@@ -154,7 +154,7 @@ class DictionaryEntryAdmin(admin.ModelAdmin):
         (
             "Описание",
             {
-                "classes": ("collapse",),
+                "classes": ("collapse", ),
                 "fields": (
                     "description",
                 ),
@@ -168,7 +168,7 @@ class DictionaryEntryAdmin(admin.ModelAdmin):
 class MachineAdmin(admin.ModelAdmin):
     list_display = [
         "factory_number",
-        "model_tech",
+        "model_tech__name",
         "client",
         "service_company",
         "shipment_date",
@@ -203,7 +203,7 @@ class MachineAdmin(admin.ModelAdmin):
         (
             "Компоненты",
             {
-                "classes": ("collapse",),
+                "classes": ("collapse", ),
                 "fields": (
                     "engine_model",
                     "engine_factory_number",
@@ -219,7 +219,7 @@ class MachineAdmin(admin.ModelAdmin):
         (
             "Доставка и комплектация",
             {
-                "classes": ("collapse",),
+                "classes": ("collapse", ),
                 "fields": (
                     "delivery_contract",
                     "consignee",
@@ -235,17 +235,15 @@ class MachineAdmin(admin.ModelAdmin):
 @admin.register(Maintenance)
 class MaintenanceAdmin(admin.ModelAdmin):
     list_display = [
-        "machine",
-        "maintenance_type",
+        "machine__factory_number",
+        "maintenance_type__name",
         "maintenance_date",
         "operating_hours",
         "work_order_number",
-        "service_organization",
     ]
     list_filter = [
         "maintenance_type",
         "maintenance_date",
-        "service_organization",
         "service_company",
         "machine__model_tech",
     ]
@@ -273,7 +271,7 @@ class MaintenanceAdmin(admin.ModelAdmin):
         (
             "Заказ-наряд",
             {
-                "classes": ("collapse",),
+                "classes": ("collapse", ),
                 "fields": (
                     "work_order_number",
                     "work_order_date",
@@ -283,9 +281,8 @@ class MaintenanceAdmin(admin.ModelAdmin):
         (
             "Организации",
             {
-                "classes": ("collapse",),
+                "classes": ("collapse", ),
                 "fields": (
-                    "service_organization",
                     "service_company",
                 ),
             },
@@ -297,18 +294,16 @@ class MaintenanceAdmin(admin.ModelAdmin):
 @admin.register(Claim)
 class ClaimAdmin(admin.ModelAdmin):
     list_display = [
-        "machine",
-        "failure_node",
+        "machine__factory_number",
+        "failure_node__name",
         "failure_date",
         "recovery_date",
         "downtime_days",
-        "service_company",
     ]
     list_filter = [
         "failure_node",
         "failure_date",
         "recovery_date",
-        "service_company",
         "machine__model_tech",
     ]
     search_fields = [
@@ -346,15 +341,6 @@ class ClaimAdmin(admin.ModelAdmin):
                     "spare_parts",
                     "recovery_date",
                     "downtime_days",
-                ),
-            },
-        ),
-        (
-            "Организации",
-            {
-                "classes": ("collapse",),
-                "fields": (
-                    "service_company",
                 ),
             },
         ),

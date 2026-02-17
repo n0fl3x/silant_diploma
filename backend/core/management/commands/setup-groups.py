@@ -61,6 +61,7 @@ class Command(BaseCommand):
                 content_type=content_type,
             )
             client_group.permissions.add(permission)
+        self.stdout.write("Client group created")
 
         service_perms = [
             (
@@ -98,10 +99,12 @@ class Command(BaseCommand):
                 content_type=content_type,
             )
             service_group.permissions.add(permission)
+        self.stdout.write("Service company group created")
 
         # Менеджер — все разрешения
         all_perms = Permission.objects.all()
         manager_group.permissions.set(all_perms)
+        self.stdout.write("Manager group created")
 
         self.stdout.write(
             self.style.SUCCESS("Permission groups successfully created!")

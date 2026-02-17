@@ -309,17 +309,6 @@ class Maintenance(models.Model):
         verbose_name="Дата заказ-наряда",
     )
 
-    # 6. Организация, проводившая ТО (справочник пользователей)
-    service_organization = models.ForeignKey(
-        to=CustomUser,
-        on_delete=models.CASCADE,
-        limit_choices_to={
-            "groups__name": "Сервисные организации",
-        },
-        verbose_name="Организация, проводившая ТО",
-        related_name="maintenance_records",
-    )
-
     # 7. Машина (связь с базой данных машин)
     machine = models.ForeignKey(
         to=Machine,
@@ -419,17 +408,6 @@ class Claim(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Машина",
         related_name="claims",
-    )
-
-    # 10. Сервисная компания (справочник пользователей с правами)
-    service_company = models.ForeignKey(
-        to=CustomUser,
-        on_delete=models.CASCADE,
-        limit_choices_to={
-            "groups__name": "Сервисные компании",
-        },
-        verbose_name="Сервисная компания",
-        related_name="company_claims",
     )
 
     class Meta:
