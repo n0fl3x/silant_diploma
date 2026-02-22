@@ -1,25 +1,35 @@
+// src/routes/dashboard.tsx
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export default function Dashboard() {
-  const { logout } = useAuth();
-  const navigate = useNavigate();
+  const { isAuthenticated, logout, user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleLogout = async () => {
-    await logout(); // Вызываем logout из контекста (без навигации)
-    navigate('/logout'); // Перенаправляем на /logout, где произойдёт редирект на /login
-  };
+  useEffect(() => {
+    // Дополнительная проверка при монтировании компонента
+    if (!isAuthenticated) {
+      window.location.href = '/login'; // Жёсткий редирект, если что‑то пошло не так
+    } else {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  if (isLoading) {
+    return <div>Загрузка личного кабинета...</div>;
+  }
 
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
         <h1>Личный кабинет</h1>
-        <button onClick={handleLogout} className="logout-button">
+        {user && <p>Добро пожаловать, {user.username}!</p>}
+        <button onClick={logout} className="logout-button">
           Выйти
         </button>
       </header>
       <main className="dashboard-content">
-        <p>Добро пожаловать в личный кабинет!</p>
+        <p>Здесь будет основной контент личного кабинета.</p>
       </main>
     </div>
   );

@@ -91,7 +91,7 @@ def logout(request):
         return resp
     except Exception:
         return Response({"success": False})
-    
+
 @api_view(http_method_names=["POST"])
 @permission_classes(permission_classes=[IsAuthenticated])
 def is_authenticated(request):
