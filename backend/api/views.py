@@ -1,3 +1,4 @@
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -10,6 +11,15 @@ from api.serializers import MachineSerializer
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         try:
+            username = request.data.get('username')
+            password = request.data.get('password')
+
+            if not username or not password:
+                return Response(
+                    {'error': 'Логин и пароль обязательны'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
             response = super().post(request, *args, **kwargs)
             tokens = response.data
             access_token = tokens["access"]
@@ -64,8 +74,10 @@ class CustomRefreshTokenView(TokenRefreshView):
 @api_view(http_method_names=["POST"])
 def logout(request):
     try:
-        resp = Response()
-        resp.data = {"success": True}
+        resp = Response(
+            data={'success': True, 'message': 'Вы успешно вышли из системы', 'redirect': True},
+            status=status.HTTP_200_OK,
+        )
         resp.delete_cookie(
             key="access_token",
             path="/",
