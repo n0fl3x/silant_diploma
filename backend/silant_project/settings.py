@@ -29,10 +29,10 @@ INSTALLED_APPS = [
 
     # Сторонние
     "rest_framework",
-    "rest_framework.authtoken",
     "django_filters",
     "allauth",
     "corsheaders",
+    "rest_framework_simplejwt",
     # ---
 
     # Своё
@@ -134,17 +134,13 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
-    # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "DEFAULT_PAGINATION_CLASS": None,
     "DEFAULT_PERMISSION_CLASSES": [
-        # "rest_framework.permissions.IsAuthenticated",
-        "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
+        "api.authentication.CookiesJWTAuthentication",
     ],
-    # "PAGE_SIZE": 20,
 }
 
 AUTH_USER_MODEL = "core.CustomUser"

@@ -6,11 +6,10 @@ urlpatterns = [
     path(
         "admin/",
         admin.site.urls,
-        name="admin_panel",
+        name="admin-panel",
     ),
     path(
         "api/v1/",
         include("api.urls"),
-        name="api",
     ),
 ]
