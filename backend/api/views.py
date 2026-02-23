@@ -3,63 +3,79 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 from django.contrib.auth import authenticate
 
 from core.models import Machine, CustomUser
-from api.serializers import MachineSerializer, MachinePublicSerializer, MachineFullSerializer
+from api.serializers import (
+    MachineSerializer,
+    MachinePublicSerializer,
+    MachineFullSerializer,
+)
 
 
 class MachineSearchAPIView(APIView):
-    """
-    Поиск информации о машине по заводскому номеру.
-    Для неавторизованных пользователей возвращает ограниченные данные,
-    для авторизованных — полную информацию.
-    """
-    def post(self, request):
-        factory_number = request.data.get('factory_number')
+    def post(
+        self,
+        request,
+    ):
+        factory_number = request.data.get("factory_number")
 
         if not factory_number:
-            return Response({
-                'success': False,
-                'error': 'Заводской номер машины обязателен'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data={
+                    "success": False,
+                    "error": "Заводской номер машины обязателен.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             machine = Machine.objects.select_related(
-                'model_tech',
-                'engine_model',
-                'transmission_model',
-                'drive_axle_model',
-                'steering_axle_model',
-                'client',
-                'service_company'
-            ).get(factory_number=factory_number)
+                "model_tech",
+                "engine_model",
+                "transmission_model",
+                "drive_axle_model",
+                "steering_axle_model",
+                "client",
+                "service_company",
+            ).get(
+                factory_number=factory_number,
+            )
 
             if request.user.is_authenticated:
                 serializer = MachineFullSerializer(machine)
-                user_status = 'authorized'
+                user_status = "authorized"
             else:
                 serializer = MachinePublicSerializer(machine)
-                user_status = 'unauthorized'
+                user_status = "unauthorized"
 
-            return Response({
-                'success': True,
-                'data': serializer.data,
-                'user_status': user_status
-            })
-
+            return Response(
+                data={
+                    "success": True,
+                    "data": serializer.data,
+                    "user_status": user_status,
+                },
+                status=status.HTTP_200_OK,
+            )
         except Machine.DoesNotExist:
-            return Response({
-                'success': False,
-                'error': 'Машина с указанным заводским номером не найдена'
-            }, status=status.HTTP_404_NOT_FOUND)
-
+            return Response(
+                data={
+                    "success": False,
+                    "error": "Машина с указанным заводским номером не найдена.",
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
         except Exception as e:
-            return Response({
-                'success': False,
-                'error': f'Произошла ошибка при поиске машины: {str(e)}'
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                data={
+                    "success": False,
+                    "error": f"Произошла ошибка при поиске машины: {str(e)}",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -76,7 +92,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             if not username or not password:
                 return Response(
                     data={
-                        "error": "Login and password required.",
+                        "error": "Введите логин и пароль.",
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -90,7 +106,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             if user is None:
                 return Response(
                     data={
-                        "error": "Incorrect login or password.",
+                        "error": "Неверные логин и/или пароль.",
                     },
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
@@ -98,7 +114,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             if not isinstance(user, CustomUser):
                 return Response(
                     data={
-                        "error": "User type error.",
+                        "error": "Ошибка типа пользователя.",
                     },
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
@@ -147,7 +163,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         except Exception as e:
             return Response(
                 data={
-                    "error": "Server error.",
+                    "error": f"Ошибка сервера: {str(e)}",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
@@ -212,7 +228,7 @@ def logout(
         resp = Response(
             data={
                 "success": True,
-                "message": "You are logged out successfully.",
+                "message": "Успешный выход из аккаунта.",
                 "redirect": True,
             },
             status=status.HTTP_200_OK,
@@ -232,7 +248,7 @@ def logout(
     except Exception as e:
         return Response(
             data={
-                "error": "Logging out error.",
+                "error": f"Ошибка выхода из аккаунта: {str(e)}",
             },
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
@@ -276,13 +292,15 @@ def is_authenticated(
         IsAuthenticated,
     ],
 )
-def get_machines(request):
+def get_machines(
+    request,
+):
     user = request.user
 
     if not isinstance(user, CustomUser):
         return Response(
             data={
-                "error": "Incorrect user type.",
+                "error": "Ошибка типа пользователя.",
             },
             status=status.HTTP_403_FORBIDDEN,
         )

@@ -9,9 +9,6 @@ from core.models import (
 
 
 class MachinePublicSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для неавторизованных пользователей — только публичные поля.
-    """
     model_tech_name = serializers.CharField(
         source="model_tech.name",
         read_only=True,
@@ -55,9 +52,6 @@ class MachinePublicSerializer(serializers.ModelSerializer):
 
 
 class MachineFullSerializer(MachinePublicSerializer):
-    """
-    Сериализатор для авторизованных пользователей — все доступные поля.
-    """
     client_name = serializers.CharField(
         source="client.name",
         read_only=True,
