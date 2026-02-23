@@ -38,7 +38,7 @@ class CustomUserAdmin(UserAdmin):
     ]
     list_editable = []
 
-    fieldsets = (
+    fieldsets = [
         (
             None,
             {
@@ -80,9 +80,9 @@ class CustomUserAdmin(UserAdmin):
                 "classes": ("collapse", ),
             },
         ),
-    )
+    ]
 
-    add_fieldsets = (
+    add_fieldsets = [
         (
             None,
             {
@@ -114,7 +114,7 @@ class CustomUserAdmin(UserAdmin):
                 ),
             },
         ),
-    )
+    ]
 
     readonly_fields = [
         "last_login",
@@ -141,7 +141,7 @@ class DictionaryEntryAdmin(admin.ModelAdmin):
         "name",
     ]
 
-    fieldsets = (
+    fieldsets = [
         (
             "Основная информация",
             {
@@ -160,8 +160,7 @@ class DictionaryEntryAdmin(admin.ModelAdmin):
                 ),
             },
         ),
-    )
-
+    ]
 
 
 @admin.register(Machine)
@@ -187,7 +186,7 @@ class MachineAdmin(admin.ModelAdmin):
         "-shipment_date",
     ]
 
-    fieldsets = (
+    fieldsets = [
         (
             "Основные данные",
             {
@@ -228,8 +227,7 @@ class MachineAdmin(admin.ModelAdmin):
                 ),
             },
         ),
-    )
-
+    ]
 
 
 @admin.register(Maintenance)
@@ -256,7 +254,7 @@ class MaintenanceAdmin(admin.ModelAdmin):
         "-maintenance_date",
     ]
 
-    fieldsets = (
+    fieldsets = [
         (
             "Основная информация",
             {
@@ -287,8 +285,7 @@ class MaintenanceAdmin(admin.ModelAdmin):
                 ),
             },
         ),
-    )
-
+    ]
 
 
 @admin.register(Claim)
@@ -320,7 +317,7 @@ class ClaimAdmin(admin.ModelAdmin):
         "downtime_days",
     ]
 
-    fieldsets = (
+    fieldsets = [
         (
             "Отказ",
             {
@@ -344,4 +341,4 @@ class ClaimAdmin(admin.ModelAdmin):
                 ),
             },
         ),
-    )
+    ]

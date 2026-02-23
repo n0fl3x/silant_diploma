@@ -1,26 +1,37 @@
-// src/components/ProtectedRoute.tsx
-import { useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState, useRef } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, checkAuth } = useAuth();
 
-  useEffect(() => {
-    // Принудительная проверка при доступе к защищённому маршруту
-    checkAuth();
-  }, [checkAuth]);
+export default function ProtectedRoute(
+    { children }: { children: React.ReactNode }
+) {
+    const { isAuthenticated, checkAuth } = useAuth();
+    const [loading, setLoading] = useState(true);
+    const hasChecked = useRef(false);
 
-  // Пока идёт проверка, показываем загрузчик
-  if (!isAuthenticated === null) {
-    return <div>Проверка авторизации...</div>;
-  }
+    useEffect( () =>
+        {
+            if ( hasChecked.current ) return;
 
-  // Если не аутентифицирован — редирект на login
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+            const verifyAuth = async () => {
+                hasChecked.current = true;
+                await checkAuth();
+                setLoading(false)
+            };
 
-  // Если аутентифицирован — показываем защищённый контент
-  return <>{children}</>;
-}
+            verifyAuth();
+        },
+        [checkAuth]
+    );
+
+    if ( loading ) {
+        return <div>Проверка авторизации...</div>
+    };
+
+    if ( !isAuthenticated ) {
+        return <Navigate to="/login" replace />
+    };
+    
+    return <>{children}</>
+};

@@ -1,15 +1,16 @@
-from django.contrib import admin
 from django.urls import path, include
+from django.contrib import admin
 
 
 urlpatterns = [
     path(
-        "admin/",
-        admin.site.urls,
+        route="admin/",
+        view=admin.site.urls,
         name="admin-panel",
     ),
     path(
-        "api/v1/",
-        include("api.urls"),
+        route="api/v1/",
+        view=include("api.urls"),
+        name="api-v1",
     ),
 ]

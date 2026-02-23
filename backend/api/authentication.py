@@ -2,7 +2,10 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class CookiesJWTAuthentication(JWTAuthentication):
-    def authenticate(self, request):
+    def authenticate(
+        self,
+        request
+    ):
         access_token = request.COOKIES.get("access_token")
 
         if not access_token:
@@ -11,7 +14,9 @@ class CookiesJWTAuthentication(JWTAuthentication):
         validated_token = self.get_validated_token(access_token)
 
         try:
-            user = self.get_user(validated_token)
+            user = self.get_user(
+                validated_token=validated_token,
+            )
         except Exception:
             return
         

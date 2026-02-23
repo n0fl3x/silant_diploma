@@ -2,27 +2,38 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from .views import (
-    get_machines,
     CustomTokenObtainPairView,
     CustomRefreshTokenView,
     logout,
     is_authenticated,
+    get_machines,
 )
 
 
-router = DefaultRouter()
-
 urlpatterns = [
     path(
-        "",
-        include(router.urls),
+        route="client-machines",
+        view=get_machines,
+        name="machines-of-client",
     ),
     path(
-        "client-machines",
-        get_machines,
+        route="token",
+        view=CustomTokenObtainPairView.as_view(),
+        name="token-obtain-pair",
     ),
-    path("token", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("token/refresh", CustomRefreshTokenView.as_view(), name="token_refresh"),
-    path("logout", logout),
-    path("authenticated", is_authenticated),
+    path(
+        route="token/refresh",
+        view=CustomRefreshTokenView.as_view(),
+        name="token-refresh",
+    ),
+    path(
+        route="logout",
+        view=logout,
+        name="logout",
+    ),
+    path(
+        route="authenticated",
+        view=is_authenticated,
+        name="is-authenticated",
+    ),
 ]

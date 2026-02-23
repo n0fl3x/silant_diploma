@@ -1,9 +1,9 @@
 import datetime
 
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AbstractUser
 
 
 class CustomUser(AbstractUser):
@@ -84,7 +84,6 @@ class DictionaryEntry(models.Model):
         ),
     ]
 
-    # Поле entity определяет, к какой сущности относится запись ('machine_model', 'maintenance_type' и т.д.)
     entity = models.CharField(
         max_length=50,
         choices=ENTITY_CHOICES,
@@ -103,7 +102,6 @@ class DictionaryEntry(models.Model):
     class Meta:
         verbose_name = "Элемент справочника"
         verbose_name_plural = "Элементы справочников"
-        # Уникальность внутри типа справочника
         unique_together = (
             "entity",
             "name",
