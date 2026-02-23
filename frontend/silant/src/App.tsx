@@ -5,6 +5,7 @@ import Dashboard from "./routes/Dashboard";
 import Logout from "./routes/Logout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
+import MachineSearch from "./components/MachineSearch";
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
                                 }
                             />
                             <Route path="/logout" element={<Logout />} />
+                            <Route path="/machine-search" element={<MachineSearch />} />
                             <Route path="/" element={<Navigate to="/dashboard" />} />
                         </Routes>
                     </main>

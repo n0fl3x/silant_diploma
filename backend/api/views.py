@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -6,7 +7,59 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.contrib.auth import authenticate
 
 from core.models import Machine, CustomUser
-from api.serializers import MachineSerializer
+from api.serializers import MachineSerializer, MachinePublicSerializer, MachineFullSerializer
+
+
+class MachineSearchAPIView(APIView):
+    """
+    Поиск информации о машине по заводскому номеру.
+    Для неавторизованных пользователей возвращает ограниченные данные,
+    для авторизованных — полную информацию.
+    """
+    def post(self, request):
+        factory_number = request.data.get('factory_number')
+
+        if not factory_number:
+            return Response({
+                'success': False,
+                'error': 'Заводской номер машины обязателен'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            machine = Machine.objects.select_related(
+                'model_tech',
+                'engine_model',
+                'transmission_model',
+                'drive_axle_model',
+                'steering_axle_model',
+                'client',
+                'service_company'
+            ).get(factory_number=factory_number)
+
+            if request.user.is_authenticated:
+                serializer = MachineFullSerializer(machine)
+                user_status = 'authorized'
+            else:
+                serializer = MachinePublicSerializer(machine)
+                user_status = 'unauthorized'
+
+            return Response({
+                'success': True,
+                'data': serializer.data,
+                'user_status': user_status
+            })
+
+        except Machine.DoesNotExist:
+            return Response({
+                'success': False,
+                'error': 'Машина с указанным заводским номером не найдена'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({
+                'success': False,
+                'error': f'Произошла ошибка при поиске машины: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):

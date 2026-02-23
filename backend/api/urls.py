@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     CustomTokenObtainPairView,
     CustomRefreshTokenView,
+    MachineSearchAPIView,
     logout,
     is_authenticated,
     get_machines,
@@ -35,5 +36,10 @@ urlpatterns = [
         route="authenticated",
         view=is_authenticated,
         name="is-authenticated",
+    ),
+    path(
+        route="machines/search",
+        view=MachineSearchAPIView.as_view(),
+        name="machine-search",
     ),
 ]
