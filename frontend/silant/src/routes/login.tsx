@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthRedirect } from "../hooks/UseAuthRedirect";
 import { useAuth } from "../contexts/AuthContext";
+import "../styles/Login.css";
 
 
 const Login = () => {
@@ -64,7 +65,7 @@ const Login = () => {
 
     return (
         <div className="login-container">
-            <h1>
+            <h1 className="login-title">
                 Вход в систему
             </h1>
             {error && <div className="error-message">{error}</div>}

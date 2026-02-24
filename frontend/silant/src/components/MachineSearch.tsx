@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../styles/MachineSearch.css";
 
 
 interface MachineData {
@@ -76,7 +77,7 @@ export default function MachineSearch() {
         
             if ( data.success && data.data ) {
                 setMachine(data.data);
-                setUserStatus(data.user_status || 'unauthorized')
+                setUserStatus(data.user_status || "unauthorized")
             }
             else {
                 setError(data.message || data.error || "Произошла неизвестная ошибка.")
