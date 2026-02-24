@@ -34,6 +34,19 @@ from .filters import (
 )
 
 
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            'id': user.id,
+            'username': user.username,
+            'groups': [group.name for group in user.groups.all()],
+            'permissions': list(user.get_all_permissions())
+        })
+
+
 class MachineList(generics.ListAPIView):
     queryset = Machine.objects.all()
     serializer_class = MachineSerializer
