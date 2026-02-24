@@ -24,11 +24,30 @@
 
 .header__logo {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .header__logo-link {
   text-decoration: none;
   color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* расстояние между логотипом и текстом */
+}
+
+.header__logo-image {
+  height: 40px; /* фиксированная высота под хедер */
+  width: auto; /* сохранение пропорций */
+  max-width: 120px; /* ограничение максимальной ширины */
+  object-fit: contain; /* изображение не искажается */
+}
+
+.header__title {
+  margin: 0;
+  font-family: "PT Astra Sans", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .header__title {
@@ -99,6 +118,19 @@
 }
 
 @media (max-width: 768px) {
+  .header__logo-link {
+    gap: 0.5rem; /* уменьшаем расстояние на мобильных */
+  }
+  
+  .header__logo-image {
+    height: 32px; /* уменьшаем размер логотипа на мобильных */
+    max-width: 100px;
+  }
+  
+  .header__title {
+    font-size: 1.3rem; /* уменьшаем текст заголовка */
+  }
+  
   .header__container {
     flex-direction: column;
     gap: 0.5rem;

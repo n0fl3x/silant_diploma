@@ -11,9 +11,16 @@ const Header: React.FC = () => {
     <header className="header">
       <div className="header__container">
         <div className="header__logo">
-          <Link to="/machine-search" className="header__logo-link">
-            <h1 className="header__title">СИЛАНТ</h1>
-          </Link>
+          <a href="/" className="header__logo-link">
+            <img
+              src="/src/images/logo-red.jpg"
+              alt="Логотип компании Силант"
+              className="header__logo-image"
+            />
+            <h1 className="header__title">
+              СИЛАНТ
+            </h1>
+          </a>
         </div>
 
         <nav className="header__nav">
