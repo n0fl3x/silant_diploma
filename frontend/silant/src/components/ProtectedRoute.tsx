@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuthContext } from "../contexts/AuthContext";
 
 
 export default function ProtectedRoute(
     { children }: { children: React.ReactNode }
 ) {
-    const { isAuthenticated, checkAuth } = useAuth();
+    const { isAuthenticated, checkAuth } = useAuthContext();
     const [loading, setLoading] = useState(true);
     const hasChecked = useRef(false);
 

@@ -1,38 +1,45 @@
-import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./routes/login";
-import Dashboard from "./routes/Dashboard";
-import Logout from "./routes/Logout";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { AuthProvider } from "./contexts/AuthContext";
-import MachineSearch from "./components/MachineSearch";
-
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import Header from './components/Header';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Logout from './pages/Logout';
+import MachineSearch from './pages/MachineSearch';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-    return (
-        <Router>
-            <AuthProvider>
-                <div className="app">
-                    <main className="content">
-                        <Routes>
-                            <Route path="/login" element={<Login />} />
-                            <Route
-                                path="/dashboard"
-                                element={
-                                    <ProtectedRoute>
-                                        <Dashboard />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route path="/logout" element={<Logout />} />
-                            <Route path="/machine-search" element={<MachineSearch />} />
-                            <Route path="/" element={<Navigate to="/dashboard" />} />
-                        </Routes>
-                    </main>
-                </div>
-            </AuthProvider>
-        </Router>
-    )
-};
+  return (
+    <Router>
+      <AuthProvider> {/* Обертка провайдером аутентификации */}
+        <div className="app">
+          <Header />
+          <main className="content">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/logout"
+                element={
+                  <ProtectedRoute>
+            <Logout />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/machine-search" element={<MachineSearch />} />
+              <Route path="/" element={<Navigate to="/machine-search" />} />
+            </Routes>
+          </main>
+        </div>
+      </AuthProvider>
+    </Router>
+  );
+}
 
 export default App;

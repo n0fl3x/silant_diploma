@@ -1,9 +1,10 @@
-import { useAuth } from "../contexts/AuthContext";
+import { useAuthContext } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
+import "../styles/Dashboard.css";
 
 
 export default function Dashboard () {
-    const { isAuthenticated, logout, user } = useAuth();
+    const { isAuthenticated, logout, user } = useAuthContext();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect( () =>
@@ -29,9 +30,6 @@ export default function Dashboard () {
                     Личный кабинет
                 </h1>
                 {user && <p>Добро пожаловать, {user.username}!</p>}
-                <button onClick={logout} className="logout-button">
-                    Выйти
-                </button>
             </header>
             <main className="dashboard-content">
                 <p>

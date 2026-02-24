@@ -1,257 +1,225 @@
 .machine-search-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 2rem auto;
-  padding: 1.5rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .machine-search-container h2 {
   text-align: center;
   color: #2c3e50;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   font-size: 1.8rem;
-  font-weight: 600;
 }
 
-.search-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* Статус пользователя */
+.user-status {
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
   margin-bottom: 1.5rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-group label {
-  font-weight: 600;
-  color: #34495e;
   font-size: 0.9rem;
 }
 
+.user-status.authorized {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.user-status.unauthorized {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+/* Форма поиска */
+.search-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
 .form-group input {
-  padding: 0.75rem;
-  border: 1px solid #bdc3c7;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  transition: all 0.3s ease;
-  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
 }
 
 .form-group input:focus {
+  outline: none;
   border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 .form-group input:disabled {
-  background-color: #ecf0f1;
+  background: #f8f9fa;
+  color: #6c757d;
   cursor: not-allowed;
-  color: #7f8c8d;
 }
 
-button {
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #3498db, #2980b9);
+.search-form button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #3498db;
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  align-self: flex-start;
-}
-
-button:disabled {
-  background: #95a5a6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(135deg, #2980b9, #2471a8);
-}
-
-.error-message {
-  padding: 1rem;
-  background: #ffeaea;
-  color: #c0392b;
-  border: 1px solid #fadbd8;
-  border-radius: 4px;
-  text-align: center;
   font-weight: 500;
-  animation: shake 0.5s ease-in-out;
+  font-size: 1rem;
+  transition: background-color 0.2s;
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
+.search-form button:hover:not(:disabled) {
+  background: #2980b9;
 }
 
+.search-form button:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
+/* Сообщения об ошибках */
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid #f5c6cb;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Результаты поиска */
 .machine-result {
-  margin-top: 1.5rem;
-  border-top: 2px solid #ecf0f1;
-  padding-top: 1.5rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .machine-result h3 {
   color: #2c3e50;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   text-align: center;
-  font-size: 1.4rem;
-  font-weight: 600;
 }
 
-.machine-table {
-  width: 100%;
-  border-collapse: collapse;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.machine-table thead {
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  color: white;
-}
-
-.machine-table th {
-  padding: 0.75rem;
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.machine-table td {
-  padding: 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid #ecf0f1;
-  color: #2c3e50;
-}
-
-.machine-table tbody tr:nth-child(even) {
-  background: #f8f9fa;
-}
-
-.machine-table tbody tr:hover {
-  background: #e3f2fd;
-  cursor: default;
-}
-
-@media (max-width: 768px) {
-  .machine-search-container {
-    margin: 1rem;
-    padding: 1rem;
-  }
-  
-  .machine-search-container h2 {
-    font-size: 1.5rem;
-  }
-  
-  .search-form {
-    gap: 0.75rem;
-  }
-  
-  .form-group input,
-  button {
-    padding: 0.625rem;
-    font-size: 0.95rem;
-  }
-  
-  .machine-table th,
-  .machine-table td {
-    padding: 0.6rem;
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .machine-search-container {
-    margin: 0.5rem;
-    padding: 0.75rem;
-  }
-  
-  .search-form {
-    gap: 0.5rem;
-  }
-  
-  .form-group label {
-    font-size: 0.85rem;
-  }
-  
-  .form-group input {
-    font-size: 0.9rem;
-  }
-  
-  .machine-table th,
-  .machine-table td {
-    padding: 0.4rem;
-    font-size: 0.8rem;
-  }
-}
-
-/* Разделы информации */
+/* Разделы с информацией */
 .section {
   margin-bottom: 2rem;
 }
 
 .section h4 {
-  color: #2c3e50;
-  margin-bottom: 0.75rem;
-  font-size: 1.2rem;
-  border-bottom: 1px solid #ecf0f1;
+  color: #34495e;
+  margin-bottom: 1rem;
   padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
 }
 
-/* Только для авторизованных разделов */
 .authorized-only {
-  background: #f8f9fa;
-  padding: 1rem;
-  border-radius: 8px;
   border-left: 4px solid #3498db;
+  padding-left: 1rem;
+  background: #f8fafc;
 }
 
-.authorized-only h4 {
-  color: #3498db;
+/* Таблица с данными машины */
+.machine-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
 }
 
-/* Стили для ячеек таблицы */
+.machine-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+}
+
 .field-label {
   font-weight: 600;
-  color: #34495e;
+  color: #555;
   width: 30%;
-  vertical-align: top;
-  padding: 0.6rem 0.8rem;
-  border-bottom: 1px solid #ecf0f1;
+  background: #f8f9fa;
 }
 
 .field-value {
-  padding: 0.6rem 0.8rem;
-  border-bottom: 1px solid #ecf0f1;
-  line-height: 1.4;
+  color: #333;
+  width: 70%;
 }
 
-/* Адаптивность для мобильных */
+/* Состояния загрузки */
+.loading-state {
+  text-align: center;
+  padding: 2rem;
+  color: #7f8c8d;
+}
+
+/* Адаптивность */
 @media (max-width: 768px) {
-  .field-label {
-    width: 40%;
-    font-size: 0.85rem;
+  .machine-search-container {
+    padding: 0 0.5rem;
+    margin: 1rem auto;
   }
   
+  .search-form,
+  .machine-result {
+    padding: 1.5rem 1rem;
+  }
+  
+  .form-group input,
+  .search-form button {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .machine-table td {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .field-label,
   .field-value {
-    font-size: 0.85rem;
+    width: 100%;
+    display: block;
+  }
+  
+  .field-label {
+    background: transparent;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .machine-search-container h2 {
+    font-size: 1.5rem;
   }
   
   .section h4 {
-    font-size: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .user-status {
+    font-size: 0.85rem;
+    padding: 0.5rem;
   }
 }

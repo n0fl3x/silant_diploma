@@ -8,6 +8,7 @@ interface AuthContextType {
         email: string;
     } | null;
     checkAuth: () => Promise<void>;
+    login: (username: string, password: string) => Promise<boolean>;
     logout: () => Promise<void>;
 };
 
@@ -45,6 +46,32 @@ export function AuthProvider(
         }
     };
 
+    const login = async (username: string, password: string): Promise<boolean> => {
+        try {
+            const response = await fetch("/api/v1/token", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({ username, password }),
+            });
+          
+            if (response.ok) {
+                const data = await response.json();
+                setIsAuthenticated(true);
+                setUser(data.user || { username, email: "" });
+                return true;
+            }
+            
+            return false;
+        }
+        catch (error) {
+            console.error("Login failed:", error);
+            return false;
+        }
+    };
+
     const logout = async () => {
         await fetch(
             "/api/v1/logout",
@@ -65,13 +92,13 @@ export function AuthProvider(
     );
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, checkAuth, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, user, checkAuth, login, logout }}>
             {children}
         </AuthContext.Provider>
     )
 };
 
-export const useAuth = () => {
+export const useAuthContext = () => {
     const context = useContext(AuthContext);
   
     if ( context === undefined ) {
