@@ -1,19 +1,151 @@
 from rest_framework import status
+from rest_framework import generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotFound
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import Group
 
-from core.models import Machine, CustomUser
-from api.serializers import (
+from django_filters.rest_framework import DjangoFilterBackend
+
+from core.models import (
+    Machine,
+    Maintenance,
+    Claim,
+    CustomUser,
+)
+from .serializers import (
     MachineSerializer,
     MachinePublicSerializer,
     MachineFullSerializer,
+    MachineSerializer,
+    MaintenanceSerializer,
+    ClaimSerializer,
 )
+from .filters import (
+    MachineFilter,
+    MaintenanceFilter,
+    ClaimFilter,
+)
+
+
+class MachineList(generics.ListAPIView):
+    queryset = Machine.objects.all()
+    serializer_class = MachineSerializer
+    permission_classes = [permissions.DjangoModelPermissions]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MachineFilter
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = super().get_queryset()
+
+        if user.groups.filter(name='Клиент').exists():
+            queryset = queryset.filter(client=user)
+        elif user.groups.filter(name='Сервисная организация').exists():
+            queryset = queryset.filter(service_company=user)
+
+        return queryset.order_by('-shipment_date')
+
+
+class MachineDetail(generics.RetrieveAPIView):
+    queryset = Machine.objects.all()
+    serializer_class = MachineSerializer
+    permission_classes = [permissions.DjangoModelPermissions]
+
+    def get_object(self):
+        obj = super().get_object()
+        user = self.request.user
+
+        if user.groups.filter(name='Клиент').exists():
+            if obj.client != user:
+                raise NotFound("Машина не найдена")
+        elif user.groups.filter(name='Сервисная организация').exists():
+            if obj.service_company != user:
+                raise NotFound("Машина не найдена")
+
+        return obj
+
+
+class MaintenanceList(generics.ListCreateAPIView):
+    queryset = Maintenance.objects.all()
+    serializer_class = MaintenanceSerializer
+    permission_classes = [permissions.DjangoModelPermissions]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MaintenanceFilter
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = super().get_queryset()
+
+        if user.groups.filter(name='Клиент').exists():
+            queryset = queryset.filter(machine__client=user)
+        elif user.groups.filter(name='Сервисная организация').exists():
+            queryset = queryset.filter(service_company=user)
+
+        return queryset.order_by('-maintenance_date')
+
+
+class MaintenanceDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Maintenance.objects.all()
+    serializer_class = MaintenanceSerializer
+    permission_classes = [permissions.DjangoModelPermissions]
+
+    def get_object(self):
+        obj = super().get_object()
+        user = self.request.user
+
+        if user.groups.filter(name='Клиент').exists():
+            if obj.client != user:
+                raise NotFound("Машина не найдена")
+        elif user.groups.filter(name='Сервисная организация').exists():
+            if obj.service_company != user:
+                raise NotFound("Машина не найдена")
+
+        return obj
+
+
+class ClaimList(generics.ListCreateAPIView):
+    queryset = Claim.objects.all()
+    serializer_class = ClaimSerializer
+    permission_classes = [permissions.DjangoModelPermissions]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ClaimFilter
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = super().get_queryset()
+
+        if user.groups.filter(name='Клиент').exists():
+            queryset = queryset.filter(machine__client=user)
+        elif user.groups.filter(name='Сервисная организация').exists():
+            queryset = queryset.filter(service_company=user)
+
+        return queryset.order_by('-failure_date')
+
+
+class ClaimDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Claim.objects.all()
+    serializer_class = ClaimSerializer
+    permission_classes = [permissions.DjangoModelPermissions]
+
+    def get_object(self):
+        obj = super().get_object()
+        user = self.request.user
+
+        if user.groups.filter(name='Клиент').exists():
+            if obj.client != user:
+                raise NotFound("Машина не найдена")
+        elif user.groups.filter(name='Сервисная организация').exists():
+            if obj.service_company != user:
+                raise NotFound("Машина не найдена")
+
+        return obj
 
 
 class MachineSearchAPIView(APIView):
