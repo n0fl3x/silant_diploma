@@ -4,10 +4,10 @@
   left: 0;
   right: 0;
   width: 100%;
-  background: #2c3e50;
+  background: var(--color-primary); /* #163E6C вместо #2c3e50 */
   color: white;
   padding: 1rem 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(22, 62, 108, 0.2); /* тень с основным цветом */
   z-index: 1000;
   height: 60px;
 }
@@ -33,6 +33,7 @@
 
 .header__title {
   margin: 0;
+  font-family: "PT Astra Sans", sans-serif; /* шрифт бренда */
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -53,43 +54,48 @@
   text-decoration: none;
   display: inline-block;
   text-align: center;
+  font-family: "PT Astra Sans", sans-serif; /* шрифт бренда */
   font-size: 0.9rem;
 }
 
+/* Основная кнопка — используем акцентный красный */
 .header__button--main {
-  background: #3498db;
+  background: var(--color-accent); /* #D20A11 */
   color: white;
 }
 
 .header__button--main:hover {
-  background: #2980b9;
+  background: #B00000; /* тёмный оттенок красного (~85 % от #D20A11) */
 }
 
+/* Кнопка входа — светлый вариант на основном цвете */
 .header__button--login {
-  background: #27ae60;
+  background: rgba(22, 62, 108, 0.8); /* полупрозрачный основной цвет */
   color: white;
 }
 
 .header__button--login:hover {
-  background: #219955;
+  background: var(--color-primary); /* сплошной основной цвет при наведении */
 }
 
+/* Кнопка личного кабинета — акцентный красный с лёгкой заливкой */
 .header__button--dashboard {
-  background: #9b59b6;
+  background: rgba(210, 10, 17, 0.9); /* полупрозрачный акцентный */
   color: white;
 }
 
 .header__button--dashboard:hover {
-  background: #8e44ad;
+  background: var(--color-accent); /* сплошной акцентный цвет при наведении */
 }
 
+/* Кнопка выхода — яркий акцентный красный */
 .header__button--logout {
-  background: #e74c3c;
+  background: var(--color-accent); /* #D20A11 */
   color: white;
 }
 
 .header__button--logout:hover {
-  background: #c0392b;
+  background: #B00000; /* более тёмный красный при наведении */
 }
 
 @media (max-width: 768px) {
