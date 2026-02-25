@@ -26,17 +26,16 @@ export function AuthProvider({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isChecking, setIsChecking] = useState(false); // Флаг предотвращения дублирования
+  const [isChecking, setIsChecking] = useState(false);
 
   const checkAuth = async (): Promise<void> => {
-    // Если уже идёт проверка авторизации, прерываем новый вызов
     if (isChecking) {
       console.log('checkAuth aborted — already checking');
       return;
     };
 
-    setIsChecking(true); // Устанавливаем флаг начала проверки
-    setLoading(true);  // Устанавливаем состояние загрузки
+    setIsChecking(true);
+    setLoading(true);
 
     try {
       const response = await fetch("/api/v1/authenticated", {
@@ -49,7 +48,6 @@ export function AuthProvider({
         setIsAuthenticated(data.authenticated);
         setUser(data.user || null);
       } else {
-        // Если сервер вернул не-OK статус, считаем пользователя не авторизованным
         setIsAuthenticated(false);
         setUser(null);
       }
@@ -58,14 +56,13 @@ export function AuthProvider({
       setIsAuthenticated(false);
       setUser(null);
     } finally {
-      setLoading(false);   // Снимаем состояние загрузки
-      setIsChecking(false); // Снимаем флаг проверки
+      setLoading(false);
+      setIsChecking(false);
     }
   };
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      // Здесь нужно реализовать логику логина — предположим, есть эндпоинт /api/v1/login
       const loginResponse = await fetch("/api/v1/login", {
         method: "POST",
         headers: {
@@ -78,7 +75,6 @@ export function AuthProvider({
         throw new Error("Login failed");
       }
 
-      // После успешного логина проверяем авторизацию
       await checkAuth();
       return true;
     } catch (error) {
@@ -87,14 +83,19 @@ export function AuthProvider({
     }
   };
 
-  const logout = () => {
-    // Очищаем состояние
-    setIsAuthenticated(false);
-    setUser(null);
+  const logout = async () => {
+    try {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      setIsAuthenticated(false);
+      setUser(null);
+    } catch (error) {
+      console.error('Ошибка при очистке данных аутентификации:', error);
+      throw error;
+    }
   };
 
   useEffect(() => {
-    // При инициализации проверяем статус авторизации
     checkAuth();
   }, []);
 

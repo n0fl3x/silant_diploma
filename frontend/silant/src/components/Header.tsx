@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import "../styles/Header.css";
 import { useAuth } from '../contexts/AuthContext';
 
@@ -39,6 +39,16 @@ const Header: React.FC = () => {
               >
                 Кабинет
               </Link>
+              <NavLink
+                to="/machine-list"
+                className={
+                  ({ isActive }) => isActive ?
+                    'header__button header__button--machines header__button--active' :
+                    'header__button header__button--machines'
+                }
+              >
+                Машины
+              </NavLink>
               <Link
                 to="/logout"
                 className="header__button header__button--logout"

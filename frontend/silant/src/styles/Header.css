@@ -146,3 +146,21 @@
     font-size: 0.8rem;
   }
 }
+
+.header__button--machines {
+  background-color: #3498db;
+  color: white;
+}
+
+.header__button--machines:hover {
+  background-color: #2980b9;
+}
+
+.header__button--active {
+  background-color: #e74c3c;
+  font-weight: 600;
+}
+
+.header__button--active:hover {
+  background-color: #c0392b;
+}
