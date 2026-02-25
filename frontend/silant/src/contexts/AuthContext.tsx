@@ -1,109 +1,123 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  user_description: string;
+}
 
 interface AuthContextType {
-    isAuthenticated: boolean;
-    user: {
-        username: string;
-        email: string;
-    } | null;
-    checkAuth: () => Promise<void>;
-    login: (username: string, password: string) => Promise<boolean>;
-    logout: () => Promise<void>;
-};
+  isAuthenticated: boolean;
+  user: User | null;
+  loading: boolean;
+  login: (username: string, password: string) => Promise<boolean>;
+  logout: () => void;
+  checkAuth: () => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider(
-    { children }: { children: React.ReactNode }
-) {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState<{ username: string; email: string } | null>(null);
+export function AuthProvider({
+  children
+}: {
+  children: React.ReactNode;
+}) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isChecking, setIsChecking] = useState(false); // Флаг предотвращения дублирования
 
-    const checkAuth = async () => {
-        try {
-            const response = await fetch(
-                "/api/v1/authenticated",
-                {
-                    method: "POST",
-                    credentials: "include",
-                }
-            );
-
-            if ( response.ok ) {
-                const data = await response.json();
-                setIsAuthenticated(true);
-                setUser(data.user)
-            }
-            else {
-                setIsAuthenticated(false);
-                setUser(null)
-            }
-        }
-        catch ( error ) {
-            setIsAuthenticated(false);
-          setUser(null)
-        }
+  const checkAuth = async (): Promise<void> => {
+    // Если уже идёт проверка авторизации, прерываем новый вызов
+    if (isChecking) {
+      console.log('checkAuth aborted — already checking');
+      return;
     };
 
-    const login = async (username: string, password: string): Promise<boolean> => {
-        try {
-            const response = await fetch("/api/v1/token", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({ username, password }),
-            });
-          
-            if (response.ok) {
-                const data = await response.json();
-                setIsAuthenticated(true);
-                setUser(data.user || { username, email: "" });
-                return true;
-            }
-            
-            return false;
-        }
-        catch (error) {
-            console.error("Login failed:", error);
-            return false;
-        }
-    };
+    setIsChecking(true); // Устанавливаем флаг начала проверки
+    setLoading(true);  // Устанавливаем состояние загрузки
 
-    const logout = async () => {
-        await fetch(
-            "/api/v1/logout",
-            {
-                method: "POST",
-                credentials: "include"
-            }
-        );
+    try {
+      const response = await fetch("/api/v1/authenticated", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsAuthenticated(data.authenticated);
+        setUser(data.user || null);
+      } else {
+        // Если сервер вернул не-OK статус, считаем пользователя не авторизованным
         setIsAuthenticated(false);
-        setUser(null)
-    };
+        setUser(null);
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      setIsAuthenticated(false);
+      setUser(null);
+    } finally {
+      setLoading(false);   // Снимаем состояние загрузки
+      setIsChecking(false); // Снимаем флаг проверки
+    }
+  };
 
-    useEffect( () =>
-        {
-            checkAuth()
+  const login = async (username: string, password: string): Promise<boolean> => {
+    try {
+      // Здесь нужно реализовать логику логина — предположим, есть эндпоинт /api/v1/login
+      const loginResponse = await fetch("/api/v1/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        []
-    );
+        body: JSON.stringify({ username, password }),
+      });
 
-    return (
-        <AuthContext.Provider value={{ isAuthenticated, user, checkAuth, login, logout }}>
-            {children}
-        </AuthContext.Provider>
-    )
-};
+      if (!loginResponse.ok) {
+        throw new Error("Login failed");
+      }
 
-export const useAuthContext = () => {
-    const context = useContext(AuthContext);
-  
-    if ( context === undefined ) {
-        throw new Error("useAuth must be used within an AuthProvider")
-    };
-  
-    return context
+      // После успешного логина проверяем авторизацию
+      await checkAuth();
+      return true;
+    } catch (error) {
+      console.error("Login error:", error);
+      return false;
+    }
+  };
+
+  const logout = () => {
+    // Очищаем состояние
+    setIsAuthenticated(false);
+    setUser(null);
+  };
+
+  useEffect(() => {
+    // При инициализации проверяем статус авторизации
+    checkAuth();
+  }, []);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        loading,
+        login,
+        logout,
+        checkAuth,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };

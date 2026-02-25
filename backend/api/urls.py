@@ -25,9 +25,9 @@ urlpatterns = [
         name="machines-of-client",
     ),
     path(
-        route="token",
+        route="login",
         view=CustomTokenObtainPairView.as_view(),
-        name="token-obtain-pair",
+        name="login",
     ),
     path(
         route="token/refresh",

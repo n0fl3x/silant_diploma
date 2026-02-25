@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import "../styles/Header.css";
-import { useAuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 
 const Header: React.FC = () => {
-  const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated } = useAuth();
 
   return (
     <header className="header">

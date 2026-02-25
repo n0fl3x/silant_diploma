@@ -1,37 +1,30 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuthContext } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
+export default function ProtectedRoute({
+  children
+}: {
+  children: React.ReactNode
+}) {
+  const { isAuthenticated, loading } = useAuth(); // Берём loading из контекста
+  const [localLoading, setLocalLoading] = useState(true);
 
-export default function ProtectedRoute(
-    { children }: { children: React.ReactNode }
-) {
-    const { isAuthenticated, checkAuth } = useAuthContext();
-    const [loading, setLoading] = useState(true);
-    const hasChecked = useRef(false);
+  // Устанавливаем локальную загрузку только при первом монтировании
+  useEffect(() => {
+    setLocalLoading(false);
+  }, []);
 
-    useEffect( () =>
-        {
-            if ( hasChecked.current ) return;
+  // Показываем индикатор, пока идёт общая проверка авторизации ИЛИ пока монтируется ProtectedRoute
+  if (loading || localLoading) {
+    return <div>Проверка авторизации...</div>;
+  }
 
-            const verifyAuth = async () => {
-                hasChecked.current = true;
-                await checkAuth();
-                setLoading(false)
-            };
+  // Если не авторизован — редирект на login
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
-            verifyAuth();
-        },
-        [checkAuth]
-    );
-
-    if ( loading ) {
-        return <div>Проверка авторизации...</div>
-    };
-
-    if ( !isAuthenticated ) {
-        return <Navigate to="/login" replace />
-    };
-    
-    return <>{children}</>
-};
+  // Если авторизован и загрузка завершена — показываем защищённый контент
+  return <>{children}</>;
+}

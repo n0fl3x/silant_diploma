@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import "../styles/Login.css";
 
 const Login = () => {
@@ -9,7 +9,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { isAuthenticated, login } = useAuthContext();
+  const { isAuthenticated, login } = useAuth();
   const navigate = useNavigate();
 
   // Редирект на /dashboard, если пользователь уже авторизован

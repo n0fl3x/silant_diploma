@@ -1,10 +1,10 @@
-import { useAuthContext } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import "../styles/Dashboard.css";
 
 
 export default function Dashboard () {
-    const { isAuthenticated, logout, user } = useAuthContext();
+    const { isAuthenticated, user } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect( () =>
