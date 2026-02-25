@@ -69,14 +69,21 @@ const MachineTable: React.FC<MachineTableProps> = ({
       <table className="machine-table">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Заводской №</th>
+            <th>Модель техники</th>
             <th>Двигатель</th>
+            <th>Зав. номер двигателя</th>
             <th>Трансмиссия</th>
+            <th>Номер трансмиссии</th>
             <th>Ведущий мост</th>
+            <th>Номер ведущего моста</th>
             <th>Управляемый мост</th>
+            <th>Номер управляемого моста</th>
+            <th>Договор поставки</th>
             <th>Дата отгрузки</th>
             <th>Грузополучатель</th>
+            <th>Адрес доставки</th>
+            <th>Конфигурация</th>
             <th>Клиент</th>
             <th>Сервисная компания</th>
             <th>Действия</th>
@@ -85,18 +92,23 @@ const MachineTable: React.FC<MachineTableProps> = ({
         <tbody>
           {paginatedMachines.map((machine) => (
             <tr key={machine.id}>
-              <td>{machine.id}</td>
-              <td>{machine.factory_number}</td>
-              <td>{machine.engine_factory_number}</td>
-              <td>{machine.transmission_factory_number}</td>
-              <td>{machine.drive_axle_factory_number}</td>
-              <td>{machine.steering_axle_factory_number}</td>
-              <td>{new Date(machine.shipment_date).toLocaleDateString()}</td>
-              <td>
-                {machine.consignee || <span className="text-muted">Не указан</span>}
-              </td>
-              <td>ID {machine.client}</td>
-              <td>ID {machine.service_company}</td>
+              <td>{machine.factory_number || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.model_tech_name || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.engine_model_name || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.engine_factory_number || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.transmission_model_name || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.transmission_factory_number || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.drive_axle_model_name || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.drive_axle_factory_number || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.steering_axle_model_name || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.steering_axle_factory_number || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.delivery_contract || <span className="text-muted">Не указан</span>}</td>
+              <td>{new Date(machine.shipment_date).toLocaleDateString() || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.consignee || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.delivery_address || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.configuration || <span className="text-muted">Не указан</span>}</td>
+              <td>{machine.client_name}</td>
+              <td>{machine.service_company_name}</td>
               <td>
                 <button
                   onClick={() => onMachineSelect?.(machine)}

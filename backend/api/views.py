@@ -58,6 +58,16 @@ class MachineList(generics.ListAPIView):
         user = self.request.user
         queryset = super().get_queryset()
 
+        queryset = queryset.select_related(
+            'client',
+            'service_company',
+            'steering_axle_model',
+            'drive_axle_model',
+            'transmission_model',
+            'engine_model',
+            'model_tech',
+        )
+
         if user.groups.filter(name='Клиент').exists():
             queryset = queryset.filter(client=user)
         elif user.groups.filter(name='Сервисная организация').exists():
@@ -66,6 +76,7 @@ class MachineList(generics.ListAPIView):
         return queryset.order_by('-shipment_date')
 
 
+# TODO: тут тоже допилить запросы и потом поптавить интерфейсы
 class MachineDetail(generics.RetrieveAPIView):
     queryset = Machine.objects.all()
     serializer_class = MachineSerializer
