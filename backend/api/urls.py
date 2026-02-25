@@ -14,16 +14,10 @@ from .views import (
     CurrentUserView,
     logout,
     is_authenticated,
-    get_machines,
 )
 
 
 urlpatterns = [
-    path(
-        route="client-machines",
-        view=get_machines,
-        name="machines-of-client",
-    ),
     path(
         route="login",
         view=CustomTokenObtainPairView.as_view(),

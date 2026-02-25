@@ -1,0 +1,67 @@
+/* components/MachineTable.css */
+.machine-table-container {
+  padding: 20px;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow-x: auto;
+}
+
+.machine-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.machine-table th {
+  background-color: #2c3e50;
+  color: white;
+  padding: 12px 10px;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.machine-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #ecf0f1;
+  font-size: 0.9em;
+}
+
+.machine-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.action-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.action-btn:hover {
+  background: #2980b9;
+}
+
+.loading, .error, .no-data {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.1em;
+}
+
+.error {
+  color: #e74c3c;
+  background: #fadbd8;
+  padding: 20px;
+  border-radius: 4px;
+}
+
+.text-muted {
+  color: #95a5a6;
+  font-style: italic;
+}

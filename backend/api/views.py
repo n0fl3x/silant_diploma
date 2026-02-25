@@ -426,39 +426,3 @@ def is_authenticated(
         },
         status=status.HTTP_200_OK,
     )
-
-@api_view(
-    http_method_names=[
-        "GET",
-    ],
-)
-@permission_classes(
-    permission_classes=[
-        IsAuthenticated,
-    ],
-)
-def get_machines(
-    request,
-):
-    user = request.user
-
-    if not isinstance(user, CustomUser):
-        return Response(
-            data={
-                "error": "Ошибка типа пользователя.",
-            },
-            status=status.HTTP_403_FORBIDDEN,
-        )
-
-    machines = Machine.objects.filter(
-        client=user,
-    )
-    serializer = MachineSerializer(
-        machines,
-        many=True,
-    )
-
-    return Response(
-        data=serializer.data,
-        status=status.HTTP_200_OK,
-    )

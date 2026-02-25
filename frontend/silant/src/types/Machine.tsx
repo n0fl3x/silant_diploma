@@ -1,0 +1,20 @@
+export interface Machine {
+  id: number;
+  factory_number: string;
+  engine_factory_number: string;
+  transmission_factory_number: string;
+  drive_axle_factory_number: string;
+  steering_axle_factory_number: string;
+  delivery_contract: string | null;
+  shipment_date: string;
+  consignee: string | null;
+  delivery_address: string;
+  configuration: string;
+  model_tech: number;
+  engine_model: number;
+  transmission_model: number;
+  drive_axle_model: number;
+  steering_axle_model: number;
+  client: number;
+  service_company: number;
+};

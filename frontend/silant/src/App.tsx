@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Logout from './pages/Logout';
 import MachineSearch from './pages/MachineSearch';
 import ProtectedRoute from './components/ProtectedRoute';
+import MachineListPage from './pages/MachineListPage';
 
 function App() {
   return (
@@ -30,8 +31,21 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/machine-search" element={<MachineSearch />} />
-            <Route path="/" element={<Navigate to="/machine-search" />} />
+            <Route
+              path="/machine-search"
+              element={<MachineSearch />}
+            />
+            <Route
+              path="/machine-list"
+              element={
+                <ProtectedRoute>
+                  <MachineListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/"
+              element={<Navigate to="/machine-search" />} />
           </Routes>
         </main>
       </div>
