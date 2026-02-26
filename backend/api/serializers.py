@@ -131,7 +131,7 @@ class MachineListSerializer(serializers.ModelSerializer):
 
 
 class MachineDetailSerializer(MachineListSerializer):
-    ...
+    pass
 
 
 class DictionaryEntrySerializer(serializers.ModelSerializer):

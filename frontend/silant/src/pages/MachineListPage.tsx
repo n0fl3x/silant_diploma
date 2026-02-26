@@ -19,7 +19,7 @@ const MachineListPage: React.FC = () => {
     <div className="machine-list-page">
       <MachineTable
         onMachineSelect={(machine) => {
-          navigate(`/machine/${machine.id}`);
+          navigate(`/machine-detail/${machine.id}`);
         }}
       />
     </div>

@@ -9,7 +9,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import Group
+from django.http import Http404
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -47,7 +47,7 @@ class CurrentUserView(APIView):
         })
 
 
-class MachineList(generics.ListAPIView):
+class MachineListView(generics.ListAPIView):
     queryset = Machine.objects.all()
     serializer_class = MachineListSerializer
     permission_classes = [permissions.DjangoModelPermissions]
@@ -76,22 +76,45 @@ class MachineList(generics.ListAPIView):
         return queryset.order_by('-shipment_date')
 
 
-class MachineDetail(generics.RetrieveAPIView):
+class MachineDetailView(generics.RetrieveAPIView):
     queryset = Machine.objects.all()
-    serializer_class = MachineListSerializer
+    serializer_class = MachineDetailSerializer
     permission_classes = [permissions.DjangoModelPermissions]
 
-    def get_object(self):
-        obj = super().get_object()
+    def get_queryset(self):
         user = self.request.user
+        queryset = super().get_queryset()
+
+        queryset = queryset.select_related(
+            'client',
+            'service_company',
+            'steering_axle_model',
+            'drive_axle_model',
+            'transmission_model',
+            'engine_model',
+            'model_tech',
+        )
 
         if user.groups.filter(name='Клиент').exists():
-            if obj.client != user:
-                raise NotFound("Машина не найдена")
+            queryset = queryset.filter(client=user)
         elif user.groups.filter(name='Сервисная организация').exists():
-            if obj.service_company != user:
-                raise NotFound("Машина не найдена")
+            queryset = queryset.filter(service_company=user)
 
+        return queryset
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        pk = self.kwargs.get('pk')
+
+        if pk is None:
+            raise Http404("ID машины не указан")
+
+        try:
+            obj = queryset.get(pk=pk)
+        except Machine.DoesNotExist:
+            raise Http404(f"Машина с ID {pk} не найдена или недоступна")
+
+        self.check_object_permissions(self.request, obj)
         return obj
 
 

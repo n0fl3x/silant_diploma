@@ -6,6 +6,7 @@ import Logout from './pages/Logout';
 import MachineSearch from './pages/MachineSearch';
 import ProtectedRoute from './components/ProtectedRoute';
 import MachineListPage from './pages/MachineListPage';
+import MachineDetailPage from './pages/MachineDetailPage';
 
 function App() {
   return (
@@ -43,6 +44,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MachineListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/machine-detail/:id"
+              element={
+                <ProtectedRoute>
+                  <MachineDetailPage />
                 </ProtectedRoute>
               }
             />

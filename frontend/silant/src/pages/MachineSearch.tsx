@@ -51,8 +51,6 @@ export default function MachineSearch() {
                 .find( cookie => cookie.startsWith("access_token=") )
                 ?.split("=")[1];
         
-            console.log("Извлечённый токен: ", accessToken);
-        
             const headers: HeadersInit = {
                 "Content-Type": "application/json",
             };
