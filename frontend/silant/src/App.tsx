@@ -14,7 +14,10 @@ function App() {
         <Header />
         <main className="content">
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route
+              path="/login"
+              element={<Login />}
+            />
             <Route
               path="/dashboard"
               element={
@@ -46,6 +49,10 @@ function App() {
             <Route
               path="/"
               element={<Navigate to="/machine-search" />} />
+            <Route
+              path="*"
+              element={<div>Страница не найдена</div>}
+            />
           </Routes>
         </main>
       </div>

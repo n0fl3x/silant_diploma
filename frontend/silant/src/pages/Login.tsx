@@ -12,14 +12,18 @@ const Login = () => {
   const { isAuthenticated, login } = useAuth();
   const navigate = useNavigate();
 
-  // Редирект на /dashboard, если пользователь уже авторизован
+  useEffect(() => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+  }, []);
+
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/dashboard", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -33,9 +37,17 @@ const Login = () => {
         setError("Неверные учётные данные.");
       }
     } catch (err) {
-      setError("Ошибка подключения к серверу.");
+      if (err instanceof Error) {
+        setError(`Ошибка входа: ${err.message}`);
+      } else {
+        setError("Ошибка подключения к серверу.");
+      }
     } finally {
       setLoading(false);
+      if (error) {
+        setUsername('');
+        setPassword('');
+      }
     }
   };
 

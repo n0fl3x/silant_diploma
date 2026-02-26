@@ -76,7 +76,7 @@ class MachineFullSerializer(MachinePublicSerializer):
         ]
 
 
-class MachineSerializer(serializers.ModelSerializer):
+class MachineListSerializer(serializers.ModelSerializer):
     client_name = serializers.CharField(
         source="client.user_description",
         read_only=True,
@@ -128,6 +128,10 @@ class MachineSerializer(serializers.ModelSerializer):
             "client_name",
             "service_company_name",
         ]
+
+
+class MachineDetailSerializer(MachineListSerializer):
+    ...
 
 
 class DictionaryEntrySerializer(serializers.ModelSerializer):

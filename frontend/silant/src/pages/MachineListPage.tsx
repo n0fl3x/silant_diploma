@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import MachineTable from '../components/MachineTable';
 import { useAuth } from '../contexts/AuthContext';
 
 const MachineListPage: React.FC = () => {
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
   if (authLoading) {
     return <div>Проверка авторизации...</div>;
@@ -14,11 +16,10 @@ const MachineListPage: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="machine-list-page">
       <MachineTable
         onMachineSelect={(machine) => {
-          console.log('Выбрана машина:', machine);
-          // Здесь надо добавить логику или ещё как-то
+          navigate(`/machine/${machine.id}`);
         }}
       />
     </div>

@@ -20,10 +20,10 @@ from core.models import (
     CustomUser,
 )
 from .serializers import (
-    MachineSerializer,
     MachinePublicSerializer,
     MachineFullSerializer,
-    MachineSerializer,
+    MachineListSerializer,
+    MachineDetailSerializer,
     MaintenanceSerializer,
     ClaimSerializer,
 )
@@ -49,7 +49,7 @@ class CurrentUserView(APIView):
 
 class MachineList(generics.ListAPIView):
     queryset = Machine.objects.all()
-    serializer_class = MachineSerializer
+    serializer_class = MachineListSerializer
     permission_classes = [permissions.DjangoModelPermissions]
     filter_backends = [DjangoFilterBackend]
     filterset_class = MachineFilter
@@ -76,10 +76,9 @@ class MachineList(generics.ListAPIView):
         return queryset.order_by('-shipment_date')
 
 
-# TODO: тут тоже допилить запросы и потом поптавить интерфейсы
 class MachineDetail(generics.RetrieveAPIView):
     queryset = Machine.objects.all()
-    serializer_class = MachineSerializer
+    serializer_class = MachineListSerializer
     permission_classes = [permissions.DjangoModelPermissions]
 
     def get_object(self):

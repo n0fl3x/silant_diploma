@@ -28,13 +28,16 @@ export default function Logout() {
         navigate('/login', { replace: true });
       } catch (err) {
         console.error('Ошибка при выходе:', err);
-        setError('Не удалось выйти из системы. Выполняется переход на страницу входа...');
 
         try {
-          await clearAuth();
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          clearAuth();
         } catch (clearErr) {
-          console.warn('Ошибка при очистке состояния аутентификации:', clearErr);
+          console.warn('Ошибка при локальной очистке токенов:', clearErr);
         }
+
+        setError('Не удалось выйти из системы. Выполняется переход на страницу входа...');
 
         setTimeout(() => {
           navigate('/login', { replace: true });

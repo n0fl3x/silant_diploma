@@ -28,25 +28,90 @@ export function AuthProvider({
   const [loading, setLoading] = useState(true);
   const [isChecking, setIsChecking] = useState(false);
 
+  const fetchUserData = async (): Promise<void> => {
+    try {
+      const response = await fetch('/api/v1/user', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+      } else {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refreshToken');
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refreshToken');
+      setIsAuthenticated(false);
+      setUser(null);
+    }
+  };
+
+  const refreshAccessToken = async (): Promise<boolean> => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) return false;
+
+    try {
+      const response = await fetch('/api/v1/token/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh: refreshToken })
+      });
+
+      if (!response.ok) return false;
+
+      const { access } = await response.json();
+      localStorage.setItem('access_token', access);
+      return true;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      return false;
+    }
+  };
+
   const checkAuth = async (): Promise<void> => {
     if (isChecking) {
       console.log('checkAuth aborted — already checking');
       return;
-    };
+    }
 
     setIsChecking(true);
     setLoading(true);
 
     try {
-      const response = await fetch("/api/v1/authenticated", {
+      let response = await fetch("/api/v1/authenticated", {
         method: "POST",
         credentials: "include",
       });
 
+      if (response.status === 401) {
+        const refreshed = await refreshAccessToken();
+        if (refreshed) {
+          response = await fetch("/api/v1/authenticated", {
+            method: "POST",
+            credentials: "include",
+          });
+        } else {
+          throw new Error('Token refresh failed');
+        }
+      }
+
       if (response.ok) {
         const data = await response.json();
         setIsAuthenticated(data.authenticated);
-        setUser(data.user || null);
+        if (data.user) {
+          setUser(data.user);
+        } else {
+          await fetchUserData();
+        }
       } else {
         setIsAuthenticated(false);
         setUser(null);
@@ -75,6 +140,10 @@ export function AuthProvider({
         throw new Error("Login failed");
       }
 
+      const { access, refresh } = await loginResponse.json();
+      localStorage.setItem('access_token', access);
+      localStorage.setItem('refresh_token', refresh);
+
       await checkAuth();
       return true;
     } catch (error) {
@@ -85,18 +154,40 @@ export function AuthProvider({
 
   const logout = async () => {
     try {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
+      await fetch('/api/v1/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (error) {
+      console.warn('Logout request failed, continuing cleanup:', error);
+    } finally {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
       setIsAuthenticated(false);
       setUser(null);
-    } catch (error) {
-      console.error('Ошибка при очистке данных аутентификации:', error);
-      throw error;
     }
   };
 
   useEffect(() => {
-    checkAuth();
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        console.warn('Auth check timeout — setting loading to false');
+        setLoading(false);
+        setIsChecking(false);
+      }
+    }, 1000);
+
+    const accessToken = localStorage.getItem('access_token');
+    const refreshToken = localStorage.getItem('refresh_token');
+
+    if (accessToken && refreshToken) {
+      setIsAuthenticated(true);
+      fetchUserData();
+    } else {
+      checkAuth();
+    }
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   return (
