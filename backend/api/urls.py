@@ -14,6 +14,7 @@ from .views import (
     CurrentUserView,
     logout,
     is_authenticated,
+    machine_update,
 )
 
 
@@ -39,15 +40,23 @@ urlpatterns = [
         name="is-authenticated",
     ),
     path(
+        route="user",
+        view=CurrentUserView.as_view(),
+        name="current-user",
+    ),
+    path(
         route="machines/search",
         view=MachineSearchAPIView.as_view(),
         name="machine-search",
     ),
     path('machines', MachineListView.as_view(), name='machine-list'),
     path('machines/<int:pk>', MachineDetailView.as_view(), name='machine-detail'),
+    path('machine-update/<int:pk>', machine_update, name='machine-update'),
+
+    #
     path('maintenance', MaintenanceList.as_view(), name='maintenance-list'),
     path('maintenance/<int:pk>', MaintenanceDetail.as_view(), name='maintenance-detail'),
     path('claims', ClaimList.as_view(), name='claim-list'),
     path('claims/<int:pk>', ClaimDetail.as_view(), name='claim-detail'),
-    path('user', CurrentUserView.as_view(), name='current-user'),
+    
 ]

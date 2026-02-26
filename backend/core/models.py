@@ -1,7 +1,6 @@
 import datetime
 
 from django.db import models
-from django.core.validators import MinLengthValidator
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
 
@@ -116,9 +115,8 @@ class Machine(models.Model):
     factory_number = models.CharField(
         max_length=50,
         unique=True,
-        validators=[
-            MinLengthValidator(3),
-        ],
+        blank=False,
+        null=False,
         verbose_name="Зав. номер машины",
     )
 
@@ -246,18 +244,21 @@ class Machine(models.Model):
     # 16. Клиент (справочник пользователей)
     client = models.ForeignKey(
         to=CustomUser,
-        on_delete=models.CASCADE,
-        related_name="machines",
+        on_delete=models.PROTECT,
+        related_name="machines_as_client",
         verbose_name="Клиент",
-        null=True,
+        null=False,
+        blank=False,
     )
 
     # 17. Сервисная компания (справочник пользователей)
     service_company = models.ForeignKey(
         to=CustomUser,
-        on_delete=models.CASCADE,
-        related_name="serviced_machines",
+        on_delete=models.PROTECT,
+        related_name="machines_as_service_company",
         verbose_name="Сервисная компания",
+        null=False,
+        blank=False,
     )
 
     class Meta:

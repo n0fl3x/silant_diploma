@@ -102,22 +102,22 @@
 }
 
 .back-button {
-  background: #6c757d;
+  background: #e74c3c;
   color: white;
 }
 
 .back-button:hover {
-  background: #545b62;
+  background: #c0392b;
   transform: translateY(-1px);
 }
 
 .edit-button {
-  background: #28a745;
+  background: #3498db;
   color: white;
 }
 
 .edit-button:hover {
-  background: #1e7e34;
+  background: #2980b9;
   transform: translateY(-1px);
 }
 

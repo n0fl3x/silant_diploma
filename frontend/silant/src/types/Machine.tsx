@@ -1,6 +1,6 @@
 export interface Machine {
   id: number;
-  factory_number: string;
+  factory_number: string | null;
   model_tech_name: string | null;
   engine_model_name: string | null;
   engine_factory_number: string | null;

@@ -1,3 +1,5 @@
+import json
+
 from rest_framework import status
 from rest_framework import generics, permissions
 from rest_framework.views import APIView
@@ -8,8 +10,9 @@ from rest_framework.exceptions import NotFound
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from django.contrib.auth import authenticate
 from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import authenticate
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -24,6 +27,7 @@ from .serializers import (
     MachineFullSerializer,
     MachineListSerializer,
     MachineDetailSerializer,
+    MachineSerializer,
     MaintenanceSerializer,
     ClaimSerializer,
 )
@@ -116,6 +120,46 @@ class MachineDetailView(generics.RetrieveAPIView):
 
         self.check_object_permissions(self.request, obj)
         return obj
+    
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def machine_update(request, pk):
+    try:
+        machine = get_object_or_404(Machine, id=pk)
+
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return Response(
+                {'error': 'Некорректный JSON в запросе'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = MachineSerializer(
+            machine,
+            data=data,
+            partial=False
+        )
+
+        if not serializer.is_valid():
+            return Response(
+                {'error': 'Неверные данные', 'details': serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer.save()
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
+    except Exception as e:
+        print(e)
+        return Response(
+            {'error': 'Ошибка сервера'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 class MaintenanceList(generics.ListCreateAPIView):
@@ -399,6 +443,7 @@ class CustomRefreshTokenView(TokenRefreshView):
             )
 
 @api_view(http_method_names=["POST"])
+@permission_classes([IsAuthenticated])
 def logout(
     request,
 ):

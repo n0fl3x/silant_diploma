@@ -7,6 +7,7 @@ import MachineSearch from './pages/MachineSearch';
 import ProtectedRoute from './components/ProtectedRoute';
 import MachineListPage from './pages/MachineListPage';
 import MachineDetailPage from './pages/MachineDetailPage';
+import MachineEditPage from './pages/MachineEditPage';
 
 function App() {
   return (
@@ -52,6 +53,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MachineDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/machine-edit/:id"
+              element={
+                <ProtectedRoute>
+                  <MachineEditPage />
                 </ProtectedRoute>
               }
             />

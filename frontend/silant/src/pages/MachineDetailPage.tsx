@@ -211,7 +211,12 @@ export default function MachineDetailPage() {
         >
           Назад
         </button>
-        <button className="edit-button">Редактировать</button>
+        <button
+          className="edit-button"
+          onClick={() => navigate(`/machine-edit/${machine.id}`)}
+        >
+          Редактировать
+        </button>
       </div>
     </div>
   );
