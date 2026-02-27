@@ -1,8 +1,4 @@
-"""
-Кастомная команда - python manage.py db-import-machines
-Импортирует данные о машинах из XLS файла в БД, попутно создавая связанные объекты.
-"""
-
+# backend/core/management/commands/db_import_machines.py
 import os
 import pandas as pd
 
@@ -13,14 +9,10 @@ from django.db import IntegrityError, transaction
 
 from core.models import Machine, DictionaryEntry, CustomUser
 
-
 class Command(BaseCommand):
     help = "Import test data about machines from XLS file to DB"
 
-    def add_arguments(
-        self,
-        parser,
-    ) -> None:
+    def add_arguments(self, parser) -> None:
         parser.add_argument(
             "--file",
             type=str,
@@ -32,11 +24,7 @@ class Command(BaseCommand):
             ),
         )
 
-    def handle(
-        self,
-        *args,
-        **options,
-    ) -> None:
+    def handle(self, *args, **options) -> None:
         excel_path = options["file"]
 
         if not os.path.exists(excel_path):
@@ -47,20 +35,15 @@ class Command(BaseCommand):
         try:
             self.load_machines(excel_path)
             self.stdout.write(
-                self.style.SUCCESS("Machines import completed successfully!")
+                self.style.SUCCESS("Machines import completed!")
             )
         except Exception as e:
             raise CommandError(f"Import failed: {e}")
 
-    def load_machines(
-        self,
-        excel_path,
-    ):
-        """
-        Загрузка машин из xls листа machines
-        """
+    def load_machines(self, excel_path):
+        """Загрузка машин из xls листа machines"""
         self.stdout.write("Loading machines...")
-        
+
         try:
             df = pd.read_excel(
                 io=excel_path,
@@ -69,13 +52,13 @@ class Command(BaseCommand):
             )
         except Exception as e:
             raise CommandError(f"Error reading xls list machines: {e}")
-        
-        service_group = Group.objects.get(
-            name="Сервисная организация",
-        )
-        client_group = Group.objects.get(
-            name="Клиент",
-        )
+
+        # Получаем группы один раз перед циклом
+        try:
+            service_group = Group.objects.get(name="Сервисная организация")
+            client_group = Group.objects.get(name="Клиент")
+        except Group.DoesNotExist:
+            raise CommandError("One or more required groups not found! Run 'python manage.py setup-groups' first.")
 
         with transaction.atomic():
             for idx, row in df.iterrows():
@@ -92,51 +75,50 @@ class Command(BaseCommand):
                     # Этого поля в эксельке нет
                     delivery_contract = None
 
-                    shipment_date=row["Дата отгрузки с завода"]
+                    shipment_date = row["Дата отгрузки с завода"]
                     try:
-                        if isinstance(
-                            shipment_date,
-                            (int, float)
-                        ):
+                        if isinstance(shipment_date, (int, float)):
                             shipment_date = datetime.fromtimestamp(shipment_date).date()
-                        elif isinstance(
-                            shipment_date,
-                            datetime
-                        ):
+                        elif isinstance(shipment_date, datetime):
                             shipment_date = shipment_date.date()
                         else:
                             shipment_date = pd.to_datetime(shipment_date).date()
                     except (ValueError, TypeError) as e:
                         self.stderr.write(
-                            f"Row {idx + 4}: Cannot process shipment date: {shipment_date} ({e})",
+                            f"Row {idx + 4}: Cannot process shipment date: {shipment_date} ({e})"
                         )
+                        continue
 
                     service_company_name = row["Сервисная компания"].strip()
                     sc_login = f"serv-comp-login-{idx + 4}"
+                    # Создаём или получаем сервисную компанию
                     sc, sc_created = CustomUser.objects.get_or_create(
                         user_description=service_company_name,
                         defaults={
                             "username": sc_login,
                             "user_description": service_company_name,
+                            "user_type": "service_company",
+                            "group": service_group,
                         },
                     )
                     if sc_created:
-                        sc.groups.add(service_group.pk)
                         sc.set_password(f"sc-temp-password-{idx + 4}")
                         sc.save()
                         self.stdout.write(f"Created new service company {service_company_name}")
 
                     client_name = row["Покупатель"].strip()
                     cl_login = f"client-login-{idx + 4}"
+                    # Создаём или получаем клиента
                     cl, cl_created = CustomUser.objects.get_or_create(
                         user_description=client_name,
                         defaults={
                             "username": cl_login,
                             "user_description": client_name,
+                            "user_type": "client",
+                            "group": client_group,
                         },
                     )
                     if cl_created:
-                        cl.groups.add(client_group.pk)
                         cl.set_password(f"cl-temp-password-{idx + 4}")
                         cl.save()
                         self.stdout.write(f"Created new client {client_name}")
@@ -216,18 +198,29 @@ class Command(BaseCommand):
                         service_company=sc,
                     )
 
-                    machine.save()
-                    self.stdout.write(f"Machine {machine.factory_number} created in DB")
+                    try:
+                        machine.save()
+                        self.stdout.write(f"Machine {machine.factory_number} created in DB")
+                    except IntegrityError as e:
+                        self.stderr.write(
+                            f"Row {idx + 4}: Unique constraint error for machine {factory_number}: {e}"
+                        )
+                        continue
+                except Exception as e:
+                    self.stderr.write(
+                        f"Row {idx + 4}: Unexpected error saving machine {factory_number}: {e}"
+                    )
+                    continue
 
                 except IntegrityError as e:
-                    self.stderr.write(f"Row {idx + 4}: Unique objects error: {e}")
+                    self.stderr.write(f"Row {idx + 4}: Integrity error: {e}")
                     continue
                 except DictionaryEntry.DoesNotExist as e:
-                    self.stderr.write(f"Row {idx + 4}: DictionaryEntry object not found: {e}")
+                    self.stderr.write(f"Row {idx + 4}: DictionaryEntry not found: {e}")
                     continue
                 except CustomUser.DoesNotExist as e:
                     self.stderr.write(f"Row {idx + 4}: User not found: {e}")
                     continue
                 except Exception as e:
-                    self.stderr.write(f"Row {idx + 4}: Machine {row['Зав. номер машины']} saving error: {e}")
+                    self.stderr.write(f"Row {idx + 4}: Unexpected error processing row: {e}")
                     continue

@@ -165,7 +165,7 @@ export default function MachineEditPage() {
       const response = await fetch(`/api/v1/machine-update/${machine.id}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`, // Исправлено: было 'Token'
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(saveData)
@@ -174,7 +174,7 @@ export default function MachineEditPage() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || 'Ошибка сохранения');
-      }
+      };
 
       const updatedMachine = await response.json();
       console.log('Машина успешно обновлена:', updatedMachine);

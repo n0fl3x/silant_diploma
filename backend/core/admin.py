@@ -1,4 +1,6 @@
+from django import forms
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.contrib.auth.admin import UserAdmin
 
 from .models import (
@@ -15,9 +17,12 @@ class CustomUserAdmin(UserAdmin):
     list_display = [
         "username",
         "email",
+        "user_type",
+        "group",
         "first_name",
         "last_name",
         "is_staff",
+        "is_superuser",
         "is_active",
         "user_description",
     ]
@@ -25,18 +30,19 @@ class CustomUserAdmin(UserAdmin):
         "is_staff",
         "is_superuser",
         "is_active",
-        "groups",
+        "group",
+        "user_type",
     ]
     search_fields = [
         "username",
         "first_name",
         "last_name",
         "email",
+        "user_description",
     ]
     ordering = [
         "username",
     ]
-    list_editable = []
 
     fieldsets = [
         (
@@ -44,7 +50,7 @@ class CustomUserAdmin(UserAdmin):
             {
                 "fields": (
                     "username",
-                    "password",
+                    "password"
                 ),
             },
         ),
@@ -55,29 +61,38 @@ class CustomUserAdmin(UserAdmin):
                     "first_name",
                     "last_name",
                     "email",
-                    "user_description",
+                    "user_description"
                 ),
             },
         ),
         (
-            "Права",
+            "Права доступа",
+            {
+                "fields": (
+                    "user_type",
+                    "group",
+                    "user_permissions"
+                ),
+            },
+        ),
+        (
+            "Статус",
             {
                 "fields": (
                     "is_active",
                     "is_staff",
-                    "is_superuser",
-                    "groups",
-                    "user_permissions",
+                    "is_superuser"
                 ),
             },
         ),
         (
-            "Даты", {
+            "Даты",
+            {
+                "classes": ("collapse", ),
                 "fields": (
                     "last_login",
-                    "date_joined",
+                    "date_joined"
                 ),
-                "classes": ("collapse", ),
             },
         ),
     ]
@@ -89,31 +104,19 @@ class CustomUserAdmin(UserAdmin):
                 "classes": ("wide", ),
                 "fields": (
                     "username",
-                    "password1",
-                    "password2",
-                ),
-            },
-        ),
-        (
-            "Персональная информация", {
-                "fields": (
                     "first_name",
                     "last_name",
                     "email",
-                    "user_description",
-                ),
-            },
-        ),
-        (
-            "Права", {
-                "fields": (
-                    "is_active",
-                    "is_staff",
                     "is_superuser",
-                    "groups",
-                ),
-            },
-        ),
+                    "is_staff",
+                    "password1",
+                    "password2",
+                    "user_type",
+                    "group",
+                    "user_description",
+                )
+            }
+        )
     ]
 
     readonly_fields = [
@@ -229,6 +232,16 @@ class MachineAdmin(admin.ModelAdmin):
         ),
     ]
 
+    def save_model(self, request, obj, form, change):
+        try:
+            super().save_model(request, obj, form, change)
+        except ValidationError as e:
+            if hasattr(e, 'error_dict'):
+                for field, errors in e.error_dict.items():
+                    form.add_error(field, errors)
+            else:
+                form.add_error(None, e)
+
 
 @admin.register(Maintenance)
 class MaintenanceAdmin(admin.ModelAdmin):
@@ -238,6 +251,7 @@ class MaintenanceAdmin(admin.ModelAdmin):
         "maintenance_date",
         "operating_hours",
         "work_order_number",
+        "service_company",
     ]
     list_filter = [
         "maintenance_type",
@@ -248,6 +262,7 @@ class MaintenanceAdmin(admin.ModelAdmin):
     search_fields = [
         "work_order_number",
         "machine__factory_number",
+        "service_company__user_description",
     ]
     date_hierarchy = "maintenance_date"
     ordering = [
@@ -280,12 +295,44 @@ class MaintenanceAdmin(admin.ModelAdmin):
             "Организации",
             {
                 "classes": ("collapse", ),
-                "fields": (
-                    "service_company",
-                ),
+                "fields": ("service_company", ),
             },
         ),
     ]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "service_company":
+            object_id = request.resolver_match.kwargs.get('object_id')
+            current_obj = None
+
+            if object_id:
+                try:
+                    current_obj = Maintenance.objects.select_related(
+                'machine__client'
+            ).get(pk=object_id)
+                except Maintenance.DoesNotExist:
+                    pass
+
+            base_qs = CustomUser.objects.filter(user_type="service_company")
+
+            if current_obj and current_obj.machine and current_obj.machine.client:
+                client_user = current_obj.machine.client
+                base_qs = base_qs | CustomUser.objects.filter(pk=client_user.pk)
+
+            kwargs["queryset"] = base_qs.distinct().order_by('user_description')
+
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+    def save_model(self, request, obj, form, change):
+        try:
+            super().save_model(request, obj, form, change)
+        except ValidationError as e:
+            if hasattr(e, 'error_dict'):
+                for field, errors in e.error_dict.items():
+                    form.add_error(field, errors)
+            else:
+                form.add_error(None, e)
 
 
 @admin.register(Claim)
@@ -342,3 +389,13 @@ class ClaimAdmin(admin.ModelAdmin):
             },
         ),
     ]
+
+    def save_model(self, request, obj, form, change):
+        try:
+            super().save_model(request, obj, form, change)
+        except ValidationError as e:
+            if hasattr(e, 'error_dict'):
+                for field, errors in e.error_dict.items():
+                    form.add_error(field, errors)
+            else:
+                form.add_error(None, e)

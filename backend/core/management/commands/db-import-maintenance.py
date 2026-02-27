@@ -7,9 +7,11 @@ import os
 import pandas as pd
 
 from datetime import datetime
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 
 from core.models import (
     Machine,
@@ -58,26 +60,16 @@ class Command(BaseCommand):
         except Exception as e:
             raise CommandError(f"Import failed: {e}")
 
-    def load_maintenance(
-        self,
-        excel_path,
-    ):
-        """
-        Загрузка записей о ТО из xls листа maintenances
-        """
+    def load_maintenance(self, excel_path):
+        """Загрузка записей о ТО из xls листа maintenances"""
         self.stdout.write("Loading maintenance records...")
 
         try:
-            df = pd.read_excel(
-                io=excel_path,
-                sheet_name="maintenances",
-            )
+            df = pd.read_excel(io=excel_path, sheet_name="maintenances")
         except Exception as e:
             raise CommandError(f"Error reading xls sheet maintenances: {e}")
-        
-        service_group = Group.objects.get(
-            name="Сервисная организация",
-        )
+
+        service_group = Group.objects.get(name="Сервисная организация")
 
         with transaction.atomic():
             for idx, row in df.iterrows():
@@ -86,9 +78,7 @@ class Command(BaseCommand):
 
                     factory_number = str(row["Зав. номер машины"]).strip()
                     try:
-                        machine = Machine.objects.get(
-                            factory_number=factory_number,
-                        )
+                        machine = Machine.objects.get(factory_number=factory_number)
                     except Machine.DoesNotExist:
                         self.stderr.write(
                             f"Row {idx}: Machine with factory number {factory_number} not found. Skipping..."
@@ -97,40 +87,35 @@ class Command(BaseCommand):
 
                     maintenance_date = row["Дата проведения ТО"]
                     try:
-                        if isinstance(
-                            maintenance_date,
-                            (int, float)
-                        ):
+                        if isinstance(maintenance_date, (int, float)):
                             maintenance_date = datetime.fromtimestamp(maintenance_date).date()
-                        elif isinstance(
-                            maintenance_date,
-                            datetime
-                        ):
+                        elif isinstance(maintenance_date, datetime):
                             maintenance_date = maintenance_date.date()
                         else:
                             maintenance_date = pd.to_datetime(maintenance_date).date()
                     except (ValueError, TypeError) as e:
                         self.stderr.write(
-                            f"Row {idx}: Invalid maintenance date: {maintenance_date} ({e})"
+                            f"Row {idx}: Invalid maintenance date: {maintenance_date} ({e}). Skipping..."
                         )
+                        continue
 
                     service_company_name = str(row["Организация, проводившая ТО"]).strip()
                     if service_company_name.lower() == "самостоятельно":
                         sc = machine.client
                     else:
-                        sc_login = f"serv-comp-login-{idx}-{idx}"
-                        sc, sc_created = CustomUser.objects.get_or_create(
+                        sc, created = CustomUser.objects.get_or_create(
                             user_description=service_company_name,
                             defaults={
-                                "username": sc_login,
-                                "user_description": service_company_name,
-                            },
+                                'username': f"serv-comp-login-{idx}",
+                            }
                         )
-                        if sc_created:
-                            sc.groups.add(service_group.pk)
-                            sc.set_password(f"sc-temp-password-{idx}-{idx}")
+                        if not sc.groups.filter(name="Сервисная организация").exists():
+                            sc.groups.add(service_group)
+                            self.stdout.write(f"Added user {service_company_name} to service group")
+                        if created:
+                            sc.set_password(f"sc-temp-password-{idx}")
                             sc.save()
-                            self.stdout.write(f"Created new service company {service_company_name}")
+                            self.stdout.write(f"Created new service company {service_company_name} with login {sc.username}")
 
                     maintenance_type_name = str(row["Вид ТО"]).strip()
                     mtt, mtt_created = DictionaryEntry.objects.get_or_create(
@@ -154,23 +139,21 @@ class Command(BaseCommand):
                         )
 
                     work_order_date = row["Дата заказ-наряда"]
-                    try:
-                        if isinstance(
-                            work_order_date,
-                            (int, float)
-                        ):
-                            work_order_date = datetime.fromtimestamp(work_order_date).date()
-                        elif isinstance(
-                            work_order_date,
-                            datetime
-                        ):
-                            work_order_date = work_order_date.date()
-                        else:
-                            work_order_date = pd.to_datetime(work_order_date).date()
-                    except (ValueError, TypeError) as e:
-                        self.stderr.write(
-                            f"Row {idx}: Invalid maintenance date: {work_order_date} ({e})"
-                        )
+                    if pd.notna(work_order_date):
+                        try:
+                            if isinstance(work_order_date, (int, float)):
+                                work_order_date = datetime.fromtimestamp(work_order_date).date()
+                            elif isinstance(work_order_date, datetime):
+                                work_order_date = work_order_date.date()
+                            else:
+                                work_order_date = pd.to_datetime(work_order_date).date()
+                        except (ValueError, TypeError) as e:
+                            self.stderr.write(
+                                f"Row {idx}: Invalid work order date: {work_order_date} ({e}). Using None."
+                            )
+                            work_order_date = None
+                    else:
+                        work_order_date = None
 
                     maintenance = Maintenance(
                         maintenance_type=mtt,
@@ -182,18 +165,20 @@ class Command(BaseCommand):
                         service_company=sc,
                     )
 
-                    maintenance.save()
-                    self.stdout.write(f"Maintenance record {maintenance.id} created for machine {factory_number}")
+                    try:
+                        maintenance.save()
+                        self.stdout.write(
+                            f"Maintenance record {maintenance.id} created for machine {factory_number}"
+                        )
+                    except ValidationError as e:
+                        self.stderr.write(
+                            f"Row {idx}: Validation error for maintenance: {e}"
+                        )
+                        continue
 
                 except IntegrityError as e:
                     self.stderr.write(f"Row {idx}: Unique objects error: {e}")
                     continue
-                except DictionaryEntry.DoesNotExist as e:
-                    self.stderr.write(f"Row {idx}: DictionaryEntry object not found: {e}")
-                    continue
-                except CustomUser.DoesNotExist as e:
-                    self.stderr.write(f"Row {idx}: User not found: {e}")
-                    continue
                 except Exception as e:
-                    self.stderr.write(f"Row {idx}: Machine {row['Зав. номер машины']} saving error: {e}")
+                    self.stderr.write(f"Row {idx}: Unexpected error: {e}")
                     continue

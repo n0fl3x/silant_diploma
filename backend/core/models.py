@@ -1,6 +1,8 @@
 import datetime
 
+from django.contrib import admin
 from django.db import models
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
 
@@ -9,13 +11,21 @@ class CustomUser(AbstractUser):
     """
     Кастомный класс пользователя для управления доступами.
     """
-    groups = models.ManyToManyField(
+    USER_TYPE_CHOICES = [
+        ('client', 'Клиент'),
+        ('service_company', 'Сервисная компания'),
+        ('manager', 'Менеджер'),
+        ('superadmin', 'Суперадмин'),
+    ]
+    group = models.ForeignKey(
         to="auth.Group",
-        verbose_name="Группы",
-        blank=True,
-        help_text="Группы, к которым принадлежит пользователь.",
-        related_name="customuser_groups",
-        related_query_name="customuser",
+        on_delete=models.PROTECT,
+        verbose_name="Группа",
+        blank=False,
+        null=False,
+        help_text="Группа, к которой принадлежит пользователь.",
+        related_name="users",
+        related_query_name="user",
     )
 
     user_permissions = models.ManyToManyField(
@@ -29,19 +39,41 @@ class CustomUser(AbstractUser):
 
     user_description = models.CharField(
         max_length=255,
-        blank=True,
-        null=True,
-        verbose_name="Опциональное описание пользователя",
+        blank=False,
+        null=False,
+        unique=True,
+        verbose_name="Обязательное писание пользователя",
+    )
+
+    user_type = models.CharField(
+        max_length=20,
+        choices=USER_TYPE_CHOICES,
+        default='client',
+        verbose_name="Тип пользователя",
+        help_text="Роль пользователя в системе"
     )
 
     class Meta:
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
+        unique_together = ('user_type', 'user_description')
     
+    @property
+    def is_manager(self):
+        return self.user_type == 'manager'
+
+    @property
+    def is_service_company(self):
+        return self.user_type == 'service_company'
+
+    @property
+    def is_client(self):
+        return self.user_type == 'client'
+
     def __str__(self):
         if self.user_description:
-            return f"{self.username} - {self.user_description}"
-        return f"{self.username}"
+            return f"{self.username} - {self.user_description} ({self.user_type})"
+        return f"{self.username} ({self.user_type})"
 
 
 class DictionaryEntry(models.Model):
@@ -268,9 +300,20 @@ class Machine(models.Model):
             "shipment_date",
         ]
 
+    def clean(self):
+        super().clean()
+        if self.shipment_date and self.shipment_date > timezone.now().date():
+            raise ValidationError({
+                'shipment_date': 'Дата отгрузки с завода не может быть больше текущей даты.'
+            })
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.model_tech.name} (№{self.factory_number})"
-
+    
 
 class Maintenance(models.Model):
     # 1. Вид ТО (справочник)
@@ -311,7 +354,7 @@ class Maintenance(models.Model):
     # 7. Машина (связь с базой данных машин)
     machine = models.ForeignKey(
         to=Machine,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name="Машина",
         related_name="maintenance_events",
     )
@@ -319,10 +362,7 @@ class Maintenance(models.Model):
     # 8. Сервисная компания (справочник пользователей с правами)
     service_company = models.ForeignKey(
         to=CustomUser,
-        on_delete=models.CASCADE,
-        limit_choices_to={
-            "groups__name": "Сервисные компании",
-        },
+        on_delete=models.PROTECT,
         verbose_name="Сервисная компания",
         related_name="company_maintenance_records",
     )
@@ -336,6 +376,24 @@ class Maintenance(models.Model):
 
     def __str__(self):
         return f"ТО {self.maintenance_type.name} для {self.machine.factory_number}"
+    
+    def clean(self):
+        super().clean()
+
+        if self.maintenance_date and self.maintenance_date > timezone.now().date():
+            raise ValidationError({
+                'maintenance_date': 'Дата проведения ТО не может быть больше текущей даты.'
+            })
+
+        if (self.work_order_date and self.maintenance_date
+                and self.work_order_date > self.maintenance_date):
+            raise ValidationError({
+                'work_order_date': 'Дата заказ-наряда не может быть позже даты проведения ТО.'
+            })
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class Claim(models.Model):
@@ -404,7 +462,7 @@ class Claim(models.Model):
     # 9. Машина (связь с базой данных машин)
     machine = models.ForeignKey(
         to=Machine,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name="Машина",
         related_name="claims",
     )
@@ -420,58 +478,42 @@ class Claim(models.Model):
         return f"Рекламация {self.failure_node.name} для {self.machine.factory_number}"
     
     def clean(self):
+        super().clean()
+
+        if self.failure_date and self.failure_date > timezone.now().date():
+            raise ValidationError({
+                'failure_date': 'Дата отказа не может быть больше текущей даты.'
+            })
+
+        if self.recovery_date and self.recovery_date > timezone.now().date():
+            raise ValidationError({
+                'recovery_date': 'Дата восстановления не может быть больше текущей даты.'
+            })
+
         if self.recovery_date and self.failure_date and self.recovery_date < self.failure_date:
-            raise ValidationError(
-                message="Дата восстановления не может быть раньше даты отказа.",
-            )
+            raise ValidationError({
+                'recovery_date': 'Дата восстановления не может быть раньше даты отказа.'
+            })
 
-    def save(
-        self,
-        *args,
-        **kwargs
-    ):
-        """
-        Переопределение метода save() для автоматического расчёта downtime_days.
-        """
-        try:
-            if isinstance(
-                self.failure_date,
-                (
-                    datetime.date,
-                    datetime.datetime
-                )
-            ) and \
-            isinstance(
-                self.recovery_date,
-                (
-                    datetime.date,
-                    datetime.datetime
-                )
-            ):
+    def save(self, *args, **kwargs):
+        self.clean()
 
-                failure_date = self.failure_date.date() \
-                    if isinstance(self.failure_date, datetime.datetime) \
-                    else self.failure_date
-                recovery_date = self.recovery_date.date() \
-                    if isinstance(self.recovery_date, datetime.datetime) \
-                    else self.recovery_date
+        self.downtime_days = 0
+
+        if self.failure_date and self.recovery_date:
+            try:
+                failure_date = self.failure_date
+                if isinstance(failure_date, datetime.datetime):
+                    failure_date = failure_date.date()
+
+                recovery_date = self.recovery_date
+                if isinstance(recovery_date, datetime.datetime):
+                    recovery_date = recovery_date.date()
 
                 if recovery_date >= failure_date:
                     delta = recovery_date - failure_date
                     self.downtime_days = delta.days
-                else:
-                    self.downtime_days = 0
-
-            else:
+            except (TypeError, AttributeError):
                 self.downtime_days = 0
 
-        except (
-            TypeError,
-            AttributeError
-        ):
-            self.downtime_days = 0
-
-        super().save(
-            *args,
-            **kwargs
-        )
+        super().save(*args, **kwargs)
