@@ -51,13 +51,26 @@ class Command(BaseCommand):
         except Exception as e:
             raise CommandError(f"Import failed: {e}")
 
-    def load_claims(
-        self,
-        excel_path,
-    ):
-        """
-        Загрузка записей о рекламациях из листа claims
-        """
+    def _parse_date(self, date_value):
+        """Универсальная функция для парсинга дат из разных форматов"""
+        if pd.isna(date_value) or date_value is None:
+            return None
+
+        try:
+            if isinstance(date_value, (int, float)):
+                return datetime.fromtimestamp(date_value).date()
+            elif isinstance(date_value, datetime):
+                return date_value.date()
+            else:
+                parsed = pd.to_datetime(date_value)
+                if pd.notna(parsed):
+                    return parsed.date()
+        except (ValueError, TypeError, OverflowError):
+            return None
+        return None
+
+    def load_claims(self, excel_path):
+        """Загрузка записей о рекламациях из листа claims"""
         self.stdout.write("Loading claims records...")
 
         try:
@@ -69,64 +82,73 @@ class Command(BaseCommand):
         except Exception as e:
             raise CommandError(f"Error reading xls sheet claims: {e}")
 
-        with transaction.atomic():
-            for idx, row in df.iterrows():
-                try:
-                    description = str(row["Описание отказа"]).strip() or ""
-                    used_parts = str(row["Используемые запасные части"]).strip() or ""
+        for idx, row in df.iterrows():
+            try:
+                with transaction.atomic():
+                    description = str(row.get("Описание отказа", "")).strip() or ""
+                    used_parts = str(row.get("Используемые запасные части", "")).strip() or ""
 
-                    factory_number = row["Зав. номер машины"]
-                    try:
-                        machine = Machine.objects.get(
-                            factory_number=factory_number,
+                    factory_number = row.get("Зав. номер машины", "")
+                    if pd.isna(factory_number) or not factory_number:
+                        self.stderr.write(
+                            f"Row {idx + 1}: Missing factory number. Skipping..."
                         )
+                        continue
+
+                    try:
+                        machine = Machine.objects.get(factory_number=factory_number)
                     except Machine.DoesNotExist:
                         self.stderr.write(
                             f"Row {idx + 1}: Machine with factory number {factory_number} not found. Skipping..."
                         )
                         continue
 
-                    failure_date = row["Дата отказа"]
-                    try:
-                        if isinstance(
-                            failure_date,
-                            (int, float)
-                        ):
-                            failure_date = datetime.fromtimestamp(failure_date).date()
-                        elif isinstance(
-                            failure_date,
-                            datetime
-                        ):
-                            failure_date = failure_date.date()
-                        else:
-                            failure_date = pd.to_datetime(failure_date).date()
-                    except (ValueError, TypeError) as e:
+                    failure_date = self._parse_date(row.get("Дата отказа"))
+                    if failure_date is None:
                         self.stderr.write(
-                            f"Row {idx + 1}: Invalid maintenance date: {failure_date} ({e})"
+                            f"Row {idx + 1}: Invalid failure date: {row.get('Дата отказа')}. Skipping..."
                         )
+                        continue
+
+                    recovery_date = self._parse_date(row.get("Дата восстановления"))
 
                     try:
-                        hour_meter = int(row["Наработка, м/час"])
+                        hour_meter = int(row.get("Наработка, м/час", 0))
+                        if hour_meter < 0:
+                            hour_meter = 0
                     except (ValueError, TypeError):
                         hour_meter = 0
                         self.stderr.write(
                             f"Row {idx + 1}: Invalid value for 'Наработка'. Using 0."
                         )
 
-                    node_name = str(row["Узел отказа"]).strip()
-                    failure_node, fn_created = DictionaryEntry.objects.get_or_create(
-                        entity="failure_node",
-                        name=node_name,
-                        defaults={
-                            "description": f"Автосоздано для машины {factory_number}",
-                        },
-                    )
-                    if fn_created:
-                        self.stdout.write(
-                            f"New dictionary entry created: failure_node -> {node_name}"
+                    node_name = str(row.get("Узел отказа", "")).strip()
+                    if not node_name:
+                        failure_node, created = DictionaryEntry.objects.get_or_create(
+                            entity="failure_node",
+                            name="Не указан",
+                            defaults={
+                                "description": "Узел отказа не был указан в исходных данных",
+                            },
                         )
+                        if created:
+                            self.stdout.write(
+                                "Created default failure node: 'Не указан'"
+                            )
+                    else:
+                        failure_node, created = DictionaryEntry.objects.get_or_create(
+                            entity="failure_node",
+                            name=node_name,
+                            defaults={
+                                "description": f"Автосоздано для машины {factory_number}",
+                            },
+                        )
+                        if created:
+                            self.stdout.write(
+                                f"New dictionary entry created: failure_node -> {node_name}"
+                            )
 
-                    method_name = str(row["Способ восстановления"]).strip() or "Неизвестно"
+                    method_name = str(row.get("Способ восстановления", "")).strip() or "Неизвестно"
                     recovery_method, rm_created = DictionaryEntry.objects.get_or_create(
                         entity="recovery_method",
                         name=method_name,
@@ -139,27 +161,10 @@ class Command(BaseCommand):
                             f"New dictionary entry created: recovery_method -> {method_name}"
                         )
 
-                    recovery_date = row["Дата восстановления"]
                     try:
-                        if isinstance(
-                            recovery_date,
-                            (int, float),
-                        ):
-                            recovery_date = datetime.fromtimestamp(recovery_date).date()
-                        elif isinstance(
-                            recovery_date,
-                            datetime,
-                        ):
-                            recovery_date = recovery_date.date()
-                        else:
-                            recovery_date = pd.to_datetime(recovery_date).date()
-                    except (ValueError, TypeError) as e:
-                        self.stderr.write(
-                            f"Row {idx + 1}: Invalid maintenance date: {recovery_date} ({e})"
-                        )
-
-                    try:
-                        downtime = int(row["Время простоя техники"])
+                        downtime = int(row.get("Время простоя техники", 0))
+                        if downtime < 0:
+                            downtime = 0
                     except (ValueError, TypeError):
                         downtime = 0
                         self.stderr.write(
@@ -179,14 +184,15 @@ class Command(BaseCommand):
                     )
 
                     claim.save()
-                    self.stdout.write(f"Claim record {claim.id} created for machine {factory_number}")
+                    self.stdout.write(
+                        f"Claim record {claim.id} created for machine {factory_number}"
+                    )
 
-                except IntegrityError as e:
-                    self.stderr.write(f"Row {idx + 1}: Unique objects error: {e}")
-                    continue
-                except DictionaryEntry.DoesNotExist as e:
-                    self.stderr.write(f"Row {idx + 1}: DictionaryEntry object not found: {e}")
-                    continue
-                except Exception as e:
-                    self.stderr.write(f"Row {idx + 1}: Machine {row['Зав. номер машины']} saving error: {e}")
-                    continue
+            except IntegrityError as e:
+                self.stderr.write(f"Row {idx + 1}: Unique objects error: {e}")
+            except Exception as e:
+                self.stderr.write(f"Row {idx + 1}: Unexpected error: {e}")
+
+        self.stdout.write(
+            self.style.SUCCESS(f"Claims import completed!")
+        )
