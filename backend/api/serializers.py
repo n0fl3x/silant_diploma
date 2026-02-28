@@ -304,6 +304,35 @@ class MachineSerializer(serializers.ModelSerializer):
     def validate_service_company_input(self, value):
         return self._validate_user_by_description(value, 'service_company')
 
+    def create(self, validated_data):
+        model_tech_entry = validated_data.pop('model_tech_input', None)
+        engine_model_entry = validated_data.pop('engine_model_input', None)
+        transmission_model_entry = validated_data.pop('transmission_model_input', None)
+        drive_axle_model_entry = validated_data.pop('drive_axle_model_input', None)
+        steering_axle_model_entry = validated_data.pop('steering_axle_model_input', None)
+        client_input = validated_data.pop('client_input', None)
+        service_company_input = validated_data.pop('service_company_input', None)
+
+        machine = Machine(**validated_data)
+
+        if model_tech_entry is not None:
+            machine.model_tech = model_tech_entry
+        if engine_model_entry is not None:
+            machine.engine_model = engine_model_entry
+        if transmission_model_entry is not None:
+            machine.transmission_model = transmission_model_entry
+        if drive_axle_model_entry is not None:
+            machine.drive_axle_model = drive_axle_model_entry
+        if steering_axle_model_entry is not None:
+            machine.steering_axle_model = steering_axle_model_entry
+        if client_input is not None:
+            machine.client = client_input
+        if service_company_input is not None:
+            machine.service_company = service_company_input
+
+        machine.save()
+        return machine
+
     def update(self, instance, validated_data):
         model_tech_entry = validated_data.pop('model_tech_input', None)
         engine_model_entry = validated_data.pop('engine_model_input', None)

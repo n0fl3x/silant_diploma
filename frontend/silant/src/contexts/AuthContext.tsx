@@ -37,22 +37,23 @@ export function AuthProvider({
         }
       });
 
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-      } else {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refreshToken');
-        setIsAuthenticated(false);
-        setUser(null);
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data.")
       }
+
+      const userData = await response.json();
+
+      const user: User = {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        user_description: userData.user_description
+      };
+
+      setUser(user);
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refreshToken');
-      setIsAuthenticated(false);
-      setUser(null);
-    }
+      console.error('Failed to fetch user data:', error)
+    };
   };
 
   const refreshAccessToken = async (): Promise<boolean> => {
@@ -60,7 +61,7 @@ export function AuthProvider({
     if (!refreshToken) return false;
 
     try {
-      const response = await fetch('/api/v1/token/refresh', {
+      const response = await fetch('/api/v1/token-refresh', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh: refreshToken })
@@ -78,15 +79,20 @@ export function AuthProvider({
   };
 
   const checkAuth = async (): Promise<void> => {
-    if (isChecking) {
-      console.log('checkAuth aborted — already checking');
-      return;
-    }
+    if (isChecking) return;
 
     setIsChecking(true);
     setLoading(true);
 
     try {
+      const token = localStorage.getItem('access_token');
+
+      if (!token) {
+        setIsAuthenticated(false);
+        setUser(null);
+        return;
+      }
+
       let response = await fetch("/api/v1/authenticated", {
         method: "POST",
         credentials: "include",
@@ -94,14 +100,15 @@ export function AuthProvider({
 
       if (response.status === 401) {
         const refreshed = await refreshAccessToken();
-        if (refreshed) {
-          response = await fetch("/api/v1/authenticated", {
-            method: "POST",
-            credentials: "include",
-          });
-        } else {
-          throw new Error('Token refresh failed');
+        if (!refreshed) {
+          setIsAuthenticated(false);
+          setUser(null);
+          return;
         }
+        response = await fetch("/api/v1/authenticated", {
+          method: "POST",
+          credentials: "include",
+        });
       }
 
       if (response.ok) {
@@ -109,8 +116,6 @@ export function AuthProvider({
         setIsAuthenticated(data.authenticated);
         if (data.user) {
           setUser(data.user);
-        } else {
-          await fetchUserData();
         }
       } else {
         setIsAuthenticated(false);
@@ -128,27 +133,29 @@ export function AuthProvider({
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      const loginResponse = await fetch("/api/v1/login", {
-        method: "POST",
+      const response = await fetch('/api/v1/login', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
       });
 
-      if (!loginResponse.ok) {
-        throw new Error("Login failed");
+      if (!response.ok) {
+        throw new Error('Неверные учётные данные');
       }
 
-      const { access, refresh } = await loginResponse.json();
-      localStorage.setItem('access_token', access);
-      localStorage.setItem('refresh_token', refresh);
+      const data = await response.json();
+
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
 
       await checkAuth();
+
       return true;
     } catch (error) {
-      console.error("Login error:", error);
-      return false;
+      console.error('Login error:', error);
+      throw error;
     }
   };
 

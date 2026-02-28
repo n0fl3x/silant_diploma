@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 
 
@@ -82,17 +83,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 AUTH_USER_MODEL = "core.CustomUser"
 
 REST_FRAMEWORK = {
@@ -111,18 +108,16 @@ REST_FRAMEWORK = {
     ],
 }
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=48),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer', ),
+}
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
-
-SESSION_COOKIE_AGE = 12096600  # 2w
-
-SESSION_SAVE_EVERY_REQUEST = True
-
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-
-# SESSION_COOKIE_SECURE = True
-
-CSRF_COOKIE_HTTPONLY = True
-
-SESSION_ENGINE = "django.contrib.sessions.backends.db"

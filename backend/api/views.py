@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotFound
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.exceptions import TokenError
 
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -20,7 +21,6 @@ from core.models import (
     Machine,
     Maintenance,
     Claim,
-    CustomUser,
 )
 from .serializers import (
     MachinePublicSerializer,
@@ -46,6 +46,8 @@ class CurrentUserView(APIView):
         return Response({
             'id': user.id,
             'username': user.username,
+            'email': user.email or "empty",
+            'user_description': user.user_description or "empty",
             'groups': [group.name for group in user.groups.all()],
             'permissions': list(user.get_all_permissions())
         })
@@ -127,6 +129,7 @@ class MachineDetailView(generics.RetrieveAPIView):
 def machine_update(request, pk):
     try:
         machine = get_object_or_404(Machine, id=pk)
+        print(machine)
 
         try:
             data = json.loads(request.body)
@@ -160,6 +163,22 @@ def machine_update(request, pk):
             {'error': 'Ошибка сервера'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+    
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def machine_create(request):
+    serializer = MachineSerializer(
+        data=request.data,
+        context={'request': request}
+    )
+    if serializer.is_valid():
+        machine = serializer.save()
+        return Response(
+            MachineSerializer(machine, context={'request': request}).data,
+            status=status.HTTP_201_CREATED
+        )
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MaintenanceList(generics.ListCreateAPIView):
@@ -301,146 +320,92 @@ class MachineSearchAPIView(APIView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    def post(
-        self,
-        request,
-        *args,
-        **kwargs,
-    ):
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
         try:
-            username = request.data.get("username")
-            password = request.data.get("password")
-
-            if not username or not password:
-                return Response(
-                    data={
-                        "error": "Введите логин и пароль.",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            user = authenticate(
-                request=request,
-                username=username,
-                password=password,
-            )
-            
-            if user is None:
-                return Response(
-                    data={
-                        "error": "Неверные логин и/или пароль.",
-                    },
-                    status=status.HTTP_401_UNAUTHORIZED,
-                )
-
-            if not isinstance(user, CustomUser):
-                return Response(
-                    data={
-                        "error": "Ошибка типа пользователя.",
-                    },
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
-
-            response = super().post(
-                request,
-                *args,
-                **kwargs,
-            )
-            tokens = response.data
-            access_token = tokens["access"]
-            refresh_token = tokens["refresh"]
-
-            response_data = {
-                "success": True,
-                "user": {
-                    "id": user.id,
-                    "username": user.username,
-                    "email": user.email or "empty",
-                    "user_description": user.user_description or "empty",
-                },
-            }
-
-            resp = Response(
-                data=response_data,
-                status=status.HTTP_200_OK,
-            )
-            resp.set_cookie(
-                key="access_token",
-                value=access_token,
-                httponly=True,
-                secure=True,
-                samesite="Lax",
-                path="/",
-            )
-            resp.set_cookie(
-                key="refresh_token",
-                value=refresh_token,
-                httponly=True,
-                secure=True,
-                samesite="Lax",
-                path="/",
-            )
-
-            return resp
-        except Exception as e:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
             return Response(
-                data={
-                    "error": f"Ошибка сервера: {str(e)}",
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                data={"error": str(e)},
+                status=status.HTTP_401_UNAUTHORIZED
             )
+
+        tokens = serializer.validated_data
+        access_token = tokens['access']
+        refresh_token = tokens['refresh']
+
+        user = request.user
+
+        response_data = {
+            "success": True,
+            "user": {
+                "id": user.id,
+                "username": user.username,
+            }
+        }
+
+        resp = Response(data=response_data, status=status.HTTP_200_OK)
+        resp.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            path="/",
+        )
+        resp.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            path="/",
+        )
+
+        return resp
 
 
 class CustomRefreshTokenView(TokenRefreshView):
-    def post(
-        self,
-        request,
-        *args,
-        **kwargs,
-    ):
-        try:
-            refresh_token = request.COOKIES.get("refresh_token")
-            
-            if not refresh_token:
-                return Response(
-                    data={
-                        "error": "Refresh token is missing.",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get("refresh_token")
 
-            request.data["refresh"] = refresh_token
-            resp = super().post(
-                request,
-                *args,
-                kwargs,
+        if not refresh_token:
+            return Response(
+                data={"error": "Refresh token is missing."},
+                status=status.HTTP_400_BAD_REQUEST
             )
-            tokens = resp.data
+
+        temp_request = request
+        temp_request.data = {'refresh': refresh_token}
+
+        try:
+            response = super().post(temp_request, *args, **kwargs)
+            tokens = response.data
             access_token = tokens["access"]
 
             new_resp = Response(
-                data={
-                    "refreshed": True,
-                },
-                status=status.HTTP_200_OK,
+                data={"refreshed": True},
+                status=status.HTTP_200_OK
             )
             new_resp.set_cookie(
                 key="access_token",
                 value=access_token,
                 httponly=True,
-                secure=True,
+                secure=False,
                 samesite="Lax",
                 path="/",
             )
-
             return new_resp
-        except Exception as e:
-            return Response(
-                data={
-                    "error": "Token refresh error.",
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        except TokenError as e:
+            error_resp = Response(
+                data={"error": "Token refresh error."},
+                status=status.HTTP_401_UNAUTHORIZED
             )
+            error_resp.delete_cookie("access_token")
+            error_resp.delete_cookie("refresh_token")
+            return error_resp
+
 
 @api_view(http_method_names=["POST"])
 @permission_classes([IsAuthenticated])

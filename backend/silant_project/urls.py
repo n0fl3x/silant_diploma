@@ -4,6 +4,11 @@ from django.contrib import admin
 
 urlpatterns = [
     path(
+        route="",
+        view=include("core.urls"),
+        name="session-keep-alive",
+    ),
+    path(
         route="admin/",
         view=admin.site.urls,
         name="admin-panel",
@@ -13,9 +18,4 @@ urlpatterns = [
         view=include("api.urls"),
         name="api-v1",
     ),
-    path(
-        route="",
-        view=include("core.urls"),
-        name="session-keep-alive",
-    )
 ]

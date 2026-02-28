@@ -13,11 +13,6 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-  }, []);
-
-  useEffect(() => {
     if (isAuthenticated) {
       navigate("/dashboard", { replace: true });
     }
@@ -44,10 +39,6 @@ const Login = () => {
       }
     } finally {
       setLoading(false);
-      if (error) {
-        setUsername('');
-        setPassword('');
-      }
     }
   };
 

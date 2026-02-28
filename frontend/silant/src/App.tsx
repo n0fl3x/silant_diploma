@@ -8,7 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MachineListPage from './pages/MachineListPage';
 import MachineDetailPage from './pages/MachineDetailPage';
 import MachineEditPage from './pages/MachineEditPage';
-import SessionKeepAlive from './components/SessionKeepAlive';
+import MachineCreatePage from './pages/MachineCreatePage';
 import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
@@ -17,7 +17,6 @@ function App() {
       <Router>
         <div className="app">
           <Header />
-          <SessionKeepAlive />
           <main className="content">
             <Routes>
               <Route
@@ -65,6 +64,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MachineEditPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/machine-create"
+                element={
+                  <ProtectedRoute>
+                    <MachineCreatePage />
                   </ProtectedRoute>
                 }
               />

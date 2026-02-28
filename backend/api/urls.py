@@ -15,6 +15,7 @@ from .views import (
     logout,
     is_authenticated,
     machine_update,
+    machine_create,
 )
 
 
@@ -25,7 +26,7 @@ urlpatterns = [
         name="login",
     ),
     path(
-        route="token/refresh",
+        route="token-refresh",
         view=CustomRefreshTokenView.as_view(),
         name="token-refresh",
     ),
@@ -52,11 +53,11 @@ urlpatterns = [
     path('machines', MachineListView.as_view(), name='machine-list'),
     path('machines/<int:pk>', MachineDetailView.as_view(), name='machine-detail'),
     path('machine-update/<int:pk>', machine_update, name='machine-update'),
+    path('machine-create', machine_create, name='machine-create'),
 
     #
     path('maintenance', MaintenanceList.as_view(), name='maintenance-list'),
     path('maintenance/<int:pk>', MaintenanceDetail.as_view(), name='maintenance-detail'),
     path('claims', ClaimList.as_view(), name='claim-list'),
     path('claims/<int:pk>', ClaimDetail.as_view(), name='claim-detail'),
-    
 ]

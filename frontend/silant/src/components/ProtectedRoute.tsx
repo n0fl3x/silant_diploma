@@ -7,24 +7,20 @@ export default function ProtectedRoute({
 }: {
   children: React.ReactNode
 }) {
-  const { isAuthenticated, loading } = useAuth(); // Берём loading из контекста
+  const { isAuthenticated, loading } = useAuth();
   const [localLoading, setLocalLoading] = useState(true);
 
-  // Устанавливаем локальную загрузку только при первом монтировании
   useEffect(() => {
     setLocalLoading(false);
   }, []);
 
-  // Показываем индикатор, пока идёт общая проверка авторизации ИЛИ пока монтируется ProtectedRoute
   if (loading || localLoading) {
     return <div>Проверка авторизации...</div>;
   }
 
-  // Если не авторизован — редирект на login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // Если авторизован и загрузка завершена — показываем защищённый контент
   return <>{children}</>;
 }

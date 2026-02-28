@@ -34,6 +34,7 @@ export default function MachineDetailPage() {
       setError(null);
 
       const token = localStorage.getItem('access_token');
+      console.log(localStorage);
       if (!token) {
         throw new Error('Токен авторизации отсутствует');
       }
@@ -60,6 +61,7 @@ export default function MachineDetailPage() {
       const data: Machine = await response.json();
       setMachine(data);
     } catch (err) {
+      console.error(err);
       setError('Не удалось загрузить данные машины. Попробуйте позже.');
     } finally {
       console.log("fetchMachineDetail: Завершение загрузки (setLoading(false))");
