@@ -69,6 +69,48 @@ export default function MachineDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!machine?.id) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        throw new Error('Токен авторизации отсутствует');
+      }
+
+      const response = await fetch(`/api/v1/machine-delete/${machine.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Машина не найдена');
+        } else if (response.status === 401) {
+          throw new Error('Требуется повторная авторизация');
+        } else {
+          throw new Error(`Ошибка сервера: ${response.status}`);
+        }
+      }
+
+      navigate('/machine-list');
+    } catch (err) {
+      console.error('Ошибка при удалении машины:', err);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Не удалось удалить машину. Попробуйте позже.');
+      }
+      setLoading(false);
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <div className="machine-detail-container">
@@ -207,6 +249,14 @@ export default function MachineDetailPage() {
       </div>
 
       <div className="detail-actions">
+        <button
+          className="delete-button"
+          onClick={handleDelete}
+          disabled={loading}
+        >
+          {loading ? 'Удаление...' : 'Удалить машину'}
+        </button>
+
         <button
           className="back-button"
           onClick={() => navigate(-1)}

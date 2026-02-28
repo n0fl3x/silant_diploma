@@ -181,6 +181,32 @@ def machine_create(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def machine_delete(request, pk):
+    machine_to_del = get_object_or_404(Machine, id=pk)
+
+    try:
+        serializer = MachineSerializer(machine_to_del)
+        machine_to_del_data = serializer.data
+        machine_to_del.delete()
+
+        return Response(
+            {
+                "message": "Машина успешно удалена",
+                "deleted_machine": machine_to_del_data,
+            },
+            status.HTTP_200_OK,
+        )
+    except Exception as e:
+        return Response(
+            {
+                "error": f"Ошибка при удалении машины: {str(e)}",
+            },
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
 class MaintenanceList(generics.ListCreateAPIView):
     queryset = Maintenance.objects.all()
     serializer_class = MaintenanceSerializer

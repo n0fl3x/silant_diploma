@@ -16,6 +16,7 @@ from .views import (
     is_authenticated,
     machine_update,
     machine_create,
+    machine_delete,
 )
 
 
@@ -54,6 +55,7 @@ urlpatterns = [
     path('machines/<int:pk>', MachineDetailView.as_view(), name='machine-detail'),
     path('machine-update/<int:pk>', machine_update, name='machine-update'),
     path('machine-create', machine_create, name='machine-create'),
+    path('machine-delete/<int:pk>', machine_delete, name='machine-delete'),
 
     #
     path('maintenance', MaintenanceList.as_view(), name='maintenance-list'),
