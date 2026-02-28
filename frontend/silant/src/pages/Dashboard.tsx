@@ -1,11 +1,15 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 
 export default function Dashboard() {
   const { isAuthenticated, user, loading: authLoading } = useAuth();
+  const { userGroup } = useAuth();
   const [userLoading, setUserLoading] = useState(true);
+
+  const canCreateMachine = userGroup === 'manager' || userGroup === 'superadmin';
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -32,9 +36,14 @@ export default function Dashboard() {
       </header>
       <main className="dashboard-content">
         <div className="dashboard-actions">
-          <Link to="/machine-create" className="create-machine-btn">
-            Создать новую машину
-          </Link>
+          {canCreateMachine && (
+            <button
+              className="create-machine-btn"
+              onClick={() => navigate('/machine-create')}
+            >
+              Создать новую машину
+            </button>
+          )}
         </div>
 
         <div className="user-profile">

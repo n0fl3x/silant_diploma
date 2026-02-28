@@ -87,10 +87,14 @@ class MachineListView(generics.ListAPIView):
             'model_tech',
         )
 
-        if user.groups.filter(name='Клиент').exists():
+        group_name = user.group.name if user.group else None
+
+        if group_name == 'Клиент':
             queryset = queryset.filter(client=user)
-        elif user.groups.filter(name='Сервисная организация').exists():
+        elif group_name == 'Сервисная компания':
             queryset = queryset.filter(service_company=user)
+        elif not group_name:
+            return Machine.objects.none()
 
         return queryset.order_by('-shipment_date')
 
