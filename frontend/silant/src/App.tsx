@@ -8,73 +8,79 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MachineListPage from './pages/MachineListPage';
 import MachineDetailPage from './pages/MachineDetailPage';
 import MachineEditPage from './pages/MachineEditPage';
+import SessionKeepAlive from './components/SessionKeepAlive';
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   return (
-    <Router>
-      <div className="app">
-        <Header />
-        <main className="content">
-          <Routes>
-            <Route
-              path="/login"
-              element={<Login />}
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/logout"
-              element={
-                <ProtectedRoute>
-                  <Logout />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/machine-search"
-              element={<MachineSearch />}
-            />
-            <Route
-              path="/machine-list"
-              element={
-                <ProtectedRoute>
-                  <MachineListPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/machine-detail/:id"
-              element={
-                <ProtectedRoute>
-                  <MachineDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/machine-edit/:id"
-              element={
-                <ProtectedRoute>
-                  <MachineEditPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/"
-              element={<Navigate to="/machine-search" />} />
-            <Route
-              path="*"
-              element={<div>Страница не найдена</div>}
-            />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <div className="app">
+          <Header />
+          <SessionKeepAlive />
+          <main className="content">
+            <Routes>
+              <Route
+                path="/login"
+                element={<Login />}
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/logout"
+                element={
+                  <ProtectedRoute>
+                    <Logout />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/machine-search"
+                element={<MachineSearch />}
+              />
+              <Route
+                path="/machine-list"
+                element={
+                  <ProtectedRoute>
+                    <MachineListPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/machine-detail/:id"
+                element={
+                  <ProtectedRoute>
+                    <MachineDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/machine-edit/:id"
+                element={
+                  <ProtectedRoute>
+                    <MachineEditPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/"
+                element={<Navigate to="/machine-search" />}
+              />
+              <Route
+                path="*"
+                element={<div>Страница не найдена</div>}
+              />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

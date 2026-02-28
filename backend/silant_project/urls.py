@@ -13,4 +13,9 @@ urlpatterns = [
         view=include("api.urls"),
         name="api-v1",
     ),
+    path(
+        route="",
+        view=include("core.urls"),
+        name="session-keep-alive",
+    )
 ]

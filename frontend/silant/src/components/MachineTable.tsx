@@ -70,6 +70,7 @@ const MachineTable: React.FC<MachineTableProps> = ({
         <thead>
           <tr>
             <th>Заводской №</th>
+            <th>Действия</th>
             <th>Модель техники</th>
             <th>Двигатель</th>
             <th>Зав. номер двигателя</th>
@@ -86,13 +87,20 @@ const MachineTable: React.FC<MachineTableProps> = ({
             <th>Конфигурация</th>
             <th>Клиент</th>
             <th>Сервисная компания</th>
-            <th>Действия</th>
           </tr>
         </thead>
         <tbody>
           {paginatedMachines.map((machine) => (
             <tr key={machine.id}>
               <td>{machine.factory_number || <span className="text-muted">Не указан</span>}</td>
+              <td>
+                <button
+                  onClick={() => onMachineSelect?.(machine)}
+                  className="action-btn"
+                >
+                  Подробнее
+                </button>
+              </td>
               <td>{machine.model_tech_name || <span className="text-muted">Не указан</span>}</td>
               <td>{machine.engine_model_name || <span className="text-muted">Не указан</span>}</td>
               <td>{machine.engine_factory_number || <span className="text-muted">Не указан</span>}</td>
@@ -109,14 +117,6 @@ const MachineTable: React.FC<MachineTableProps> = ({
               <td>{machine.configuration || <span className="text-muted">Не указан</span>}</td>
               <td>{machine.client_name}</td>
               <td>{machine.service_company_name}</td>
-              <td>
-                <button
-                  onClick={() => onMachineSelect?.(machine)}
-                  className="action-btn"
-                >
-                  Подробнее
-                </button>
-              </td>
             </tr>
           ))}
         </tbody>
