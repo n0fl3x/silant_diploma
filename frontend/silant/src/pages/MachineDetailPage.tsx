@@ -8,6 +8,9 @@ export default function MachineDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const { userGroup } = useAuth();
+
+  const canEditOrDelete = userGroup === 'manager' || userGroup === 'superadmin';
 
   const [machine, setMachine] = useState<Machine | null>(null);
   const [loading, setLoading] = useState(true);
@@ -249,25 +252,28 @@ export default function MachineDetailPage() {
       </div>
 
       <div className="detail-actions">
-        <button
-          className="delete-button"
-          onClick={handleDelete}
-          disabled={loading}
-        >
-          {loading ? 'Удаление...' : 'Удалить машину'}
-        </button>
-
+        {canEditOrDelete && (
+          <>
+            <button
+              className="delete-button"
+              onClick={handleDelete}
+              disabled={loading}
+            >
+              {loading ? 'Удаление...' : 'Удалить машину'}
+            </button>
+            <button
+              className="edit-button"
+              onClick={() => navigate(`/machine-edit/${machine.id}`)}
+            >
+              Редактировать
+            </button>
+          </>
+        )}
         <button
           className="back-button"
           onClick={() => navigate(-1)}
         >
           Назад
-        </button>
-        <button
-          className="edit-button"
-          onClick={() => navigate(`/machine-edit/${machine.id}`)}
-        >
-          Редактировать
         </button>
       </div>
     </div>

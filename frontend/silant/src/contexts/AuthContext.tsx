@@ -7,9 +7,12 @@ interface User {
   user_description: string;
 }
 
+type UserGroup = 'client' | 'service_company' | 'manager' | 'superadmin' | null;
+
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
+  userGroup: UserGroup;
   loading: boolean;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
@@ -25,6 +28,7 @@ export function AuthProvider({
 }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [userGroup, setUserGroup] = useState<UserGroup>(null);
   const [loading, setLoading] = useState(true);
   const [isChecking, setIsChecking] = useState(false);
 
@@ -51,6 +55,7 @@ export function AuthProvider({
       };
 
       setUser(user);
+      setUserGroup(userData.group_name);
     } catch (error) {
       console.error('Failed to fetch user data:', error)
     };
@@ -178,7 +183,6 @@ export function AuthProvider({
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (loading) {
-        console.warn('Auth check timeout — setting loading to false');
         setLoading(false);
         setIsChecking(false);
       }
@@ -202,6 +206,7 @@ export function AuthProvider({
       value={{
         isAuthenticated,
         user,
+        userGroup,
         loading,
         login,
         logout,

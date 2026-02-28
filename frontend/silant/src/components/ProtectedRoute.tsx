@@ -1,25 +1,29 @@
-import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function ProtectedRoute({
-  children
-}: {
-  children: React.ReactNode
-}) {
-  const { isAuthenticated, loading } = useAuth();
-  const [localLoading, setLocalLoading] = useState(true);
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  requiredGroups?: ('client' | 'service_company' | 'manager' | 'superadmin')[];
+}
 
-  useEffect(() => {
-    setLocalLoading(false);
-  }, []);
+export default function ProtectedRoute({ children, requiredGroups }: ProtectedRouteProps) {
+  const { isAuthenticated, userGroup, loading } = useAuth();
 
-  if (loading || localLoading) {
-    return <div>Проверка авторизации...</div>;
+  if (loading) {
+    return <div>Загрузка...</div>;
   }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (requiredGroups && !requiredGroups.includes(userGroup!)) {
+    if (userGroup === 'client' || userGroup === 'service_company') {
+      return <Navigate to="/machine-list" replace />;
+    }
+    // В остальных случаях — на дашборд
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;

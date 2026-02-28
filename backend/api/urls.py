@@ -37,20 +37,22 @@ urlpatterns = [
         name="logout",
     ),
     path(
-        route="authenticated",
-        view=is_authenticated,
-        name="is-authenticated",
-    ),
-    path(
         route="user",
         view=CurrentUserView.as_view(),
         name="current-user",
+    ),
+    path(
+        route="authenticated",
+        view=is_authenticated,
+        name="is-authenticated",
     ),
     path(
         route="machines/search",
         view=MachineSearchAPIView.as_view(),
         name="machine-search",
     ),
+
+    #
     path('machines', MachineListView.as_view(), name='machine-list'),
     path('machines/<int:pk>', MachineDetailView.as_view(), name='machine-detail'),
     path('machine-update/<int:pk>', machine_update, name='machine-update'),

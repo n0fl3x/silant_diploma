@@ -62,7 +62,7 @@ function App() {
               <Route
                 path="/machine-edit/:id"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredGroups={['manager', 'superadmin']}>
                     <MachineEditPage />
                   </ProtectedRoute>
                 }
@@ -70,7 +70,7 @@ function App() {
               <Route
                 path="/machine-create"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredGroups={['manager', 'superadmin']}>
                     <MachineCreatePage />
                   </ProtectedRoute>
                 }

@@ -36,6 +36,10 @@ from .filters import (
     MaintenanceFilter,
     ClaimFilter,
 )
+from .permissions import (
+    IsManagerOrSuperadmin,
+    CanEditMachines,
+)
 
 
 class CurrentUserView(APIView):
@@ -43,12 +47,21 @@ class CurrentUserView(APIView):
 
     def get(self, request):
         user = request.user
+        group_name = user.group.name if user.group else None
+        user_type_mapping = {
+            "Клиент": "client",
+            "Сервисная компания": "service_company",
+            "Менеджер": "manager",
+            "Суперадмин": "superadmin"
+        }
+        user_type = user_type_mapping.get(group_name, "unknown")
+
         return Response({
             'id': user.id,
             'username': user.username,
             'email': user.email or "empty",
             'user_description': user.user_description or "empty",
-            'groups': [group.name for group in user.groups.all()],
+            'group_name': user_type,
             'permissions': list(user.get_all_permissions())
         })
 
@@ -56,7 +69,7 @@ class CurrentUserView(APIView):
 class MachineListView(generics.ListAPIView):
     queryset = Machine.objects.all()
     serializer_class = MachineListSerializer
-    permission_classes = [permissions.DjangoModelPermissions]
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = MachineFilter
 
@@ -85,7 +98,7 @@ class MachineListView(generics.ListAPIView):
 class MachineDetailView(generics.RetrieveAPIView):
     queryset = Machine.objects.all()
     serializer_class = MachineDetailSerializer
-    permission_classes = [permissions.DjangoModelPermissions]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -124,8 +137,8 @@ class MachineDetailView(generics.RetrieveAPIView):
         return obj
     
 
-@api_view(['PUT'])
-@permission_classes([IsAuthenticated])
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated, CanEditMachines])
 def machine_update(request, pk):
     try:
         machine = get_object_or_404(Machine, id=pk)
@@ -166,7 +179,7 @@ def machine_update(request, pk):
     
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsManagerOrSuperadmin])
 def machine_create(request):
     serializer = MachineSerializer(
         data=request.data,
@@ -182,7 +195,7 @@ def machine_create(request):
 
 
 @api_view(["DELETE"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, CanEditMachines])
 def machine_delete(request, pk):
     machine_to_del = get_object_or_404(Machine, id=pk)
 
