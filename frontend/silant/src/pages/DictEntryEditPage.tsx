@@ -17,7 +17,6 @@ export default function EditDictionaryEntryPage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Загрузка данных для редактирования
   useEffect(() => {
     const fetchEntry = async () => {
       try {
@@ -45,11 +44,10 @@ export default function EditDictionaryEntryPage() {
     fetchEntry();
   }, [numericId, navigate]);
 
-  // Обработка отправки формы
   const handleSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch(`api/v1/dict-entries/${numericId}`, {
+      const response = await fetch(`/api/v1/dict-entry-update/${numericId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -59,14 +57,13 @@ export default function EditDictionaryEntryPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Ошибка при обновлении элемента');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Ошибка при обновлении элемента');
       }
 
-      // После успешного сохранения переходим на страницу детального просмотра
       navigate(`/dictionary/${numericId}`);
     } catch (error) {
       console.error('Ошибка обновления:', error);
-      // Здесь можно добавить отображение ошибки пользователю
     } finally {
       setIsSubmitting(false);
     }

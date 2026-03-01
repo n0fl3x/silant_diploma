@@ -30,6 +30,7 @@ from .serializers import (
     MachineSerializer,
     DictionaryEntryListSerializer,
     DictionaryEntryDetailSerializer,
+    DictionaryEntrySerializer,
 )
 from .filters import (
     MachineFilter,
@@ -474,3 +475,89 @@ class DictEntryDetailView(generics.RetrieveAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsManagerOrSuperadmin])
+def dict_entry_create(request):
+    serializer = DictionaryEntrySerializer(data=request.data)
+
+    if serializer.is_valid():
+        created_entry = serializer.save()
+
+        return Response(
+            {
+                'success': True,
+                'message': 'Элемент справочника успешно создан',
+                'data': serializer.data
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+    return Response(
+        {
+            'success': False,
+            'message': 'Ошибка при создании элемента справочника',
+            'errors': serializer.errors
+        },
+        status=status.HTTP_400_BAD_REQUEST
+    )
+
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated, IsManagerOrSuperadmin])
+def dict_entry_update(request, pk):
+    dictionary_entry = get_object_or_404(DictionaryEntry, id=pk)
+
+    serializer = DictionaryEntrySerializer(
+        dictionary_entry,
+        data=request.data,
+        partial=request.method == 'PATCH'
+    )
+
+    if serializer.is_valid():
+        updated_entry = serializer.save()
+
+        return Response(
+            {
+                'success': True,
+                'message': 'Элемент справочника успешно обновлён',
+                'data': serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
+
+    return Response(
+        {
+            'success': False,
+            'message': 'Ошибка при обновлении элемента справочника',
+            'errors': serializer.errors
+        },
+        status=status.HTTP_400_BAD_REQUEST
+    )
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated, IsManagerOrSuperadmin])
+def dict_entry_delete(request, pk):
+    dict_ent_to_del = get_object_or_404(DictionaryEntry, id=pk)
+
+    try:
+        serializer = DictionaryEntrySerializer(dict_ent_to_del)
+        dict_ent_to_del_data = serializer.data
+        dict_ent_to_del.delete()
+
+        return Response(
+            {
+                "message": "Элемент справочника успешно удалён",
+                "deleted_machine": dict_ent_to_del_data,
+            },
+            status.HTTP_200_OK,
+        )
+    except Exception as e:
+        return Response(
+            {
+                "error": f"Ошибка при удалении машины: {str(e)}",
+            },
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

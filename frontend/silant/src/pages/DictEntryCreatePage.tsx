@@ -11,7 +11,7 @@ export default function CreateDictionaryEntryPage() {
   const handleSubmit = async (data: FormData) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/v1/dict-entries/', {
+      const response = await fetch('/api/v1/dict-entry-create', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -21,13 +21,14 @@ export default function CreateDictionaryEntryPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Ошибка при создании элемента');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Ошибка при создании элемента');
       }
 
-      navigate('/dict-entry');
+      const result = await response.json();
+      navigate(`/dictionary/${result.data.id}`);
     } catch (error) {
       console.error('Ошибка создания:', error);
-      // Здесь можно добавить отображение ошибки пользователю
     } finally {
       setIsLoading(false);
     }

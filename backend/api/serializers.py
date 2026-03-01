@@ -439,3 +439,65 @@ class DictionaryEntryDetailSerializer(serializers.ModelSerializer):
 
     def get_entity_display(self, obj):
         return dict(DictionaryEntry.ENTITY_CHOICES).get(obj.entity, obj.entity)
+
+
+class DictionaryEntrySerializer(serializers.ModelSerializer):
+    entity_display = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DictionaryEntry
+        fields = [
+            'id',
+            'entity',
+            'entity_display',
+            'name',
+            'description'
+        ]
+        extra_kwargs = {
+            'name': {'required': True},
+            'entity': {'required': True}
+        }
+
+    def get_entity_display(self, obj):
+        entity_choices_dict = dict(DictionaryEntry.ENTITY_CHOICES)
+        return entity_choices_dict.get(obj.entity, obj.entity)
+
+    def validate_name(self, value):
+        if len(value) > 100:
+            raise serializers.ValidationError(
+                'Наименование не должно превышать 100 символов.'
+            )
+        return value
+
+    def validate(self, data):
+        instance = getattr(self, 'instance', None)
+        entity = data.get('entity')
+        name = data.get('name')
+
+        if entity and name:
+            queryset = DictionaryEntry.objects.filter(entity=entity, name=name)
+            if instance:
+                queryset = queryset.exclude(id=instance.id)
+
+            if queryset.exists():
+                raise serializers.ValidationError({
+                    'name': 'Комбинация типа справочника и наименования уже существует.'
+                })
+
+        return data
+
+    def create(self, validated_data):
+        try:
+            instance = DictionaryEntry.objects.create(**validated_data)
+            return instance
+        except Exception as e:
+            raise serializers.ValidationError({'error': str(e)})
+
+    def update(self, instance, validated_data):
+        try:
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+            return instance
+        except Exception as e:
+            raise serializers.ValidationError({'error': str(e)})

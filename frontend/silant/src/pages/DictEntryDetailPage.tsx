@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import type { DictionaryEntry } from '../types/DictionaryEntry';
 import "../styles/DictEntryDetail.css";
 
@@ -7,10 +7,12 @@ import "../styles/DictEntryDetail.css";
 const DictEntryDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const numericId = parseInt(id || '0', 10);
+  const navigate = useNavigate();
 
   const [entry, setEntry] = useState<DictionaryEntry | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchDictionaryEntry = async (entryId: number) => {
     setLoading(true);
@@ -29,6 +31,31 @@ const DictEntryDetailPage: React.FC = () => {
       setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+  if (!numericId) return;
+
+  setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/v1/dict-entry-delete/${numericId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Ошибка при удалении элемента справочника');
+      }
+
+      navigate('/dictionary');
+    } catch (error) {
+      console.error('Ошибка удаления:', error);
+      setError(error instanceof Error ? error.message : 'Неизвестная ошибка');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -120,6 +147,14 @@ const DictEntryDetailPage: React.FC = () => {
         >
           Редактировать элемент
         </Link>
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={isDeleting}
+          className={`btn ${isDeleting ? 'btn-danger-loading' : 'btn-danger'}`}
+        >
+          {isDeleting ? 'Удаление...' : 'Удалить элемент'}
+        </button>
       </div>
     </div>
   );
