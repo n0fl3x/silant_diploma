@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [userLoading, setUserLoading] = useState(true);
 
   const canCreateMachine = userGroup === 'manager' || userGroup === 'superadmin';
+  const canCreateDictEntry = userGroup === 'manager' || userGroup === 'superadmin';
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,6 +43,14 @@ export default function Dashboard() {
               onClick={() => navigate('/machine-create')}
             >
               Создать новую машину
+            </button>
+          )}
+          {canCreateDictEntry && (
+            <button
+              className="create-machine-btn"
+              onClick={() => navigate('/dictionary-create')}
+            >
+              Создать новый элемент справочника
             </button>
           )}
         </div>

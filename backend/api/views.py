@@ -376,7 +376,6 @@ class MachineDetailView(generics.RetrieveAPIView):
 def machine_update(request, pk):
     try:
         machine = get_object_or_404(Machine, id=pk)
-        print(machine)
 
         try:
             data = json.loads(request.body)
@@ -405,7 +404,6 @@ def machine_update(request, pk):
             status=status.HTTP_200_OK
         )
     except Exception as e:
-        print(e)
         return Response(
             {'error': 'Ошибка сервера'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR

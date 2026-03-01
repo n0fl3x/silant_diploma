@@ -11,6 +11,8 @@ import MachineEditPage from './pages/MachineEditPage';
 import MachineCreatePage from './pages/MachineCreatePage';
 import DictionaryListPage from './pages/DictionaryListPage';
 import DictionaryEntryDetail from './pages/DictEntryDetailPage';
+import CreateDictionaryEntryPage from './pages/DictEntryCreatePage';
+import EditDictionaryEntryPage from './pages/DictEntryEditPage';
 import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
@@ -92,8 +94,23 @@ function App() {
                     <DictionaryEntryDetail />
                   </ProtectedRoute>
                 }
-              >
-              </Route>
+              />
+              < Route
+                path='/dictionary-create'
+                element={
+                  <ProtectedRoute requiredGroups={['manager', 'superadmin']}>
+                    <CreateDictionaryEntryPage />
+                  </ProtectedRoute>
+                }
+              />
+              < Route
+                path='/dictionary-edit/:id'
+                element={
+                  <ProtectedRoute requiredGroups={['manager', 'superadmin']}>
+                    <EditDictionaryEntryPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/"
                 element={<Navigate to="/machine-search" />}

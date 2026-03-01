@@ -108,11 +108,14 @@ const DictEntryDetailPage: React.FC = () => {
       </div>
 
       <div className="actions">
-        <Link to="/dictionary" className="btn btn-secondary">
+        <Link
+          to="/dictionary"
+          className="btn btn-secondary"
+        >
           ← Назад к списку справочников
         </Link>
         <Link
-          to={`/dictionary/edit/${entry.id}`}
+          to={`/dictionary-edit/${entry.id}`}
           className="btn btn-primary"
         >
           Редактировать элемент
