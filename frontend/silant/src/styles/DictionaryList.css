@@ -1,0 +1,105 @@
+.dictionary-list-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dictionary-list-page h1 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+}
+
+.error {
+  color: #d32f2f;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.dictionary-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dictionary-table th,
+.dictionary-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.dictionary-table thead th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.dictionary-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.entity-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Цвета для разных типов справочников */
+.entity-machine_model {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+.entity-engine_model {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+}
+.entity-transmission_model {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+.entity-steering_axle_model {
+  background-color: #fce4ec;
+  color: #c2185b;
+}
+.entity-drive_axle_model {
+  background-color: #e1f5fe;
+  color: #0288d1;
+}
+.entity-maintenance_type {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+.entity-failure_node {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+.entity-recovery_method {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.description-cell {
+  max-width: 300px;
+  white-space: normal;
+}

@@ -1,17 +1,16 @@
 import json
 
 from rest_framework import status
-from rest_framework import generics, permissions
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import NotFound
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.exceptions import TokenError
 
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
 
@@ -21,6 +20,7 @@ from core.models import (
     Machine,
     Maintenance,
     Claim,
+    DictionaryEntry,
 )
 from .serializers import (
     MachinePublicSerializer,
@@ -28,8 +28,7 @@ from .serializers import (
     MachineListSerializer,
     MachineDetailSerializer,
     MachineSerializer,
-    MaintenanceSerializer,
-    ClaimSerializer,
+    DictionaryEntryListSerializer,
 )
 from .filters import (
     MachineFilter,
@@ -42,6 +41,110 @@ from .permissions import (
 )
 
 
+class CustomTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            return Response(
+                data={"error": str(e)},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        user = authenticate(username=username, password=password)
+
+        if not user:
+            return Response(
+                data={"error": "Неверные учётные данные"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        tokens = serializer.validated_data
+        access_token = tokens['access']
+        refresh_token = tokens['refresh']
+
+        user_group = user.user_type if user.group else None
+
+        response_data = {
+            "success": True,
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "user_group": user_group,
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+            }
+        }
+
+        resp = Response(data=response_data, status=status.HTTP_200_OK)
+
+        resp.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            path="/",
+        )
+        resp.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=False,
+            samesite="Lax",
+            path="/",
+        )
+
+        return resp
+
+
+class CustomRefreshTokenView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response(
+                data={"error": "Refresh token is missing."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        temp_request = request
+        temp_request.data = {'refresh': refresh_token}
+
+        try:
+            response = super().post(temp_request, *args, **kwargs)
+            tokens = response.data
+            access_token = tokens["access"]
+
+            new_resp = Response(
+                data={"refreshed": True},
+                status=status.HTTP_200_OK
+            )
+            new_resp.set_cookie(
+                key="access_token",
+                value=access_token,
+                httponly=True,
+                secure=False,
+                samesite="Lax",
+                path="/",
+            )
+            return new_resp
+        except TokenError as e:
+            error_resp = Response(
+                data={"error": "Token refresh error."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+            error_resp.delete_cookie("access_token")
+            error_resp.delete_cookie("refresh_token")
+            return error_resp
+
+
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -50,7 +153,7 @@ class CurrentUserView(APIView):
         group_name = user.group.name if user.group else None
         user_type_mapping = {
             "Клиент": "client",
-            "Сервисная компания": "service_company",
+            "Сервисная организация": "service_company",
             "Менеджер": "manager",
             "Суперадмин": "superadmin"
         }
@@ -64,6 +167,132 @@ class CurrentUserView(APIView):
             'group_name': user_type,
             'permissions': list(user.get_all_permissions())
         })
+    
+
+@api_view(http_method_names=["POST"])
+@permission_classes([IsAuthenticated])
+def logout(
+    request,
+):
+    try:
+        resp = Response(
+            data={
+                "success": True,
+                "message": "Успешный выход из аккаунта.",
+                "redirect": True,
+            },
+            status=status.HTTP_200_OK,
+        )
+        resp.delete_cookie(
+            key="access_token",
+            path="/",
+            samesite="Lax",
+        )
+        resp.delete_cookie(
+            key="refresh_token",
+            path="/",
+            samesite="Lax",
+        )
+
+        return resp
+    except Exception as e:
+        return Response(
+            data={
+                "error": f"Ошибка выхода из аккаунта: {str(e)}",
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+@api_view(
+    http_method_names=[
+        "POST",
+    ],
+)
+@permission_classes(
+    permission_classes=[
+        IsAuthenticated,
+    ],
+)
+def is_authenticated(
+    request,
+):
+    user = request.user
+    user_data = {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email or "empty",
+        "user_description": user.user_description or "empty",
+    }
+
+    return Response(
+        data={
+            "authenticated": True,
+            "user": user_data,
+        },
+        status=status.HTTP_200_OK,
+    )
+    
+
+class MachineSearchAPIView(APIView):
+    def post(
+        self,
+        request,
+    ):
+        factory_number = request.data.get("factory_number")
+
+        if not factory_number:
+            return Response(
+                data={
+                    "success": False,
+                    "error": "Заводской номер машины обязателен.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            machine = Machine.objects.select_related(
+                "model_tech",
+                "engine_model",
+                "transmission_model",
+                "drive_axle_model",
+                "steering_axle_model",
+                "client",
+                "service_company",
+            ).get(
+                factory_number=factory_number,
+            )
+
+            if request.user.is_authenticated:
+                serializer = MachineFullSerializer(machine)
+                user_status = "authorized"
+            else:
+                serializer = MachinePublicSerializer(machine)
+                user_status = "unauthorized"
+
+            return Response(
+                data={
+                    "success": True,
+                    "data": serializer.data,
+                    "user_status": user_status,
+                },
+                status=status.HTTP_200_OK,
+            )
+        except Machine.DoesNotExist:
+            return Response(
+                data={
+                    "success": False,
+                    "error": "Машина с указанным заводским номером не найдена.",
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except Exception as e:
+            return Response(
+                data={
+                    "success": False,
+                    "error": f"Произошла ошибка при поиске машины: {str(e)}",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class MachineListView(generics.ListAPIView):
@@ -91,7 +320,7 @@ class MachineListView(generics.ListAPIView):
 
         if group_name == 'Клиент':
             queryset = queryset.filter(client=user)
-        elif group_name == 'Сервисная компания':
+        elif group_name == 'Сервисная организация':
             queryset = queryset.filter(service_company=user)
         elif not group_name:
             return Machine.objects.none()
@@ -118,9 +347,9 @@ class MachineDetailView(generics.RetrieveAPIView):
             'model_tech',
         )
 
-        if user.groups.filter(name='Клиент').exists():
+        if user.groups.filter(name='client').exists():
             queryset = queryset.filter(client=user)
-        elif user.groups.filter(name='Сервисная организация').exists():
+        elif user.groups.filter(name='service_company').exists():
             queryset = queryset.filter(service_company=user)
 
         return queryset
@@ -224,291 +453,10 @@ def machine_delete(request, pk):
         )
 
 
-class MaintenanceList(generics.ListCreateAPIView):
-    queryset = Maintenance.objects.all()
-    serializer_class = MaintenanceSerializer
-    permission_classes = [permissions.DjangoModelPermissions]
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = MaintenanceFilter
+class DictEntryListView(APIView):
+    permission_classes = [IsAuthenticated, IsManagerOrSuperadmin]
 
-    def get_queryset(self):
-        user = self.request.user
-        queryset = super().get_queryset()
-
-        if user.groups.filter(name='Клиент').exists():
-            queryset = queryset.filter(machine__client=user)
-        elif user.groups.filter(name='Сервисная организация').exists():
-            queryset = queryset.filter(service_company=user)
-
-        return queryset.order_by('-maintenance_date')
-
-
-class MaintenanceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Maintenance.objects.all()
-    serializer_class = MaintenanceSerializer
-    permission_classes = [permissions.DjangoModelPermissions]
-
-    def get_object(self):
-        obj = super().get_object()
-        user = self.request.user
-
-        if user.groups.filter(name='Клиент').exists():
-            if obj.client != user:
-                raise NotFound("Машина не найдена")
-        elif user.groups.filter(name='Сервисная организация').exists():
-            if obj.service_company != user:
-                raise NotFound("Машина не найдена")
-
-        return obj
-
-
-class ClaimList(generics.ListCreateAPIView):
-    queryset = Claim.objects.all()
-    serializer_class = ClaimSerializer
-    permission_classes = [permissions.DjangoModelPermissions]
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = ClaimFilter
-
-    def get_queryset(self):
-        user = self.request.user
-        queryset = super().get_queryset()
-
-        if user.groups.filter(name='Клиент').exists():
-            queryset = queryset.filter(machine__client=user)
-        elif user.groups.filter(name='Сервисная организация').exists():
-            queryset = queryset.filter(service_company=user)
-
-        return queryset.order_by('-failure_date')
-
-
-class ClaimDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Claim.objects.all()
-    serializer_class = ClaimSerializer
-    permission_classes = [permissions.DjangoModelPermissions]
-
-    def get_object(self):
-        obj = super().get_object()
-        user = self.request.user
-
-        if user.groups.filter(name='Клиент').exists():
-            if obj.client != user:
-                raise NotFound("Машина не найдена")
-        elif user.groups.filter(name='Сервисная организация').exists():
-            if obj.service_company != user:
-                raise NotFound("Машина не найдена")
-
-        return obj
-
-
-class MachineSearchAPIView(APIView):
-    def post(
-        self,
-        request,
-    ):
-        factory_number = request.data.get("factory_number")
-
-        if not factory_number:
-            return Response(
-                data={
-                    "success": False,
-                    "error": "Заводской номер машины обязателен.",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        try:
-            machine = Machine.objects.select_related(
-                "model_tech",
-                "engine_model",
-                "transmission_model",
-                "drive_axle_model",
-                "steering_axle_model",
-                "client",
-                "service_company",
-            ).get(
-                factory_number=factory_number,
-            )
-
-            if request.user.is_authenticated:
-                serializer = MachineFullSerializer(machine)
-                user_status = "authorized"
-            else:
-                serializer = MachinePublicSerializer(machine)
-                user_status = "unauthorized"
-
-            return Response(
-                data={
-                    "success": True,
-                    "data": serializer.data,
-                    "user_status": user_status,
-                },
-                status=status.HTTP_200_OK,
-            )
-        except Machine.DoesNotExist:
-            return Response(
-                data={
-                    "success": False,
-                    "error": "Машина с указанным заводским номером не найдена.",
-                },
-                status=status.HTTP_404_NOT_FOUND,
-            )
-        except Exception as e:
-            return Response(
-                data={
-                    "success": False,
-                    "error": f"Произошла ошибка при поиске машины: {str(e)}",
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-
-class CustomTokenObtainPairView(TokenObtainPairView):
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-
-        try:
-            serializer.is_valid(raise_exception=True)
-        except TokenError as e:
-            return Response(
-                data={"error": str(e)},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-
-        tokens = serializer.validated_data
-        access_token = tokens['access']
-        refresh_token = tokens['refresh']
-
-        user = request.user
-
-        response_data = {
-            "success": True,
-            "user": {
-                "id": user.id,
-                "username": user.username,
-            }
-        }
-
-        resp = Response(data=response_data, status=status.HTTP_200_OK)
-        resp.set_cookie(
-            key="access_token",
-            value=access_token,
-            httponly=True,
-            secure=False,
-            samesite="Lax",
-            path="/",
-        )
-        resp.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            secure=False,
-            samesite="Lax",
-            path="/",
-        )
-
-        return resp
-
-
-class CustomRefreshTokenView(TokenRefreshView):
-    def post(self, request, *args, **kwargs):
-        refresh_token = request.COOKIES.get("refresh_token")
-
-        if not refresh_token:
-            return Response(
-                data={"error": "Refresh token is missing."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        temp_request = request
-        temp_request.data = {'refresh': refresh_token}
-
-        try:
-            response = super().post(temp_request, *args, **kwargs)
-            tokens = response.data
-            access_token = tokens["access"]
-
-            new_resp = Response(
-                data={"refreshed": True},
-                status=status.HTTP_200_OK
-            )
-            new_resp.set_cookie(
-                key="access_token",
-                value=access_token,
-                httponly=True,
-                secure=False,
-                samesite="Lax",
-                path="/",
-            )
-            return new_resp
-        except TokenError as e:
-            error_resp = Response(
-                data={"error": "Token refresh error."},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-            error_resp.delete_cookie("access_token")
-            error_resp.delete_cookie("refresh_token")
-            return error_resp
-
-
-@api_view(http_method_names=["POST"])
-@permission_classes([IsAuthenticated])
-def logout(
-    request,
-):
-    try:
-        resp = Response(
-            data={
-                "success": True,
-                "message": "Успешный выход из аккаунта.",
-                "redirect": True,
-            },
-            status=status.HTTP_200_OK,
-        )
-        resp.delete_cookie(
-            key="access_token",
-            path="/",
-            samesite="Lax",
-        )
-        resp.delete_cookie(
-            key="refresh_token",
-            path="/",
-            samesite="Lax",
-        )
-
-        return resp
-    except Exception as e:
-        return Response(
-            data={
-                "error": f"Ошибка выхода из аккаунта: {str(e)}",
-            },
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
-
-@api_view(
-    http_method_names=[
-        "POST",
-    ],
-)
-@permission_classes(
-    permission_classes=[
-        IsAuthenticated,
-    ],
-)
-def is_authenticated(
-    request,
-):
-    user = request.user
-    user_data = {
-        "id": user.id,
-        "username": user.username,
-        "email": user.email or "empty",
-        "user_description": user.user_description or "empty",
-    }
-
-    return Response(
-        data={
-            "authenticated": True,
-            "user": user_data,
-        },
-        status=status.HTTP_200_OK,
-    )
+    def get(self, request, *args, **kwargs):
+        queryset = DictionaryEntry.objects.all().order_by('entity')
+        serializer = DictionaryEntryListSerializer(queryset, many=True)
+        return JsonResponse(serializer.data, safe=False)

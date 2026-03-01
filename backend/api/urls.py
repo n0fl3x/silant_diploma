@@ -4,19 +4,22 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     CustomTokenObtainPairView,
     CustomRefreshTokenView,
+    CurrentUserView,
+    is_authenticated,
+    logout,
+
     MachineSearchAPIView,
     MachineListView,
     MachineDetailView,
-    MaintenanceList,
-    MaintenanceDetail,
-    ClaimList,
-    ClaimDetail,
-    CurrentUserView,
-    logout,
-    is_authenticated,
     machine_update,
     machine_create,
     machine_delete,
+
+    DictEntryListView,
+    # DictEntryDetailView,
+    # dict_entry_update,
+    # dict_entry_create,
+    # dict_entry_delete,
 )
 
 
@@ -60,8 +63,9 @@ urlpatterns = [
     path('machine-delete/<int:pk>', machine_delete, name='machine-delete'),
 
     #
-    path('maintenance', MaintenanceList.as_view(), name='maintenance-list'),
-    path('maintenance/<int:pk>', MaintenanceDetail.as_view(), name='maintenance-detail'),
-    path('claims', ClaimList.as_view(), name='claim-list'),
-    path('claims/<int:pk>', ClaimDetail.as_view(), name='claim-detail'),
+    path('dict-entries', DictEntryListView.as_view(), name='dict-entry-list'),
+    # path('dict-entries/<int:pk>', DictEntryDetailView.as_view(), name='dict-entry-detail'),
+    # path('dict-entry-update/<int:pk>', dict_entry_update, name='dict-entry-update'),
+    # path('dict-entry-create', dict_entry_create, name='dict-entry-create'),
+    # path('dict-entry-delete/<int:pk>', dict_entry_delete, name='dict-entry-delete'),
 ]

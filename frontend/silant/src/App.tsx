@@ -9,6 +9,7 @@ import MachineListPage from './pages/MachineListPage';
 import MachineDetailPage from './pages/MachineDetailPage';
 import MachineEditPage from './pages/MachineEditPage';
 import MachineCreatePage from './pages/MachineCreatePage';
+import DictionaryListPage from './pages/DictionaryListPage';
 import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
@@ -75,6 +76,13 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/dictionary"
+                element={
+                  <ProtectedRoute requiredGroups={['manager', 'superadmin']}>
+                    <DictionaryListPage />
+                  </ProtectedRoute>
+                } />
               <Route
                 path="/"
                 element={<Navigate to="/machine-search" />}

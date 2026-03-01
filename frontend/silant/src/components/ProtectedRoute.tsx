@@ -22,7 +22,6 @@ export default function ProtectedRoute({ children, requiredGroups }: ProtectedRo
     if (userGroup === 'client' || userGroup === 'service_company') {
       return <Navigate to="/machine-list" replace />;
     }
-    // В остальных случаях — на дашборд
     return <Navigate to="/dashboard" replace />;
   }
 

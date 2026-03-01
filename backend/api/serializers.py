@@ -412,19 +412,13 @@ class MachineSerializer(serializers.ModelSerializer):
         return value
 
 
-class DictionaryEntrySerializer(serializers.ModelSerializer):
+class DictionaryEntryListSerializer(serializers.ModelSerializer):
+    entity_display = serializers.CharField(
+        source='get_entity_display',
+        read_only=True,
+        label='Тип справочника (текст)'
+    )
+
     class Meta:
         model = DictionaryEntry
-        fields = "__all__"
-
-
-class MaintenanceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Maintenance
-        fields = "__all__"
-
-
-class ClaimSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Claim
-        fields = "__all__"
+        fields = ['id', 'entity', 'entity_display', 'name', 'description']

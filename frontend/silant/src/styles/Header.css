@@ -164,3 +164,24 @@
 .header__button--active:hover {
   background-color: #c0392b;
 }
+
+.dictionary-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.dictionary-btn:hover {
+  background: #0056b3;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}

@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import type { UserGroup } from "../types/User";
+
 
 interface User {
   id: number;
@@ -7,12 +9,10 @@ interface User {
   user_description: string;
 }
 
-type UserGroup = 'client' | 'service_company' | 'manager' | 'superadmin' | null;
-
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  userGroup: UserGroup;
+  userGroup: UserGroup | null;
   loading: boolean;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
@@ -28,7 +28,7 @@ export function AuthProvider({
 }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [userGroup, setUserGroup] = useState<UserGroup>(null);
+  const [userGroup, setUserGroup] = useState<UserGroup | null>(null);
   const [loading, setLoading] = useState(true);
   const [isChecking, setIsChecking] = useState(false);
 
@@ -62,7 +62,7 @@ export function AuthProvider({
   };
 
   const refreshAccessToken = async (): Promise<boolean> => {
-    const refreshToken = localStorage.getItem('refreshToken');
+    const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) return false;
 
     try {
@@ -154,6 +154,10 @@ export function AuthProvider({
 
       localStorage.setItem('access_token', data.access_token);
       localStorage.setItem('refresh_token', data.refresh_token);
+      localStorage.setItem('user_group', data.user_group);
+
+      setIsAuthenticated(true);
+      setUserGroup(data.user_group);
 
       await checkAuth();
 

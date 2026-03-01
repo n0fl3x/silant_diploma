@@ -5,7 +5,9 @@ import { useAuth } from '../contexts/AuthContext';
 
 
 const Header: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { userGroup, isAuthenticated } = useAuth();
+
+  const showDictionaryButton = isAuthenticated && (userGroup === 'manager' || userGroup === 'superadmin');
 
   return (
     <header className="header">
@@ -49,6 +51,14 @@ const Header: React.FC = () => {
               >
                 Машины
               </NavLink>
+              {showDictionaryButton && (
+                <Link
+                  to="/dictionary"
+                  className="dictionary-btn"
+                >
+                  Справочник
+                </Link>
+              )}
               <Link
                 to="/logout"
                 className="header__button header__button--logout"
