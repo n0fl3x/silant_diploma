@@ -88,40 +88,86 @@ class MachineListSerializer(serializers.ModelSerializer):
         source="service_company.user_description",
         read_only=True,
     )
-    model_tech_name = serializers.CharField(
-        source="model_tech.name",
-        read_only=True,
-    )
-    engine_model_name = serializers.CharField(
-        source="engine_model.name",
-        read_only=True,
-    )
-    transmission_model_name = serializers.CharField(
-        source="transmission_model.name",
-        read_only=True,
-    )
-    drive_axle_model_name = serializers.CharField(
-        source="drive_axle_model.name",
-        read_only=True,
-    )
-    steering_axle_model_name = serializers.CharField(
-        source="steering_axle_model.name",
-        read_only=True,
-    )
+    # model_tech_name = serializers.CharField(
+    #     source="model_tech.name",
+    #     read_only=True,
+    # )
+    # engine_model_name = serializers.CharField(
+    #     source="engine_model.name",
+    #     read_only=True,
+    # )
+    # transmission_model_name = serializers.CharField(
+    #     source="transmission_model.name",
+    #     read_only=True,
+    # )
+    # drive_axle_model_name = serializers.CharField(
+    #     source="drive_axle_model.name",
+    #     read_only=True,
+    # )
+    # steering_axle_model_name = serializers.CharField(
+    #     source="steering_axle_model.name",
+    #     read_only=True,
+    # )
+
+    model_tech = serializers.SerializerMethodField()
+    engine_model = serializers.SerializerMethodField()
+    transmission_model = serializers.SerializerMethodField()
+    drive_axle_model = serializers.SerializerMethodField()
+    steering_axle_model = serializers.SerializerMethodField()
+
+    def get_model_tech(self, obj):
+        if obj.model_tech:
+            return {
+                "id": obj.model_tech.id,
+                "name": obj.model_tech.name
+            }
+        return None
+
+    def get_engine_model(self, obj):
+        if obj.engine_model:
+            return {
+                "id": obj.engine_model.id,
+                "name": obj.engine_model.name
+            }
+        return None
+
+    def get_transmission_model(self, obj):
+        if obj.transmission_model:
+            return {
+                "id": obj.transmission_model.id,
+                "name": obj.transmission_model.name
+            }
+        return None
+
+    def get_drive_axle_model(self, obj):
+        if obj.drive_axle_model:
+            return {
+                "id": obj.drive_axle_model.id,
+                "name": obj.drive_axle_model.name
+            }
+        return None
+
+    def get_steering_axle_model(self, obj):
+        if obj.steering_axle_model:
+            return {
+                "id": obj.steering_axle_model.id,
+                "name": obj.steering_axle_model.name
+            }
+        return None
 
     class Meta:
         model = Machine
         fields = [
             "id",
             "factory_number",
-            "model_tech_name",
-            "engine_model_name",
+            "model_tech",
+            "engine_model",
             "engine_factory_number",
-            "transmission_model_name",
+            "transmission_model",
             "transmission_factory_number",
-            "drive_axle_model_name",
+            "drive_axle_model",
             "drive_axle_factory_number",
-            "steering_axle_model_name",
+            "steering_axle_model",
             "steering_axle_factory_number",
             "delivery_contract",
             "shipment_date",

@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { Machine } from '../types/Machine';
 import '../styles/MachineDetail.css';
+import '../styles/DictionaryLink.css';
+import { DictionaryLink } from '../components/DictionaryLink';
 
 export default function MachineDetailPage() {
   const { id } = useParams();
@@ -162,7 +164,10 @@ export default function MachineDetailPage() {
           <h3>Основная информация</h3>
           <div className="detail-item">
             <span className="label">Тех. наименование модели:</span>
-            <span>{machine.model_tech_name || 'Не указано'}</span>
+            <DictionaryLink
+              id={machine.model_tech?.id}
+              name={machine.model_tech?.name}
+            />
           </div>
           <div className="detail-item">
             <span className="label">Договор поставки:</span>
@@ -194,7 +199,10 @@ export default function MachineDetailPage() {
           <h3>Двигатель</h3>
           <div className="detail-item">
             <span className="label">Модель:</span>
-            <span>{machine.engine_model_name || 'Не указана'}</span>
+            <DictionaryLink
+              id={machine.engine_model?.id}
+              name={machine.engine_model?.name}
+            />
           </div>
           <div className="detail-item">
             <span className="label">Заводской номер:</span>
@@ -206,7 +214,10 @@ export default function MachineDetailPage() {
           <h3>Трансмиссия</h3>
           <div className="detail-item">
             <span className="label">Модель:</span>
-            <span>{machine.transmission_model_name || 'Не указана'}</span>
+            <DictionaryLink
+              id={machine.transmission_model?.id}
+              name={machine.transmission_model?.name}
+            />
           </div>
           <div className="detail-item">
             <span className="label">Заводской номер:</span>
@@ -218,7 +229,10 @@ export default function MachineDetailPage() {
           <h3>Ведущие оси</h3>
           <div className="detail-item">
             <span className="label">Модель:</span>
-            <span>{machine.drive_axle_model_name || 'Не указана'}</span>
+            <DictionaryLink
+              id={machine.drive_axle_model?.id}
+              name={machine.drive_axle_model?.name}
+            />
           </div>
           <div className="detail-item">
             <span className="label">Заводской номер:</span>
@@ -230,7 +244,10 @@ export default function MachineDetailPage() {
           <h3>Управляемые оси</h3>
           <div className="detail-item">
             <span className="label">Модель:</span>
-            <span>{machine.steering_axle_model_name || 'Не указана'}</span>
+            <DictionaryLink
+              id={machine.steering_axle_model?.id}
+              name={machine.steering_axle_model?.name}
+            />
           </div>
           <div className="detail-item">
             <span className="label">Заводской номер:</span>

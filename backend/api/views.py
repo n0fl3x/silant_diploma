@@ -463,7 +463,7 @@ class DictEntryListView(APIView):
 
 
 class DictEntryDetailView(generics.RetrieveAPIView):
-    permission_classes = [IsAuthenticated, IsManagerOrSuperadmin]
+    permission_classes = [IsAuthenticated]
     queryset = DictionaryEntry.objects.all()
     serializer_class = DictionaryEntryDetailSerializer
     lookup_field = 'pk'

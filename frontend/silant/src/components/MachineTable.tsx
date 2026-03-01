@@ -4,6 +4,7 @@ import { fetchUserMachines } from '../services/machineService';
 import Pagination from './Pagination';
 import "../styles/MachineTable.css";
 import "../styles/Pagination.css";
+import { DictionaryLink } from '../components/DictionaryLink';
 
 interface MachineTableProps {
   onMachineSelect?: (machine: Machine) => void;
@@ -101,14 +102,39 @@ const MachineTable: React.FC<MachineTableProps> = ({
                   Подробнее
                 </button>
               </td>
-              <td>{machine.model_tech_name || <span className="text-muted">Не указан</span>}</td>
-              <td>{machine.engine_model_name || <span className="text-muted">Не указан</span>}</td>
+              <td>
+                <DictionaryLink
+                  id={machine.model_tech?.id}
+                  name={machine.model_tech?.name}
+                />
+              </td>
+              <td>
+                <DictionaryLink
+                id={machine.engine_model?.id}
+                name={machine.engine_model?.name}
+              />
+              </td>
               <td>{machine.engine_factory_number || <span className="text-muted">Не указан</span>}</td>
-              <td>{machine.transmission_model_name || <span className="text-muted">Не указан</span>}</td>
+              <td>
+                <DictionaryLink
+                  id={machine.transmission_model?.id}
+                  name={machine.transmission_model?.name}
+                />
+              </td>
               <td>{machine.transmission_factory_number || <span className="text-muted">Не указан</span>}</td>
-              <td>{machine.drive_axle_model_name || <span className="text-muted">Не указан</span>}</td>
+              <td>
+                <DictionaryLink
+                id={machine.drive_axle_model?.id}
+                name={machine.drive_axle_model?.name}
+              />
+              </td>
               <td>{machine.drive_axle_factory_number || <span className="text-muted">Не указан</span>}</td>
-              <td>{machine.steering_axle_model_name || <span className="text-muted">Не указан</span>}</td>
+              <td>
+                <DictionaryLink
+                  id={machine.steering_axle_model?.id}
+                  name={machine.steering_axle_model?.name}
+              />
+              </td>
               <td>{machine.steering_axle_factory_number || <span className="text-muted">Не указан</span>}</td>
               <td>{machine.delivery_contract || <span className="text-muted">Не указан</span>}</td>
               <td>{new Date(machine.shipment_date).toLocaleDateString() || <span className="text-muted">Не указан</span>}</td>

@@ -90,7 +90,7 @@ function App() {
               < Route
                 path='/dictionary/:id'
                 element={
-                  <ProtectedRoute requiredGroups={['manager', 'superadmin']}>
+                  <ProtectedRoute>
                     <DictionaryEntryDetail />
                   </ProtectedRoute>
                 }

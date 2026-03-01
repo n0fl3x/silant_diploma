@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import type { DictionaryEntry } from '../types/DictionaryEntry';
 import "../styles/DictEntryDetail.css";
+import { useAuth } from '../contexts/AuthContext';
 
 
 const DictEntryDetailPage: React.FC = () => {
@@ -13,6 +14,9 @@ const DictEntryDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const { userGroup } = useAuth();
+  const canEditOrDelete = userGroup === 'manager' || userGroup === 'superadmin';
 
   const fetchDictionaryEntry = async (entryId: number) => {
     setLoading(true);
@@ -141,20 +145,25 @@ const DictEntryDetailPage: React.FC = () => {
         >
           ← Назад к списку справочников
         </Link>
-        <Link
-          to={`/dictionary-edit/${entry.id}`}
-          className="btn btn-primary"
-        >
-          Редактировать элемент
-        </Link>
-        <button
-          type="button"
-          onClick={handleDelete}
-          disabled={isDeleting}
-          className={`btn ${isDeleting ? 'btn-danger-loading' : 'btn-danger'}`}
-        >
-          {isDeleting ? 'Удаление...' : 'Удалить элемент'}
-        </button>
+
+        {canEditOrDelete && (
+          <>
+            <Link
+              to={`/dictionary-edit/${entry.id}`}
+              className="btn btn-primary"
+            >
+              Редактировать элемент
+            </Link>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className={`btn ${isDeleting ? 'btn-danger-loading' : 'btn-danger'}`}
+            >
+              {isDeleting ? 'Удаление...' : 'Удалить элемент'}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
