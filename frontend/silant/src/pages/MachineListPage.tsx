@@ -21,6 +21,14 @@ const MachineListPage: React.FC = () => {
         onMachineSelect={(machine) => {
           navigate(`/machine-detail/${machine.id}`);
         }}
+        filterModelTech={null}
+        filterEngineModel={null}
+        filterTransmissionModel={null}
+        filterSteeringAxleModel={null}
+        filterDriveAxleModel={null}
+        onFilterChange={(filters) => {
+          console.log('Фильтры обновлены:', filters);
+        }}
       />
     </div>
   );
