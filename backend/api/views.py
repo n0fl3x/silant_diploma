@@ -29,6 +29,7 @@ from .serializers import (
     MachineDetailSerializer,
     MachineSerializer,
     DictionaryEntryListSerializer,
+    DictionaryEntryDetailSerializer,
 )
 from .filters import (
     MachineFilter,
@@ -460,3 +461,18 @@ class DictEntryListView(APIView):
         queryset = DictionaryEntry.objects.all().order_by('entity')
         serializer = DictionaryEntryListSerializer(queryset, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+
+class DictEntryDetailView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated, IsManagerOrSuperadmin]
+    queryset = DictionaryEntry.objects.all()
+    serializer_class = DictionaryEntryDetailSerializer
+    lookup_field = 'pk'
+
+    def get_queryset(self):
+        return DictionaryEntry.objects.select_related().all()
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)

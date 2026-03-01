@@ -16,7 +16,7 @@ from .views import (
     machine_delete,
 
     DictEntryListView,
-    # DictEntryDetailView,
+    DictEntryDetailView,
     # dict_entry_update,
     # dict_entry_create,
     # dict_entry_delete,
@@ -64,7 +64,7 @@ urlpatterns = [
 
     #
     path('dict-entries', DictEntryListView.as_view(), name='dict-entry-list'),
-    # path('dict-entries/<int:pk>', DictEntryDetailView.as_view(), name='dict-entry-detail'),
+    path('dict-entries/<int:pk>', DictEntryDetailView.as_view(), name='dict-entry-detail'),
     # path('dict-entry-update/<int:pk>', dict_entry_update, name='dict-entry-update'),
     # path('dict-entry-create', dict_entry_create, name='dict-entry-create'),
     # path('dict-entry-delete/<int:pk>', dict_entry_delete, name='dict-entry-delete'),

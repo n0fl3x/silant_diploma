@@ -10,6 +10,7 @@ import MachineDetailPage from './pages/MachineDetailPage';
 import MachineEditPage from './pages/MachineEditPage';
 import MachineCreatePage from './pages/MachineCreatePage';
 import DictionaryListPage from './pages/DictionaryListPage';
+import DictionaryEntryDetail from './pages/DictEntryDetailPage';
 import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
@@ -82,7 +83,17 @@ function App() {
                   <ProtectedRoute requiredGroups={['manager', 'superadmin']}>
                     <DictionaryListPage />
                   </ProtectedRoute>
-                } />
+                }
+              />
+              < Route
+                path='/dictionary/:id'
+                element={
+                  <ProtectedRoute requiredGroups={['manager', 'superadmin']}>
+                    <DictionaryEntryDetail />
+                  </ProtectedRoute>
+                }
+              >
+              </Route>
               <Route
                 path="/"
                 element={<Navigate to="/machine-search" />}

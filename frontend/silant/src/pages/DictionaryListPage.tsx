@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import "../styles/DictionaryList.css";
 
 interface DictionaryEntry {
@@ -65,6 +66,7 @@ export default function DictionaryListPage() {
               <th>Тип справочника</th>
               <th>Наименование</th>
               <th>Описание</th>
+              <th>Действие</th>
             </tr>
           </thead>
           <tbody>
@@ -82,6 +84,14 @@ export default function DictionaryListPage() {
                 <td>{entry.name}</td>
                 <td className="description-cell">
                   {entry.description ? entry.description : <em>Нет описания</em>}
+                </td>
+                <td className="actions-cell">
+                  <Link
+                    to={`/dictionary/${entry.id}`}
+                    className="btn btn-details"
+                  >
+                    Подробнее
+                  </Link>
                 </td>
               </tr>
             ))}

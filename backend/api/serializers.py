@@ -422,3 +422,20 @@ class DictionaryEntryListSerializer(serializers.ModelSerializer):
     class Meta:
         model = DictionaryEntry
         fields = ['id', 'entity', 'entity_display', 'name', 'description']
+
+
+class DictionaryEntryDetailSerializer(serializers.ModelSerializer):
+    entity_display = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DictionaryEntry
+        fields = [
+            'id',
+            'entity',
+            'entity_display',
+            'name',
+            'description',
+        ]
+
+    def get_entity_display(self, obj):
+        return dict(DictionaryEntry.ENTITY_CHOICES).get(obj.entity, obj.entity)
