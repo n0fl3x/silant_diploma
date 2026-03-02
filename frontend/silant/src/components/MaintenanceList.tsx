@@ -1,15 +1,42 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
-const MaintenanceList = () => {
-  const [maintenanceData, setMaintenanceData] = useState<any[]>([]);
-  const [totalCount, setTotalCount] = useState<number | null>(null); // новое поле
+interface MaintenanceItem {
+  id: number;
+  maintenance_date: string;
+  operating_hours: number;
+  work_order_number: string | null;
+  work_order_date: string | null;
+  machine: {
+    id: number;
+    factory_number: string;
+    model_tech_name: string;
+    model_tech_id: number;
+  };
+  maintenance_type: {
+    id: number;
+    name: string;
+  };
+  service_company: {
+    description: string;
+  };
+}
+
+const MaintenanceTable: React.FC = () => {
+  const [maintenances, setMaintenances] = useState<MaintenanceItem[]>([]);
+  const [filteredMaintenances, setFilteredMaintenances] = useState<MaintenanceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [filters, setFilters] = useState({
+    maintenance_type: '',
+    machine_factory_number: '',
+    service_company: ''
+  });
+
   useEffect(() => {
-    const fetchMaintenance = async () => {
+    const fetchMaintenances = async () => {
       try {
         const token = localStorage.getItem('access_token');
         const response = await axios.get('/api/v1/maintenance', {
@@ -18,94 +45,167 @@ const MaintenanceList = () => {
           }
         });
 
-        if (response.data.success && Array.isArray(response.data.data)) {
-          setMaintenanceData(response.data.data);
-          setTotalCount(response.data.count); // сохраняем общее количество
+        if (response.data.success) {
+          setMaintenances(response.data.data);
+          setFilteredMaintenances(response.data.data);
         } else {
-          setError('Некорректный формат данных от сервера');
+          setError('Не удалось загрузить данные ТО');
         }
       } catch (err: any) {
-        let errorMessage = 'Ошибка загрузки данных ТО';
-
-        if (err.response) {
-          errorMessage = `Ошибка сервера: ${err.response.status}`;
-        } else if (err.request) {
-          errorMessage = 'Нет соединения с сервером';
-        }
-
-        setError(errorMessage);
+        setError(err.response?.data?.message || 'Ошибка загрузки данных ТО');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMaintenance();
+    fetchMaintenances();
   }, []);
 
-  if (loading) return <div className="loading">Загрузка данных ТО...</div>;
-  if (error) return <div className="error">{error}</div>;
+  useEffect(() => {
+    let filtered = maintenances;
 
-  if (!Array.isArray(maintenanceData)) {
-    return <div className="error">Данные недоступны или имеют неверный формат</div>;
-  }
+    if (filters.maintenance_type) {
+      filtered = filtered.filter(item =>
+        item.maintenance_type?.name &&
+        typeof item.maintenance_type.name === 'string' &&
+        item.maintenance_type.name
+          .toLowerCase()
+          .includes(filters.maintenance_type.toLowerCase())
+      );
+    }
+
+    if (filters.machine_factory_number) {
+      filtered = filtered.filter(item =>
+        item.machine?.factory_number &&
+        typeof item.machine.factory_number === 'string' &&
+        item.machine.factory_number
+          .toLowerCase()
+          .includes(filters.machine_factory_number.toLowerCase())
+      );
+    }
+
+    if (filters.service_company) {
+      filtered = filtered.filter(item =>
+        item.service_company?.description &&
+        typeof item.service_company.description === 'string' &&
+        item.service_company.description
+          .toLowerCase()
+          .includes(filters.service_company.toLowerCase())
+      );
+    }
+
+    setFilteredMaintenances(filtered);
+  }, [filters, maintenances]);
+
+  const handleFilterChange = (field: keyof typeof filters, value: string) => {
+    setFilters(prev => ({ ...prev, [field]: value }));
+  };
+
+  if (loading) return <div className="maintenance-table-loading">Загрузка данных...</div>;
+  if (error) return <div className="maintenance-table-error">Ошибка: {error}</div>;
 
   return (
-    <div className="maintenance-list">
-      <h2>Список технических обслуживаний</h2>
-      <p>Всего записей: {maintenanceData.length} из {totalCount || 'N/A'}</p>
-      {maintenanceData.length === 0 ? (
-        <p>Нет данных о ТО для отображения</p>
-      ) : (
-        <table className="maintenance-table">
-          <thead>
-            <tr>
-              <th>Действия</th>
-              <th>Дата ТО</th>
-              <th>Машина</th>
-              <th>Модель машины</th>
-              <th>Наработка (м/час)</th>
-              <th>Вид ТО</th>
-              <th>Сервисная компания</th>
-              <th>№ заказ‑наряда</th>
-            </tr>
-          </thead>
-          <tbody>
-            {maintenanceData.map((maintenance) => (
-              <tr key={maintenance.id}>
-                <td>
-                    <Link
-                        to={`/maintenance/${maintenance.id}`}
-                        className="maintenance-table__action-btn"
-                    >
-                        Подробнее
-                    </Link>
-                </td>
-                <td>{maintenance.maintenance_date}</td>
-                <td>
-                  <Link to={`/machine-detail/${maintenance.machine.id}`}>
-                    {maintenance.machine.factory_number}
-                  </Link>
-                </td>
-                <td>
-                  <Link to={`/dictionary/${maintenance.machine.model_tech_id}`}>
-            {maintenance.machine.model_tech_name}
-                  </Link>
-                </td>
-                <td>{maintenance.operating_hours}</td>
-                <td>
-                  <Link to={`/dictionary/${maintenance.maintenance_type.id}`}>
-            {maintenance.maintenance_type.name}
-                  </Link>
-                </td>
-                <td>{maintenance.service_company.description || 'Неизвестно'}</td>
-                <td>{maintenance.work_order_number}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
+    <div className="maintenance-table-container">
+      <div className="maintenance-filters">
+        <h2>Фильтры</h2>
+        <div className="filters-grid">
+          <div className="filter-field">
+            <label htmlFor="filter-maintenance-type">Вид ТО:</label>
+            <input
+              id="filter-maintenance-type"
+              type="text"
+              placeholder="Введите вид ТО"
+              value={filters.maintenance_type}
+              onChange={(e) => handleFilterChange('maintenance_type', e.target.value)}
+              className="filter-input"
+            />
+          </div>
+
+          <div className="filter-field">
+            <label htmlFor="filter-machine-number">Заводской номер машины:</label>
+            <input
+              id="filter-machine-number"
+              type="text"
+              placeholder="Введите заводской номер"
+              value={filters.machine_factory_number}
+              onChange={(e) => handleFilterChange('machine_factory_number', e.target.value)}
+              className="filter-input"
+            />
+          </div>
+
+          <div className="filter-field">
+            <label htmlFor="filter-service-company">Сервисная компания:</label>
+            <input
+              id="filter-service-company"
+              type="text"
+              placeholder="Введите название компании"
+              value={filters.service_company}
+              onChange={(e) => handleFilterChange('service_company', e.target.value)}
+              className="filter-input"
+            />
+          </div>
+        </div>
+      </div>
+
+      <table className="maintenance-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Дата проведения</th>
+            <th>Наработка (м/час)</th>
+            <th>Вид ТО</th>
+            <th>Заводской номер машины</th>
+            <th>Сервисная компания</th>
+            <th>№ заказ-наряда</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+  {filteredMaintenances.length === 0 ? (
+    <tr>
+      <td colSpan={8} className="no-data">
+        Данные не найдены по заданным фильтрам
+      </td>
+    </tr>
+  ) : (
+    filteredMaintenances.map(item => (
+      <tr key={item.id}>
+        <td>{item.id}</td>
+        <td>{new Date(item.maintenance_date).toLocaleDateString()}</td>
+        <td>{item.operating_hours}</td>
+        <td>
+          <Link
+            to={`/maintenance/${item.maintenance_type?.id}`}
+            className="table-link"
+          >
+            {item.maintenance_type?.name || 'Не указано'}
+          </Link>
+        </td>
+        <td>
+          <Link
+            to={`/machine-detail/${item.machine?.id}`}
+            className="table-link"
+          >
+            {item.machine?.factory_number || 'Не указан'}
+          </Link>
+        </td>
+        <td>{item.service_company?.description || 'Не указана'}</td>
+        <td>{item.work_order_number || '-'}</td>
+        <td>
+          <button
+            className="action-btn edit-btn"
+            onClick={() => window.location.href = `/maintenance/${item.id}`}
+          >
+            Подробнее
+          </button>
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
+</table>
+</div>
   );
 };
 
-export default MaintenanceList;
+export default MaintenanceTable;
