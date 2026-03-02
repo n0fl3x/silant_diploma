@@ -10,6 +10,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.exceptions import TokenError
 
 from django.http import Http404, JsonResponse
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
 
@@ -22,6 +23,7 @@ from core.models import (
     DictionaryEntry,
 )
 from .serializers import (
+    ClaimCreateSerializer,
     ClaimListSerializer,
     ClaimDetailSerializer,
     MachinePublicSerializer,
@@ -733,16 +735,115 @@ class ClaimListViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class ClaimDetailViewSet(viewsets.ReadOnlyModelViewSet):
+class DictionaryEntryViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = DictionaryEntrySerializer
+
+    def get_queryset(self):
+        entity = self.request.query_params.get('entity', '')
+        if entity:
+            return DictionaryEntry.objects.filter(entity=entity)
+        return DictionaryEntry.objects.none()
+
+
+class MachineViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Machine.objects.all()
+    serializer_class = MachineSerializer
+
+
+class ClaimViewSet(viewsets.ModelViewSet):
     queryset = Claim.objects.select_related(
         'failure_node',
         'recovery_method',
-        'machine'
-    ).all()
-    serializer_class = ClaimDetailSerializer
+        'machine__service_company'
+    ).all().order_by('-failure_date')
     lookup_field = 'id'
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return ClaimCreateSerializer
+        elif self.action == 'list':
+            return ClaimListSerializer
+        return ClaimDetailSerializer
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        print(serializer)
+
+        if serializer.is_valid():
+            try:
+                claim = serializer.save()
+                response_serializer = ClaimDetailSerializer(claim)
+                return Response(
+                    {
+                        "message": "Рекламация успешно создана",
+                        "data": response_serializer.data
+                    },
+                    status=status.HTTP_201_CREATED
+                )
+            except Exception as e:
+                return Response(
+                    {"error": f"Ошибка при сохранении: {str(e)}"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        formatted_errors = self._format_validation_errors(serializer.errors)
+        return Response(
+            {"errors": formatted_errors},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    def _format_validation_errors(self, errors):
+        formatted = {}
+        for field, field_errors in errors.items():
+            if field == 'failure_node':
+                formatted[field] = ["Узел отказа не найден в справочнике"]
+            elif field == 'recovery_method':
+                formatted[field] = ["Способ восстановления не найден в справочнике"]
+            elif field == 'machine':
+                formatted[field] = ["Машина не найдена"]
+            else:
+                formatted[field] = field_errors
+        return formatted
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        partial = False
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance,
+            data=request.data,
+            partial=partial
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
+    @transaction.atomic
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        try:
+            self.perform_destroy(instance)
+            return Response(
+                {"message": "Рекламация успешно удалена"},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"Ошибка при удалении: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def perform_destroy(self, instance):
+        instance.delete()

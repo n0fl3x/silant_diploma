@@ -1,27 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-
-interface MaintenanceItem {
-  id: number;
-  maintenance_date: string;
-  operating_hours: number;
-  work_order_number: string | null;
-  work_order_date: string | null;
-  machine: {
-    id: number;
-    factory_number: string;
-    model_tech_name: string;
-    model_tech_id: number;
-  };
-  maintenance_type: {
-    id: number;
-    name: string;
-  };
-  service_company: {
-    description: string;
-  };
-}
+import type { MaintenanceItem } from '../types/MaintenanceItem';
 
 const MaintenanceTable: React.FC = () => {
   const [maintenances, setMaintenances] = useState<MaintenanceItem[]>([]);
@@ -161,50 +141,50 @@ const MaintenanceTable: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-  {filteredMaintenances.length === 0 ? (
-    <tr>
-      <td colSpan={8} className="no-data">
-        Данные не найдены по заданным фильтрам
-      </td>
-    </tr>
-  ) : (
-    filteredMaintenances.map(item => (
-      <tr key={item.id}>
-        <td>{item.id}</td>
-        <td>{new Date(item.maintenance_date).toLocaleDateString()}</td>
-        <td>{item.operating_hours}</td>
-        <td>
-          <Link
-            to={`/maintenance/${item.maintenance_type?.id}`}
-            className="table-link"
-          >
-            {item.maintenance_type?.name || 'Не указано'}
-          </Link>
-        </td>
-        <td>
-          <Link
-            to={`/machine-detail/${item.machine?.id}`}
-            className="table-link"
-          >
-            {item.machine?.factory_number || 'Не указан'}
-          </Link>
-        </td>
-        <td>{item.service_company?.description || 'Не указана'}</td>
-        <td>{item.work_order_number || '-'}</td>
-        <td>
-          <button
-            className="action-btn edit-btn"
-            onClick={() => window.location.href = `/maintenance/${item.id}`}
-          >
-            Подробнее
-          </button>
-        </td>
-      </tr>
-    ))
-  )}
-</tbody>
-</table>
-</div>
+          {filteredMaintenances.length === 0 ? (
+            <tr>
+              <td colSpan={8} className="no-data">
+                Данные не найдены по заданным фильтрам
+              </td>
+            </tr>
+          ) : (
+            filteredMaintenances.map(item => (
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>{new Date(item.maintenance_date).toLocaleDateString()}</td>
+                <td>{item.operating_hours}</td>
+                <td>
+                  <Link
+                    to={`/maintenance/${item.maintenance_type?.id}`}
+                    className="table-link"
+                  >
+                    {item.maintenance_type?.name || 'Не указано'}
+                  </Link>
+                </td>
+                <td>
+                  <Link
+                    to={`/machine-detail/${item.machine?.id}`}
+                    className="table-link"
+                  >
+                    {item.machine?.factory_number || 'Не указан'}
+                  </Link>
+                </td>
+                <td>{item.service_company?.description || 'Не указана'}</td>
+                <td>{item.work_order_number || '-'}</td>
+                <td>
+                  <button
+                    className="action-btn edit-btn"
+                    onClick={() => window.location.href = `/maintenance/${item.id}`}
+                  >
+                    Подробнее
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

@@ -1,237 +1,207 @@
-.claimListPage {
-  padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
+.claim-table-container {
+  padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.pageHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* Стили для контейнера фильтров */
+.filters-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
   margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #e9ecef;
-}
-
-.title {
-  font-size: 28px;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0;
-}
-
-.claimsTable {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  background-color: #f8f9fa;
   border-radius: 8px;
-  overflow: hidden;
+  border: 1px solid #e9ecef;
 }
 
-.tableHeader {
-  background-color: #f8f9fa;
-  text-align: left;
-  font-weight: 600;
-  color: #495057;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.tableHeader th {
-  padding: 16px 12px;
-  border-bottom: 2px solid #dee2e6;
-}
-
-.tableRow {
-  transition: background-color 0.2s ease;
-}
-
-.tableRow:hover {
-  background-color: #f8f9fa;
-}
-
-.tableCell {
-  padding: 16px 12px;
-  border-bottom: 1px solid #dee2e6;
-  font-size: 14px;
-  color: #495057;
-}
-
-.noDataCell {
-  text-align: center;
-  padding: 40px 20px;
-  color: #6c757d;
-  font-style: italic;
-  background-color: #f8f9fa;
-}
-
-.tableLink {
-  color: #007bff;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease, text-decoration 0.2s ease;
-}
-
-.tableLink:hover {
-  color: #0056b3;
-  text-decoration: underline;
-}
-
-.actionBtn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
+.filter-field {
+  display: flex;
+  flex-direction: column;
   gap: 6px;
 }
 
-.viewBtn {
-  background: #28a745;
-  color: white;
-}
-
-.viewBtn:hover {
-  background: #218837;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.loadingState,
-.errorState {
-  text-align: center;
-  padding: 60px 20px;
-  font-size: 18px;
-}
-
-.loadingState {
-  color: #6c757d;
-}
-
-.errorState {
-  color: #dc3545;
-  background-color: #f8d7da;
-  border-radius: 8px;
-  padding: 30px;
-}
-
-.statusBadge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+.filter-field label {
   font-weight: 600;
-  text-transform: uppercase;
+  color: #495057;
+  font-size: 14px;
 }
 
-.statusOpen {
-  background-color: #fff3cd;
-  color: #856404;
+.filter-input {
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+  background-color: white;
 }
 
-.statusClosed {
-  background-color: #d1ecf1;
-  color: #155724;
+.filter-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-  .claimListPage {
-    padding: 16px;
-  }
-  
-  .pageHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  
-  .claimsTable {
-    font-size: 13px;
-  }
-  
-  .tableCell,
-  .tableHeader th {
-    padding: 12px 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .claimListPage {
-    padding: 12px;
-  }
-  
-  .title {
-    font-size: 24px;
-  }
-  
-  .tableCell,
-  .tableHeader th {
-    padding: 10px 6px;
-  }
-  
-  .actionBtn {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
+/* Стили для таблицы */
+.claims-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .claims-table-header {
-  background-color: #f8f9fa;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+}
+
+.claims-table th {
+  padding: 14px 12px;
   text-align: left;
   font-weight: 600;
-  color: #495057;
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.claims-table-header th {
-  padding: 16px 12px;
-  border-bottom: 2px solid #dee2e6;
-}
-
-.claims-table-row {
-  transition: background-color 0.2s ease;
+.claims-table td {
+  padding: 12px 12px;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 14px;
+  color: #495057;
 }
 
 .claims-table-row:hover {
   background-color: #f8f9fa;
 }
 
-.claims-table-cell {
-  padding: 16px 12px;
-  border-bottom: 1px solid #dee2e6;
-  font-size: 14px;
-  color: #495057;
-}
-
-.claims-table {
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-  border-collapse: collapse;
-  background-color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-  border: 3px solid #e9ecef;
-}
-
-.claim-list-title {
-  font-size: 28px;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #e9ecef;
+/* Стили для ячеек таблицы */
+.no-data-cell {
   text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-style: italic;
+  background-color: #fff;
+}
+
+.table-link {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.table-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Стили для действий (кнопок) */
+.action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.view-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.view-btn:hover {
+  background-color: #218837;
+  transform: translateY(-1px);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .claim-table-container {
+    padding: 10px;
+  }
+
+  .filters-container {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .claims-table th,
+  .claims-table td {
+    padding: 8px 6px;
+    font-size: 13px;
+  }
+
+  .action-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters-container {
+    padding: 8px;
+  }
+
+  .filter-field label {
+    font-size: 13px;
+  }
+
+  .claims-table th {
+    font-size: 12px;
+  }
+
+  .claims-table td {
+    font-size: 12px;
+    padding: 6px 4px;
+  }
+}
+
+/* Дополнительные стили для улучшения UX */
+.claims-table-cell {
+  vertical-align: middle;
+}
+
+/* Стили для колонтитулов */
+.claims-table tfoot td {
+  font-weight: bold;
+  background-color: #e9ecef;
+}
+
+/* Анимация появления таблицы */
+.claims-table {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Стили для состояния загрузки (если понадобится) */
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.error {
+  text-align: center;
+  padding: 20px;
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  margin-bottom: 16px;
 }

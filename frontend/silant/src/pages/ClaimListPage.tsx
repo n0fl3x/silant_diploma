@@ -14,9 +14,16 @@ const ClaimListPage: React.FC = () => {
       try {
         const response = await axios.get<ClaimItem[]>('/api/v1/claims');
 
-        setClaims(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || 'Ошибка загрузки рекламаций');
+        if (Array.isArray(response.data)) {
+          setClaims(response.data);
+        } else {
+          setError('Некорректный формат данных от сервера: ожидается массив');
+        }
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error
+          ? err.message
+          : 'Ошибка загрузки рекламаций';
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }

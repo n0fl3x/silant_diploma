@@ -20,6 +20,7 @@ import MaintenanceCreateForm from './components/MaintenanceCreate';
 import MaintenanceEdit from './components/MaintenanceEdit';
 import ClaimListPage from './pages/ClaimListPage';
 import ClaimDetailPage from './pages/ClaimDetailPage';
+import CreateClaimPage from './pages/ClaimCreatePage';
 
 function App() {
   return (
@@ -162,6 +163,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ClaimDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              < Route
+                path='/claim-create'
+                element={
+                  <ProtectedRoute>
+                    <CreateClaimPage />
                   </ProtectedRoute>
                 }
               />

@@ -1,5 +1,7 @@
 from datetime import datetime, date
 
+from django.core.exceptions import ValidationError
+
 from rest_framework import serializers
 
 from core.models import (
@@ -790,6 +792,12 @@ class ClaimListSerializer(serializers.ModelSerializer):
         source='machine.factory_number',
         read_only=True
     )
+    service_company_description = serializers.SerializerMethodField()
+
+    def get_service_company_description(self, obj):
+        if obj.machine and obj.machine.service_company:
+            return obj.machine.service_company.user_description
+        return 'Не указана'
 
     class Meta:
         model = Claim
@@ -806,7 +814,8 @@ class ClaimListSerializer(serializers.ModelSerializer):
             'recovery_date',
             'downtime_days',
             'machine',
-            'machine_factory_number'
+            'machine_factory_number',
+            'service_company_description'
         ]
         read_only_fields = ['downtime_days']
 
@@ -822,6 +831,12 @@ class ClaimDetailSerializer(serializers.ModelSerializer):
         read_only=True,
         allow_null=True
     )
+    service_company_description = serializers.SerializerMethodField()
+
+    def get_service_company_description(self, obj):
+        if obj.machine and obj.machine.service_company:
+            return obj.machine.service_company.user_description
+        return 'Не указана'
 
     class Meta:
         model = Claim
@@ -836,5 +851,41 @@ class ClaimDetailSerializer(serializers.ModelSerializer):
             'downtime_days',
             'recovery_method',
             'recovery_method_name',
+            'service_company_description',
         ]
         read_only_fields = fields
+
+
+class ClaimCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Claim
+        fields = [
+            'failure_date',
+            'operating_hours',
+            'machine',
+            'failure_node',
+            'recovery_method',
+            'failure_description',
+            'spare_parts',
+            'recovery_date'
+        ]
+        extra_kwargs = {
+            'recovery_method': {'required': False, 'allow_null': True},
+            'failure_description': {'required': False},
+            'spare_parts': {'required': False},
+            'recovery_date': {'required': False}
+        }
+
+
+class DictionaryEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DictionaryEntry
+        fields = ['id', 'name', 'entity']
+
+
+class MachineSerializer(serializers.ModelSerializer):
+    model_tech_name = serializers.CharField(source='model_tech.name', read_only=True)
+
+    class Meta:
+        model = Machine
+        fields = ['id', 'factory_number', 'model_tech', 'model_tech_name']

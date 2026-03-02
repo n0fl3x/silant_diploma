@@ -12,4 +12,5 @@ export interface ClaimItem {
   downtime_days: number;
   machine: number;
   machine_factory_number: string;
+  service_company_description: string | null;
 }

@@ -487,3 +487,24 @@
   background-color: #1e7e34;
   transform: translateY(-1px);
 }
+
+.create-claim-btn {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  margin: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.create-claim-btn:hover {
+  background-color: #1976D2;
+}
+
+.create-claim-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

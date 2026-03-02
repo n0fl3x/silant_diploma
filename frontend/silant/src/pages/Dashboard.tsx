@@ -8,10 +8,10 @@ export default function Dashboard() {
   const { userGroup } = useAuth();
   const [userLoading, setUserLoading] = useState(true);
 
-  // Добавляем возможность создания ТО — только для manager и superadmin
   const canCreateMaintenance = userGroup === 'manager' || userGroup === 'superadmin';
   const canCreateMachine = userGroup === 'manager' || userGroup === 'superadmin';
   const canCreateDictEntry = userGroup === 'manager' || userGroup === 'superadmin';
+  const canCreateClaim = userGroup === 'manager' || userGroup === 'superadmin' || userGroup === 'service_company';
 
   const navigate = useNavigate();
 
@@ -62,6 +62,15 @@ export default function Dashboard() {
               onClick={() => navigate('/dictionary-create')}
             >
               Создать новый элемент справочника
+            </button>
+          )}
+          {canCreateClaim && (
+            <button
+              className="create-claim-btn"
+              onClick={() => navigate('/claim-create')}
+              title="Создать новую рекламацию"
+            >
+              Создать рекламацию
             </button>
           )}
         </div>

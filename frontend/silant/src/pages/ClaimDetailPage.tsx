@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import "../styles/ClaimDetail.css";
 import axios from 'axios';
 
 const ClaimDetailPage: React.FC = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [claim, setClaim] = useState<null | any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [userGroup, setUserGroup] = useState<string | null>(null);
 
   useEffect(() => {
     const loadClaim = async () => {
       try {
         setLoading(true);
         setError('');
-
-        const response = await axios.get(`/api/v1/claim-detail/${id}/`);
+        const response = await axios.get(`/api/v1/claims/${id}/`);
         setClaim(response.data);
       } catch (err: any) {
         if (axios.isAxiosError(err)) {
@@ -36,6 +37,33 @@ const ClaimDetailPage: React.FC = () => {
       loadClaim();
     }
   }, [id]);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const response = await axios.get('/api/v1/user');
+        setUserGroup(response.data.group_name);
+      } catch (error) {
+        console.error('Ошибка загрузки данных пользователя:', error);
+        setUserGroup('client');
+      }
+    };
+    loadUserData();
+  }, []);
+
+  const handleDelete = async () => {
+    if (!window.confirm('Вы уверены, что хотите удалить эту рекламацию?')) {
+      return;
+    }
+
+    try {
+      await axios.delete(`/api/v1/claims/${id}/`);
+      alert('Рекламация успешно удалена');
+      navigate('/claims');
+    } catch (error) {
+      alert('Ошибка при удалении рекламации');
+    }
+  };
 
   if (loading) {
     return (
@@ -58,9 +86,19 @@ const ClaimDetailPage: React.FC = () => {
       <div className="claim-card">
         <div className="claim-card-header">
           <h1 className="claim-card-title">Рекламация #{claim.id}</h1>
-          <Link to="/claims" className="claim-card-back-link">
-            ← Вернуться к списку
-          </Link>
+          <div className="claim-card-actions">
+            <Link to="/claims" className="claim-card-back-link">
+              ← Вернуться к списку
+            </Link>
+            {userGroup !== 'client' && (
+              <button
+                onClick={handleDelete}
+                className="claim-card-delete-btn"
+              >
+                Удалить рекламацию
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="claim-card-body">

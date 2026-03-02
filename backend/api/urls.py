@@ -5,30 +5,27 @@ from .views import (
     CustomTokenObtainPairView,
     CustomRefreshTokenView,
     CurrentUserView,
+    DictionaryEntryViewSet,
+    MachineViewSet,
     is_authenticated,
     logout,
-
     MachineSearchAPIView,
     MachineListView,
     MachineDetailView,
     machine_update,
     machine_create,
     machine_delete,
-
     DictEntryListView,
     DictEntryDetailView,
     dict_entry_update,
     dict_entry_create,
     dict_entry_delete,
-
     MaintenanceListView,
     MaintenanceDetailView,
     MaintenanceCreateView,
     MaintenanceDeleteView,
     MaintenanceUpdateView,
-
-    ClaimListViewSet,
-    ClaimDetailViewSet,
+    ClaimViewSet,
 )
 
 
@@ -36,14 +33,12 @@ router = DefaultRouter()
 
 router.register(
     prefix=r"claims",
-    viewset=ClaimListViewSet,
-    basename="claim-list",
+    viewset=ClaimViewSet,
+    basename="claim",
 )
-router.register(
-    prefix=r"claim-detail",
-    viewset=ClaimDetailViewSet,
-    basename="claim-detail",
-)
+router.register(r'dictionary-entries', DictionaryEntryViewSet, basename='dictionary-entry')
+router.register(r'machines', MachineViewSet, basename='machine')
+
 
 urlpatterns = [
     path(
