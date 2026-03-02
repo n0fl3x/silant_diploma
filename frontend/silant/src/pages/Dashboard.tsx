@@ -8,8 +8,11 @@ export default function Dashboard() {
   const { userGroup } = useAuth();
   const [userLoading, setUserLoading] = useState(true);
 
+  // Добавляем возможность создания ТО — только для manager и superadmin
+  const canCreateMaintenance = userGroup === 'manager' || userGroup === 'superadmin';
   const canCreateMachine = userGroup === 'manager' || userGroup === 'superadmin';
   const canCreateDictEntry = userGroup === 'manager' || userGroup === 'superadmin';
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,6 +40,14 @@ export default function Dashboard() {
       </header>
       <main className="dashboard-content">
         <div className="dashboard-actions">
+          {canCreateMaintenance && (
+            <button
+              className="create-maintenance-btn"
+              onClick={() => navigate('/maintenance-create')}
+            >
+              Создать новое ТО
+            </button>
+          )}
           {canCreateMachine && (
             <button
               className="create-machine-btn"
@@ -47,7 +58,7 @@ export default function Dashboard() {
           )}
           {canCreateDictEntry && (
             <button
-              className="create-machine-btn"
+              className="create-dict-btn"
               onClick={() => navigate('/dictionary-create')}
             >
               Создать новый элемент справочника

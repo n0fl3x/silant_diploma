@@ -3,7 +3,6 @@ import { Link, NavLink } from 'react-router-dom';
 import "../styles/Header.css";
 import { useAuth } from '../contexts/AuthContext';
 
-
 const Header: React.FC = () => {
   const { userGroup, isAuthenticated } = useAuth();
 
@@ -46,7 +45,7 @@ const Header: React.FC = () => {
                 className={
                   ({ isActive }) => isActive ?
                     'header__button header__button--machines header__button--active' :
-                    'header__button header__button--machines'
+            'header__button header__button--machines'
                 }
               >
                 Машины
@@ -59,6 +58,13 @@ const Header: React.FC = () => {
                   Справочник
                 </Link>
               )}
+              {/* Новая кнопка для страницы ТО */}
+              <Link
+                to="/maintenance"
+                className="header__button header__button--maintenance"
+              >
+                ТО машин
+              </Link>
               <Link
                 to="/logout"
                 className="header__button header__button--logout"

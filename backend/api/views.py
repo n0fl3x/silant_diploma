@@ -31,6 +31,10 @@ from .serializers import (
     DictionaryEntryListSerializer,
     DictionaryEntryDetailSerializer,
     DictionaryEntrySerializer,
+    MaintenanceCreateSerializer,
+    MaintenanceSerializer,
+    MaintenanceDetailSerializer,
+    MaintenanceUpdateSerializer,
 )
 from .filters import (
     MachineFilter,
@@ -561,3 +565,145 @@ def dict_entry_delete(request, pk):
             },
             status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
+class MaintenanceListView(APIView):
+    permission_classes = [IsAuthenticated]
+    filterset_class = MaintenanceFilter
+
+    def get(self, request):
+        user = request.user
+
+        try:
+            if user.user_type == 'client':
+                machines = Machine.objects.filter(client=user)
+                queryset = Maintenance.objects.filter(machine__in=machines)
+            elif user.user_type == 'service_company':
+                queryset = Maintenance.objects.filter(service_company=user)
+            else:
+                queryset = Maintenance.objects.all()
+
+            queryset = queryset.select_related(
+                'machine__model_tech',
+                'maintenance_type',
+                'service_company'
+            )
+
+            serializer = MaintenanceSerializer(queryset.order_by('-work_order_date'), many=True)
+
+            return Response({
+                'success': True,
+                'count': len(serializer.data),
+                'data': serializer.data
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({
+                'success': False,
+                'error': 'Произошла ошибка при получении данных ТО',
+                'detail': str(e),
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class MaintenanceDetailView(generics.RetrieveAPIView):
+    queryset = Maintenance.objects.all()
+    serializer_class = MaintenanceDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = super().get_queryset()
+
+        queryset = queryset.select_related(
+            'maintenance_type',
+            'machine',
+            'service_company',
+        ).prefetch_related(
+            'machine__model_tech',
+        )
+
+        group_name = user.group.name if user.group else None
+
+        if group_name == 'Клиент':
+            queryset = queryset.filter(machine__client=user)
+        elif group_name == 'Сервисная организация':
+            queryset = queryset.filter(service_company=user)
+
+        return queryset
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        maintenance_id = self.kwargs.get('pk')
+
+        if maintenance_id is None:
+            raise Http404("ID ТО не указан")
+
+        try:
+            obj = queryset.get(id=maintenance_id)
+        except Maintenance.DoesNotExist:
+            raise Http404(f"ТО с ID {maintenance_id} не найдено или недоступно")
+
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response({
+            "success": True,
+            "data": serializer.data
+        })
+
+
+class MaintenanceCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = MaintenanceCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            maintenance = serializer.save()
+            return Response({
+                "success": True,
+                "data": serializer.data,
+                "message": "ТО успешно создано"
+            }, status=status.HTTP_201_CREATED)
+        return Response({
+            "success": False,
+            "errors": serializer.errors,
+            "message": "Ошибка при создании ТО"
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MaintenanceDeleteView(APIView):
+    def delete(self, request, pk):
+        maintenance = get_object_or_404(Maintenance, id=pk)
+
+        try:
+            maintenance.delete()
+            return Response({
+                "success": True,
+                "message": "ТО успешно удалено"
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "message": f"Ошибка при удалении: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class MaintenanceUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, pk):
+        maintenance = get_object_or_404(Maintenance, id=pk)
+        serializer = MaintenanceUpdateSerializer(maintenance, data=request.data, partial=False)
+        if serializer.is_valid():
+            updated_maintenance = serializer.save()
+            return Response({
+                'success': True,
+                'data': serializer.data
+            }, status=status.HTTP_200_OK)
+        return Response({
+            'success': False,
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)

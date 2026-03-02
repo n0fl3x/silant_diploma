@@ -88,27 +88,7 @@ class MachineListSerializer(serializers.ModelSerializer):
         source="service_company.user_description",
         read_only=True,
     )
-    # model_tech_name = serializers.CharField(
-    #     source="model_tech.name",
-    #     read_only=True,
-    # )
-    # engine_model_name = serializers.CharField(
-    #     source="engine_model.name",
-    #     read_only=True,
-    # )
-    # transmission_model_name = serializers.CharField(
-    #     source="transmission_model.name",
-    #     read_only=True,
-    # )
-    # drive_axle_model_name = serializers.CharField(
-    #     source="drive_axle_model.name",
-    #     read_only=True,
-    # )
-    # steering_axle_model_name = serializers.CharField(
-    #     source="steering_axle_model.name",
-    #     read_only=True,
-    # )
-
+    
     model_tech = serializers.SerializerMethodField()
     engine_model = serializers.SerializerMethodField()
     transmission_model = serializers.SerializerMethodField()
@@ -293,7 +273,6 @@ class MachineSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
     def _validate_dictionary_entry(self, value: str | None, entity_type: str) -> DictionaryEntry | None:
-        """Универсальная валидация для всех полей справочника."""
         if not value or value.strip() == '':
             return None
 
@@ -547,3 +526,251 @@ class DictionaryEntrySerializer(serializers.ModelSerializer):
             return instance
         except Exception as e:
             raise serializers.ValidationError({'error': str(e)})
+
+
+class MachineForMaintenanceSerializer(serializers.ModelSerializer):
+    model_tech_name = serializers.CharField(
+        source='model_tech.name',
+        read_only=True
+    )
+    model_tech_id = serializers.IntegerField(
+        source='model_tech.id',
+        read_only=True
+    )
+
+    class Meta:
+        model = Machine
+        fields = ['id', 'factory_number', 'model_tech_name', 'model_tech_id']
+
+
+class MaintenanceTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DictionaryEntry
+        fields = ['id', 'name']
+
+
+class ServiceCompanySerializer(serializers.ModelSerializer):
+    description = serializers.CharField(source='user_description', read_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ['description']
+
+
+class MaintenanceSerializer(serializers.ModelSerializer):
+    machine = MachineForMaintenanceSerializer(read_only=True)
+    maintenance_type = MaintenanceTypeSerializer(read_only=True)
+    service_company = ServiceCompanySerializer(read_only=True)
+
+    class Meta:
+        model = Maintenance
+        fields = [
+            'id', 'maintenance_date', 'operating_hours',
+            'work_order_number', 'work_order_date',
+            'machine', 'maintenance_type', 'service_company'
+        ]
+
+
+class MachineShortSerializer(serializers.ModelSerializer):
+    model_tech = serializers.SerializerMethodField()
+
+    def get_model_tech(self, obj):
+        if obj.model_tech:
+            return {
+                'id': obj.model_tech.id,
+                'name': obj.model_tech.name
+            }
+        return None
+
+    class Meta:
+        model = Machine
+        fields = ['id', 'factory_number', 'model_tech']
+
+
+class ServiceCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'user_description']
+
+
+class MaintenanceDetailSerializer(serializers.ModelSerializer):
+    maintenance_type_name = serializers.CharField(
+        source='maintenance_type.name',
+        read_only=True
+    )
+    machine = MachineShortSerializer(read_only=True)
+    service_company = ServiceCompanySerializer(read_only=True)
+
+    class Meta:
+        model = Maintenance
+        fields = [
+            'id',
+            'maintenance_date',
+            'operating_hours',
+            'work_order_number',
+            'work_order_date',
+            'maintenance_type_id',
+            'maintenance_type_name',
+            'machine',
+            'service_company',
+        ]
+
+
+class MaintenanceCreateSerializer(serializers.ModelSerializer):
+    maintenance_type_name = serializers.CharField(write_only=True)
+    machine_factory_number = serializers.CharField(write_only=True)
+    service_company_name = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Maintenance
+        fields = [
+            'id',
+            'maintenance_date',
+            'operating_hours',
+            'work_order_number',
+            'work_order_date',
+            'maintenance_type_name',
+            'machine_factory_number',
+            'service_company_name'
+        ]
+
+    def validate(self, data):
+        maintenance_type_name = data.get('maintenance_type_name')
+        try:
+            maintenance_type = DictionaryEntry.objects.get(
+                name=maintenance_type_name,
+                entity='maintenance_type'
+            )
+            data['maintenance_type'] = maintenance_type
+        except DictionaryEntry.DoesNotExist:
+            raise serializers.ValidationError({
+                "maintenance_type_name": f"Тип ТО с названием '{maintenance_type_name}' не найден"
+            })
+
+        machine_factory_number = data.get('machine_factory_number')
+        try:
+            machine = Machine.objects.get(factory_number=machine_factory_number)
+            data['machine'] = machine
+        except Machine.DoesNotExist:
+            raise serializers.ValidationError({
+                "machine_factory_number": f"Машина с заводским номером '{machine_factory_number}' не найдена"
+            })
+
+        service_company_name = data.get('service_company_name')
+        try:
+            service_company = CustomUser.objects.get(user_description=service_company_name)
+            data['service_company'] = service_company
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError({
+                "service_company_name": f"Компания с названием '{service_company_name}' не найдена"
+            })
+
+        return data
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        for field in ['maintenance_type_name', 'machine_factory_number', 'service_company_name']:
+            data.pop(field, None)
+        
+        data['maintenance_type_name'] = instance.maintenance_type.name
+        data['machine_factory_number'] = instance.machine.factory_number
+        data['service_company_name'] = instance.service_company.user_description
+        return data
+
+    def create(self, validated_data):
+        validated_data.pop('maintenance_type_name', None)
+        validated_data.pop('machine_factory_number', None)
+        validated_data.pop('service_company_name', None)
+        return Maintenance.objects.create(**validated_data)
+
+
+class MaintenanceUpdateSerializer(serializers.ModelSerializer):
+    maintenance_type_name = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True
+    )
+    machine_factory_number = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True
+    )
+    service_company_name = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True
+    )
+
+    class Meta:
+        model = Maintenance
+        fields = [
+            'id', 'maintenance_date', 'operating_hours',
+            'work_order_number', 'work_order_date',
+            'maintenance_type_name', 'machine_factory_number', 'service_company_name'
+        ]
+
+    def validate(self, data):
+        maintenance_type_name = data.get('maintenance_type_name')
+        if maintenance_type_name and maintenance_type_name.strip():
+            try:
+                maintenance_type = DictionaryEntry.objects.get(
+                    name=maintenance_type_name,
+                    entity='maintenance_type'
+                )
+                data['maintenance_type'] = maintenance_type
+            except DictionaryEntry.DoesNotExist:
+                raise serializers.ValidationError({
+                    "maintenance_type_name": f"Тип ТО с названием '{maintenance_type_name}' не найден"
+        })
+
+        machine_factory_number = data.get('machine_factory_number')
+        if machine_factory_number and machine_factory_number.strip():
+            try:
+                machine = Machine.objects.get(factory_number=machine_factory_number)
+                data['machine'] = machine
+            except Machine.DoesNotExist:
+                raise serializers.ValidationError({
+                    "machine_factory_number": f"Машина с заводским номером '{machine_factory_number}' не найдена"
+                })
+
+        service_company_name = data.get('service_company_name')
+        if service_company_name and service_company_name.strip():
+            try:
+                service_company = CustomUser.objects.get(user_description=service_company_name)
+                data['service_company'] = service_company
+            except CustomUser.DoesNotExist:
+                raise serializers.ValidationError({
+                    "service_company_name": f"Компания с названием '{service_company_name}' не найдена"
+                })
+
+        return data
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        for field in ['maintenance_type_name', 'machine_factory_number', 'service_company_name']:
+            data.pop(field, None)
+
+        data['maintenance_type_name'] = instance.maintenance_type.name
+        data['machine_factory_number'] = instance.machine.factory_number
+        data['service_company_name'] = instance.service_company.user_description
+        return data
+
+    def update(self, instance, validated_data):
+        validated_data.pop('maintenance_type_name', None)
+        validated_data.pop('machine_factory_number', None)
+        validated_data.pop('service_company_name', None)
+
+        instance.maintenance_date = validated_data.get('maintenance_date', instance.maintenance_date)
+        instance.operating_hours = validated_data.get('operating_hours', instance.operating_hours)
+        instance.work_order_number = validated_data.get('work_order_number', instance.work_order_number)
+        instance.work_order_date = validated_data.get('work_order_date', instance.work_order_date)
+
+        if 'maintenance_type' in validated_data:
+            instance.maintenance_type = validated_data['maintenance_type']
+        if 'machine' in validated_data:
+            instance.machine = validated_data['machine']
+        if 'service_company' in validated_data:
+            instance.service_company = validated_data['service_company']
+
+        instance.save()
+        return instance

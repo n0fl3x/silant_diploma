@@ -185,3 +185,12 @@
   align-items: center;
   gap: 16px;
 }
+
+.header__button--maintenance {
+  background-color: #2196f3; /* Синий цвет */
+  color: white;
+}
+
+.header__button--maintenance:hover {
+  background-color: #1976d2; /* Тёмно‑синий при наведении */
+}

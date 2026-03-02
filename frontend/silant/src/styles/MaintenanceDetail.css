@@ -1,0 +1,234 @@
+/* Основной контейнер страницы */
+.maintenance-detail {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Шапка с заголовком и действиями */
+.maintenance-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.maintenance-detail__title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #212529;
+  margin: 0;
+}
+
+.maintenance-detail__actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Стили для кнопки удаления */
+.maintenance-detail__delete-btn {
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.maintenance-detail__delete-btn:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+}
+
+.maintenance-detail__delete-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+.maintenance-detail__delete-btn:focus {
+  outline: 2px solid #dc3545;
+  outline-offset: 2px;
+}
+
+/* Стили для ссылки «Назад» */
+.maintenance-detail__back-link {
+  padding: 10px 20px;
+  background-color: #6c757d;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.maintenance-detail__back-link:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
+}
+
+.maintenance-detail__back-link:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+/* Контент с разделами */
+.maintenance-detail__content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 25px;
+}
+
+/* Секции информации */
+.maintenance-detail__section {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease;
+}
+
+.maintenance-detail__section:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.maintenance-detail__section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #343a40;
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #007bff;
+}
+
+/* Сетка для информации */
+.maintenance-detail__info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+/* Элементы информации */
+.maintenance-detail__info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.maintenance-detail__label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}
+
+.maintenance-detail__value {
+  color: #212529;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Стили для ссылок внутри значений */
+.maintenance-detail__value a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  position: relative;
+}
+
+.maintenance-detail__value a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.maintenance-detail__value a::after {
+  content: "→";
+  margin-left: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform: translateX(-4px);
+}
+
+.maintenance-detail__value a:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Состояния загрузки и ошибок */
+.maintenance-detail-loading {
+  text-align: center;
+  font-style: italic;
+  color: #6c757d;
+  padding: 40px 0;
+  font-size: 16px;
+}
+
+.maintenance-detail-error {
+  text-align: center;
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 20px;
+  margin: 20px 0;
+  font-size: 14px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .maintenance-detail {
+    padding: 15px;
+  }
+  
+  .maintenance-detail__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .maintenance-detail__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .maintenance-detail__info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .maintenance-detail {
+    color: #e9ecef;
+  }
+  
+  .maintenance-detail__title,
+  .maintenance-detail__section-title {
+    color: #ffffff;
+  }
+  
+  .maintenance-detail__section {
+    background: #2d3748;
+    border-color: #4a5568;
+  }
+  
+  .maintenance-detail__label,
+  .maintenance-detail__value {
+    color: #e2e8f0;
+  }
+}

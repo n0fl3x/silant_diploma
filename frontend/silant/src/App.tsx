@@ -14,6 +14,10 @@ import DictionaryEntryDetail from './pages/DictEntryDetailPage';
 import CreateDictionaryEntryPage from './pages/DictEntryCreatePage';
 import EditDictionaryEntryPage from './pages/DictEntryEditPage';
 import { AuthProvider } from './contexts/AuthContext';
+import MaintenancePage from './pages/MaintenanceListPage';
+import MaintenanceDetail from './pages/MaintenanceDetailPage';
+import MaintenanceCreateForm from './components/MaintenanceCreate';
+import MaintenanceEdit from './components/MaintenanceEdit';
 
 function App() {
   return (
@@ -108,6 +112,38 @@ function App() {
                 element={
                   <ProtectedRoute requiredGroups={['manager', 'superadmin']}>
                     <EditDictionaryEntryPage />
+                  </ProtectedRoute>
+                }
+              />
+              < Route
+                path='/maintenance'
+                element={
+                  <ProtectedRoute>
+                    <MaintenancePage />
+                  </ProtectedRoute>
+                }
+              />
+              < Route
+                path='/maintenance/:id'
+                element={
+                  <ProtectedRoute>
+                    <MaintenanceDetail />
+                  </ProtectedRoute>
+                }
+              />
+              < Route
+                path='/maintenance-create'
+                element={
+                  <ProtectedRoute>
+                    <MaintenanceCreateForm />
+                  </ProtectedRoute>
+                }
+              />
+              < Route
+                path='/maintenance-edit/:id'
+                element={
+                  <ProtectedRoute>
+                    <MaintenanceEdit />
                   </ProtectedRoute>
                 }
               />

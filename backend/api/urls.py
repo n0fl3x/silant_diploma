@@ -1,5 +1,4 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
 from .views import (
     CustomTokenObtainPairView,
@@ -20,6 +19,12 @@ from .views import (
     dict_entry_update,
     dict_entry_create,
     dict_entry_delete,
+
+    MaintenanceListView,
+    MaintenanceDetailView,
+    MaintenanceCreateView,
+    MaintenanceDeleteView,
+    MaintenanceUpdateView,
 )
 
 
@@ -68,4 +73,11 @@ urlpatterns = [
     path('dict-entry-update/<int:pk>', dict_entry_update, name='dict-entry-update'),
     path('dict-entry-create', dict_entry_create, name='dict-entry-create'),
     path('dict-entry-delete/<int:pk>', dict_entry_delete, name='dict-entry-delete'),
+
+    #
+    path('maintenance', MaintenanceListView.as_view(), name='maintenance-list'),
+    path('maintenance/<int:pk>', MaintenanceDetailView.as_view(), name='maintenance-detail'),
+    path('maintenance-update/<int:pk>', MaintenanceUpdateView.as_view(), name='maintenance-update'),
+    path('maintenance-create', MaintenanceCreateView.as_view(), name='maintenance-create'),
+    path('maintenance-delete/<int:pk>', MaintenanceDeleteView.as_view(), name='maintenance-delete'),
 ]

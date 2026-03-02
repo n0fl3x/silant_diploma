@@ -8,9 +8,6 @@ from django.contrib.auth.models import AbstractUser
 
 
 class CustomUser(AbstractUser):
-    """
-    Кастомный класс пользователя для управления доступами.
-    """
     USER_TYPE_CHOICES = [
         ('client', 'Клиент'),
         ('service_company', 'Сервисная компания'),
@@ -77,9 +74,6 @@ class CustomUser(AbstractUser):
 
 
 class DictionaryEntry(models.Model):
-    """
-    Справочная таблица для хранения списков значений (модели техники, виды ТО, узлы отказа и т.п.)
-    """
     ENTITY_CHOICES = [
         (
             "machine_model",

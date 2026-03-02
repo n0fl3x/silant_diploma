@@ -1,0 +1,214 @@
+.maintenance-edit {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Шапка страницы */
+.maintenance-edit__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.maintenance-edit__title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #212529;
+  margin: 0;
+}
+
+.maintenance-edit__back-link {
+  padding: 8px 16px;
+  background-color: #6c757d;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.maintenance-edit__back-link:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
+}
+
+.maintenance-edit__back-link:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+/* Форма редактирования */
+.maintenance-edit__form {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #dee2e6;
+}
+
+/* Поля формы */
+.maintenance-edit__field {
+  margin-bottom: 20px;
+}
+
+.maintenance-edit__label {
+  display: block;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.maintenance-edit__input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.maintenance-edit__input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.maintenance-edit__input::placeholder {
+  color: #adb5bd;
+}
+
+/* Действия формы (кнопки) */
+.maintenance-edit__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 30px;
+  justify-content: flex-start;
+}
+
+.maintenance-edit__save-btn {
+  padding: 10px 24px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.maintenance-edit__save-btn:hover {
+  background-color: #218837;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+}
+
+.maintenance-edit__save-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.maintenance-edit__cancel-btn {
+  padding: 10px 24px;
+  background-color: #6c757d;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.maintenance-edit__cancel-btn:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
+}
+
+.maintenance-edit__cancel-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+/* Состояния загрузки и ошибок */
+.maintenance-edit-loading {
+  text-align: center;
+  font-style: italic;
+  color: #6c757d;
+  padding: 40px 0;
+  font-size: 16px;
+}
+
+.maintenance-edit-error {
+  text-align: center;
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 20px;
+  margin: 20px 0;
+  font-size: 14px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .maintenance-edit {
+    padding: 15px;
+  }
+  
+  .maintenance-edit__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .maintenance-edit__actions {
+    flex-direction: column;
+  }
+  
+  .maintenance-edit__save-btn,
+  .maintenance-edit__cancel-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Тёмная тема */
+@media (prefers-color-scheme: dark) {
+  .maintenance-edit {
+    color: #e9ecef;
+  }
+  
+  .maintenance-edit__title,
+  .maintenance-edit__label {
+    color: #ffffff;
+  }
+  
+  .maintenance-edit__form {
+    background: #2d3748;
+    border-color: #4a5568;
+  }
+  
+  .maintenance-edit__input {
+    background-color: #1a202c;
+    color: #e2e8f0;
+    border-color: #4a5568;
+  }
+  
+  .maintenance-edit__input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+}
