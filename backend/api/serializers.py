@@ -774,3 +774,67 @@ class MaintenanceUpdateSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class ClaimListSerializer(serializers.ModelSerializer):
+    failure_node_name = serializers.CharField(
+        source='failure_node.name',
+        read_only=True
+    )
+    recovery_method_name = serializers.CharField(
+        source='recovery_method.name',
+        read_only=True,
+        allow_null=True
+    )
+    machine_factory_number = serializers.CharField(
+        source='machine.factory_number',
+        read_only=True
+    )
+
+    class Meta:
+        model = Claim
+        fields = [
+            'id',
+            'failure_date',
+            'operating_hours',
+            'failure_node',
+            'failure_node_name',
+            'failure_description',
+            'recovery_method',
+            'recovery_method_name',
+            'spare_parts',
+            'recovery_date',
+            'downtime_days',
+            'machine',
+            'machine_factory_number'
+        ]
+        read_only_fields = ['downtime_days']
+
+
+class ClaimDetailSerializer(serializers.ModelSerializer):
+    failure_node_name = serializers.CharField(source='failure_node.name', read_only=True)
+    machine_factory_number = serializers.CharField(
+        source='machine.factory_number',
+        read_only=True
+    )
+    recovery_method_name = serializers.CharField(
+        source='recovery_method.name',
+        read_only=True,
+        allow_null=True
+    )
+
+    class Meta:
+        model = Claim
+        fields = [
+            'id',
+            'failure_date',
+            'operating_hours',
+            'failure_node',
+            'failure_node_name',
+            'machine',
+            'machine_factory_number',
+            'downtime_days',
+            'recovery_method',
+            'recovery_method_name',
+        ]
+        read_only_fields = fields

@@ -40,16 +40,18 @@ const Header: React.FC = () => {
               >
                 Кабинет
               </Link>
+
               <NavLink
                 to="/machine-list"
                 className={
-                  ({ isActive }) => isActive ?
-                    'header__button header__button--machines header__button--active' :
-            'header__button header__button--machines'
+                  ({ isActive }) => isActive
+                                    ? 'header__button header__button--machines header__button--active'
+                                    : 'header__button header__button--machines'
                 }
               >
                 Машины
               </NavLink>
+
               {showDictionaryButton && (
                 <Link
                   to="/dictionary"
@@ -58,13 +60,21 @@ const Header: React.FC = () => {
                   Справочник
                 </Link>
               )}
-              {/* Новая кнопка для страницы ТО */}
+
               <Link
                 to="/maintenance"
                 className="header__button header__button--maintenance"
               >
                 ТО машин
               </Link>
+
+              <Link
+                to="/claims"
+                className="header__button header__button--claims"
+              >
+                Рекламации
+              </Link>
+
               <Link
                 to="/logout"
                 className="header__button header__button--logout"

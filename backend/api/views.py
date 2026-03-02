@@ -1,7 +1,6 @@
 import json
 
-from rest_framework import status
-from rest_framework import generics
+from rest_framework import status, generics, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -23,6 +22,8 @@ from core.models import (
     DictionaryEntry,
 )
 from .serializers import (
+    ClaimListSerializer,
+    ClaimDetailSerializer,
     MachinePublicSerializer,
     MachineFullSerializer,
     MachineListSerializer,
@@ -707,3 +708,41 @@ class MaintenanceUpdateView(APIView):
             'success': False,
             'errors': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ClaimListViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Claim.objects.select_related(
+        'failure_node',
+        'recovery_method',
+        'machine'
+    ).\
+        all().\
+        order_by('-failure_date')
+    serializer_class = ClaimListSerializer
+    pagination_class = None
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class ClaimDetailViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Claim.objects.select_related(
+        'failure_node',
+        'recovery_method',
+        'machine'
+    ).all()
+    serializer_class = ClaimDetailSerializer
+    lookup_field = 'id'
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)

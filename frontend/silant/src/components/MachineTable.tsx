@@ -7,7 +7,6 @@ import "../styles/MachineTable.css";
 import "../styles/Pagination.css";
 import { DictionaryLink } from '../components/DictionaryLink';
 
-// FilterPanel вынесен за пределы MachineTable
 const FilterPanel: React.FC<{
   filters: {
     modelTech: string | null;
@@ -75,7 +74,6 @@ const FilterPanel: React.FC<{
 );
 
 const MachineTable: React.FC<MachineTableProps> = (props) => {
-  // Деструктуризация пропсов
   const {
     onMachineSelect,
     initialPage = 1,
@@ -93,7 +91,6 @@ const MachineTable: React.FC<MachineTableProps> = (props) => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(initialPage);
 
-  // Состояние фильтров
   const [filters, setFilters] = useState({
     modelTech: filterModelTech || null,
     engineModel: filterEngineModel || null,
@@ -102,7 +99,6 @@ const MachineTable: React.FC<MachineTableProps> = (props) => {
     driveAxleModel: filterDriveAxleModel || null
   });
 
-  // Функции обработки фильтров с useCallback для стабильности ссылок
   const handleFilterChange = useCallback((field: string, value: string) => {
     const newFilters = {
       ...filters,
@@ -140,30 +136,24 @@ const MachineTable: React.FC<MachineTableProps> = (props) => {
     loadMachines();
   }, []);
 
-  // Логика фильтрации
   const filteredMachines = useMemo(() => {
     return machines.filter(machine => {
-      // Модель техники
       if (filters.modelTech &&
           !machine.model_tech?.name?.toLowerCase().includes(filters.modelTech.toLowerCase())) {
         return false;
       }
-      // Модель двигателя
       if (filters.engineModel &&
           !machine.engine_model?.name?.toLowerCase().includes(filters.engineModel.toLowerCase())) {
         return false;
       }
-      // Модель трансмиссии
       if (filters.transmissionModel &&
           !machine.transmission_model?.name?.toLowerCase().includes(filters.transmissionModel.toLowerCase())) {
         return false;
       }
-      // Модель управляемого моста
       if (filters.steeringAxleModel &&
           !machine.steering_axle_model?.name?.toLowerCase().includes(filters.steeringAxleModel.toLowerCase())) {
         return false;
       }
-      // Модель ведущего моста
       if (filters.driveAxleModel &&
           !machine.drive_axle_model?.name?.toLowerCase().includes(filters.driveAxleModel.toLowerCase())) {
         return false;
@@ -172,7 +162,6 @@ const MachineTable: React.FC<MachineTableProps> = (props) => {
     });
   }, [machines, filters]);
 
-  // Пагинация отфильтрованных данных
   const totalPages = Math.ceil(filteredMachines.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -213,6 +202,7 @@ const MachineTable: React.FC<MachineTableProps> = (props) => {
       <table className="machine-table">
         <thead>
           <tr>
+            <th>ID</th>
             <th>Заводской №</th>
             <th>Действия</th>
             <th>Модель техники</th>
@@ -236,6 +226,7 @@ const MachineTable: React.FC<MachineTableProps> = (props) => {
         <tbody>
           {paginatedMachines.map((machine: Machine) => (
             <tr key={machine.id}>
+              <td>{machine.id}</td>
               <td>{machine.factory_number || <span className="text-muted">Не указан</span>}</td>
               <td>
                 <button

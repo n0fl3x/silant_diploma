@@ -18,6 +18,8 @@ import MaintenancePage from './pages/MaintenanceListPage';
 import MaintenanceDetail from './pages/MaintenanceDetailPage';
 import MaintenanceCreateForm from './components/MaintenanceCreate';
 import MaintenanceEdit from './components/MaintenanceEdit';
+import ClaimListPage from './pages/ClaimListPage';
+import ClaimDetailPage from './pages/ClaimDetailPage';
 
 function App() {
   return (
@@ -144,6 +146,22 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MaintenanceEdit />
+                  </ProtectedRoute>
+                }
+              />
+              < Route
+                path='/claims'
+                element={
+                  <ProtectedRoute>
+                    <ClaimListPage />
+                  </ProtectedRoute>
+                }
+              />
+              < Route
+                path='/claim-detail/:id'
+                element={
+                  <ProtectedRoute>
+                    <ClaimDetailPage />
                   </ProtectedRoute>
                 }
               />

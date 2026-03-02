@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
 from .views import (
     CustomTokenObtainPairView,
@@ -25,8 +26,24 @@ from .views import (
     MaintenanceCreateView,
     MaintenanceDeleteView,
     MaintenanceUpdateView,
+
+    ClaimListViewSet,
+    ClaimDetailViewSet,
 )
 
+
+router = DefaultRouter()
+
+router.register(
+    prefix=r"claims",
+    viewset=ClaimListViewSet,
+    basename="claim-list",
+)
+router.register(
+    prefix=r"claim-detail",
+    viewset=ClaimDetailViewSet,
+    basename="claim-detail",
+)
 
 urlpatterns = [
     path(
@@ -80,4 +97,7 @@ urlpatterns = [
     path('maintenance-update/<int:pk>', MaintenanceUpdateView.as_view(), name='maintenance-update'),
     path('maintenance-create', MaintenanceCreateView.as_view(), name='maintenance-create'),
     path('maintenance-delete/<int:pk>', MaintenanceDeleteView.as_view(), name='maintenance-delete'),
+
+    #
+    path('', include(router.urls)),
 ]
