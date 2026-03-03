@@ -8,7 +8,7 @@ SECRET_KEY = 'django-insecure-(@e5c6k#xc^lf6z4izk%jqq^=3@+yy08l6v)4!xq6#*+o2o(&6
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -120,4 +120,5 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://backend:8000",
 ]
