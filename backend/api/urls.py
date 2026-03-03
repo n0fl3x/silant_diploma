@@ -90,86 +90,86 @@ urlpatterns = [
         name='machine-list',
     ),
     path(
-        path='machines/<int:pk>',
+        route='machines/<int:pk>',
         view=MachineDetailView.as_view(),
         name='machine-detail',
     ),
     path(
-        path='machine-form-options/',
+        route='machine-form-options/',
         view=machine_form_options,
         name='machine-form-options',
     ),
     path(
-        path='machine-update/<int:pk>',
+        route='machine-update/<int:pk>',
         view=machine_update,
         name='machine-update',
     ),
     path(
-        path='machine-create',
+        route='machine-create',
         view=machine_create,
         name='machine-create',
     ),
     path(
-        path='machine-delete/<int:pk>',
+        route='machine-delete/<int:pk>',
         view=machine_delete,
         name='machine-delete',
     ),
 
     #
     path(
-        path='dict-entries',
+        route='dict-entries',
         view=DictEntryListView.as_view(),
         name='dict-entry-list',
     ),
     path(
-        path='dict-entries/<int:pk>',
+        route='dict-entries/<int:pk>',
         view=DictEntryDetailView.as_view(),
         name='dict-entry-detail',
     ),
     path(
-        path='dict-entry-update/<int:pk>',
+        route='dict-entry-update/<int:pk>',
         view=dict_entry_update,
         name='dict-entry-update',
     ),
     path(
-        path='dict-entry-create',
+        route='dict-entry-create',
         view=dict_entry_create,
         name='dict-entry-create',
     ),
     path(
-        path='dict-entry-delete/<int:pk>',
+        route='dict-entry-delete/<int:pk>',
         view=dict_entry_delete,
         name='dict-entry-delete',
     ),
 
     #
     path(
-        path='maintenance',
+        route='maintenance',
         view=MaintenanceListView.as_view(),
         name='maintenance-list',
     ),
     path(
-        path='maintenance/<int:pk>',
+        route='maintenance/<int:pk>',
         view=MaintenanceDetailView.as_view(),
         name='maintenance-detail',
     ),
     path(
-        path='maintenance-types',
+        route='maintenance-types',
         view=MaintenanceTypesView.as_view(),
         name='maintenance-types',
     ),
     path(
-        path='maintenance-update/<int:pk>',
+        route='maintenance-update/<int:pk>',
         view=MaintenanceUpdateView.as_view(),
         name='maintenance-update',
     ),
     path(
-        path='maintenance-create',
+        route='maintenance-create',
         view=MaintenanceCreateView.as_view(),
         name='maintenance-create',
     ),
     path(
-        path='maintenance-delete/<int:pk>',
+        route='maintenance-delete/<int:pk>',
         view=MaintenanceDeleteView.as_view(),
         name='maintenance-delete',
     ),

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///db.sqlite3
+      - DEBUG=1
+    volumes:
+      - ./backend:/app
+    networks:
+      - silant-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend/silant
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/silant:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - silant-network
+    environment:
+      - CHOKIDAR_USE_POLLING=true
+      - HOST=0.0.0.0
+
+networks:
+  silant-network:
+    driver: bridge
+
+volumes:
+  django-data:

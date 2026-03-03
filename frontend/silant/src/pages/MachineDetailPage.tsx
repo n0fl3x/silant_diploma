@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { Machine } from '../types/Machine';
 import '../styles/MachineDetail.css';
-import '../styles/DictionaryLink.css';
 import { DictionaryLink } from '../components/DictionaryLink';
 
 
