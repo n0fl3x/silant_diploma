@@ -250,27 +250,13 @@ class DictionaryEntrySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'error': str(e)})
 
 
-class MachineForMaintenanceSerializer(serializers.ModelSerializer):
-    model_tech_name = serializers.CharField(
-        source='model_tech.name',
-        read_only=True
-    )
-    model_tech_id = serializers.IntegerField(
-        source='model_tech.id',
-        read_only=True
-    )
-
-    class Meta:
-        model = Machine
-        fields = ['id', 'factory_number', 'model_tech_name', 'model_tech_id']
-
-
 class MaintenanceTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DictionaryEntry
         fields = ['id', 'name']
 
 
+# есть дубль
 class ServiceCompanySerializer(serializers.ModelSerializer):
     description = serializers.CharField(source='user_description', read_only=True)
 
@@ -331,6 +317,7 @@ class MachineShortSerializer(serializers.ModelSerializer):
         fields = ['id', 'factory_number', 'model_tech']
 
 
+# есть дубль
 class ServiceCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -625,12 +612,6 @@ class MachineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Machine
         fields = ['id', 'factory_number', 'model_tech', 'model_tech_name']
-
-
-class DictionaryEntrySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DictionaryEntry
-        fields = ['id', 'name', 'entity']
 
 
 class MachineEditSerializer(MachineListSerializer):
