@@ -667,6 +667,22 @@ class MaintenanceDetailView(generics.RetrieveAPIView):
         })
 
 
+class MaintenanceTypesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        types = DictionaryEntry.objects.filter(entity='maintenance_type')
+        data = [
+            {'id': type.id, 'name': type.name}
+            for type in types
+        ]
+        return Response({
+            "success": True,
+            "data": data,
+            "message": "Список типов ТО загружен"
+        }, status=status.HTTP_200_OK)
+
+
 class MaintenanceCreateView(APIView):
     permission_classes = [IsAuthenticated]
 

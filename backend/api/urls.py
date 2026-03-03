@@ -7,6 +7,7 @@ from .views import (
     CurrentUserView,
     DictionaryEntryViewSet,
     MachineViewSet,
+    MaintenanceTypesView,
     is_authenticated,
     logout,
     MachineSearchAPIView,
@@ -91,6 +92,7 @@ urlpatterns = [
     #
     path('maintenance', MaintenanceListView.as_view(), name='maintenance-list'),
     path('maintenance/<int:pk>', MaintenanceDetailView.as_view(), name='maintenance-detail'),
+    path('maintenance-types', MaintenanceTypesView.as_view(), name='maintenance-types'),
     path('maintenance-update/<int:pk>', MaintenanceUpdateView.as_view(), name='maintenance-update'),
     path('maintenance-create', MaintenanceCreateView.as_view(), name='maintenance-create'),
     path('maintenance-delete/<int:pk>', MaintenanceDeleteView.as_view(), name='maintenance-delete'),

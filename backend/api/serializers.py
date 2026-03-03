@@ -267,7 +267,7 @@ class ServiceCompanySerializer(serializers.ModelSerializer):
 
 class MaintenanceSerializer(serializers.ModelSerializer):
     machine = serializers.SerializerMethodField()
-    maintenance_type = MaintenanceTypeSerializer()  # используем новый сериализатор
+    maintenance_type = MaintenanceTypeSerializer()
     service_company = serializers.SerializerMethodField()
 
     class Meta:
@@ -348,7 +348,7 @@ class MaintenanceDetailSerializer(serializers.ModelSerializer):
 
 
 class MaintenanceCreateSerializer(serializers.ModelSerializer):
-    maintenance_type_name = serializers.CharField(write_only=True)
+    maintenance_type_id = serializers.IntegerField(write_only=True)
     machine_factory_number = serializers.CharField(write_only=True)
     service_company_name = serializers.CharField(write_only=True)
 
@@ -360,59 +360,77 @@ class MaintenanceCreateSerializer(serializers.ModelSerializer):
             'operating_hours',
             'work_order_number',
             'work_order_date',
-            'maintenance_type_name',
+            'maintenance_type_id',
             'machine_factory_number',
-            'service_company_name'
+            'service_company_name',
         ]
 
-    def validate(self, data):
-        maintenance_type_name = data.get('maintenance_type_name')
-        try:
-            maintenance_type = DictionaryEntry.objects.get(
-                name=maintenance_type_name,
-                entity='maintenance_type'
+    def validate_maintenance_type_id(self, value):
+        """Проверка существования типа ТО по ID"""
+        if not DictionaryEntry.objects.filter(
+            id=value,
+            entity='maintenance_type'
+        ).exists():
+            raise serializers.ValidationError(
+                f"Тип ТО с ID {value} не найден"
             )
-            data['maintenance_type'] = maintenance_type
-        except DictionaryEntry.DoesNotExist:
-            raise serializers.ValidationError({
-                "maintenance_type_name": f"Тип ТО с названием '{maintenance_type_name}' не найден"
-            })
+        return value
 
-        machine_factory_number = data.get('machine_factory_number')
-        try:
-            machine = Machine.objects.get(factory_number=machine_factory_number)
-            data['machine'] = machine
-        except Machine.DoesNotExist:
-            raise serializers.ValidationError({
-                "machine_factory_number": f"Машина с заводским номером '{machine_factory_number}' не найдена"
-            })
+    def validate_machine_factory_number(self, value):
+        """Проверка существования машины по заводскому номеру"""
+        if not Machine.objects.filter(factory_number=value).exists():
+            raise serializers.ValidationError(
+                f"Машина с заводским номером '{value}' не найдена"
+            )
+        return value
 
-        service_company_name = data.get('service_company_name')
-        try:
-            service_company = CustomUser.objects.get(user_description=service_company_name)
-            data['service_company'] = service_company
-        except CustomUser.DoesNotExist:
-            raise serializers.ValidationError({
-                "service_company_name": f"Компания с названием '{service_company_name}' не найдена"
-            })
-
-        return data
+    def validate_service_company_name(self, value):
+        """Проверка существования компании по названию"""
+        if not CustomUser.objects.filter(user_description=value).exists():
+            raise serializers.ValidationError(
+                f"Компания с названием '{value}' не найдена"
+            )
+        return value
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        for field in ['maintenance_type_name', 'machine_factory_number', 'service_company_name']:
+        # Удаляем write‑only поля из ответа
+        for field in ['maintenance_type_id', 'machine_factory_number', 'service_company_name']:
             data.pop(field, None)
-        
+
+        # Добавляем читаемые названия вместо ID
         data['maintenance_type_name'] = instance.maintenance_type.name
         data['machine_factory_number'] = instance.machine.factory_number
         data['service_company_name'] = instance.service_company.user_description
         return data
 
     def create(self, validated_data):
-        validated_data.pop('maintenance_type_name', None)
-        validated_data.pop('machine_factory_number', None)
-        validated_data.pop('service_company_name', None)
-        return Maintenance.objects.create(**validated_data)
+        # Получаем объекты по ID и строковым значениям
+        maintenance_type_id = validated_data.pop('maintenance_type_id')
+        machine_factory_number = validated_data.pop('machine_factory_number')
+        service_company_name = validated_data.pop('service_company_name')
+
+        try:
+            maintenance_type = DictionaryEntry.objects.get(
+                id=maintenance_type_id,
+                entity='maintenance_type'
+            )
+            machine = Machine.objects.get(factory_number=machine_factory_number)
+            service_company = CustomUser.objects.get(user_description=service_company_name)
+        except (DictionaryEntry.DoesNotExist, Machine.DoesNotExist, CustomUser.DoesNotExist) as e:
+            raise serializers.ValidationError({
+                'non_field_errors': 'Ошибка при создании ТО: один из связанных объектов не найден.'
+            })
+
+        # Создаём запись ТО с связанными объектами
+        maintenance = Maintenance.objects.create(
+            maintenance_type=maintenance_type,
+            machine=machine,
+            service_company=service_company,
+            **validated_data
+        )
+        return maintenance
+
 
 
 class MaintenanceUpdateSerializer(serializers.ModelSerializer):

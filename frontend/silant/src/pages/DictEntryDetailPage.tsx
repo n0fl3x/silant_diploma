@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import type { DictionaryEntry } from '../types/DictionaryEntry';
-import "../styles/DictEntryDetail.css";
+import '../styles/DictEntryDetail.css';
 import { useAuth } from '../contexts/AuthContext';
-
 
 const DictEntryDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -39,9 +38,15 @@ const DictEntryDetailPage: React.FC = () => {
   };
 
   const handleDelete = async () => {
-  if (!numericId) return;
+    if (!numericId) return;
 
-  setIsDeleting(true);
+    const shouldDelete = window.confirm(
+      `Вы уверены, что хотите удалить элемент "${entry?.name || 'этот элемент'}"?`
+    );
+
+    if (!shouldDelete) return;
+
+    setIsDeleting(true);
     try {
       const response = await fetch(`/api/v1/dict-entry-delete/${numericId}`, {
         method: 'DELETE',
@@ -78,7 +83,7 @@ const DictEntryDetailPage: React.FC = () => {
         <p>Загрузка...</p>
       </div>
     );
-  };
+  }
 
   if (error) {
     return (
@@ -90,7 +95,7 @@ const DictEntryDetailPage: React.FC = () => {
         </Link>
       </div>
     );
-  };
+  }
 
   if (!entry) {
     return (
@@ -101,7 +106,7 @@ const DictEntryDetailPage: React.FC = () => {
         </Link>
       </div>
     );
-  };
+  }
 
   return (
     <div className="dictionary-entry-detail">
