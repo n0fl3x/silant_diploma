@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Machine } from '../types/Machine';
+import "../styles/MachineForm.css";
+
 
 interface MachineFormProps {
   initialData?: Partial<Machine>;
@@ -27,7 +29,6 @@ export interface MachineSubmitData {
   service_company_input: string | null;
 }
 
-// Типы для справочных данных
 interface ReferenceOption {
   id: number;
   name: string;
@@ -65,7 +66,6 @@ const MachineForm: React.FC<MachineFormProps> = ({
     client_input: initialData.client_name || null,
     service_company_input: initialData.service_company_name || null
   });
-
   const [referenceData, setReferenceData] = useState<ReferenceData>({
     model_tech_options: [],
     engine_model_options: [],
@@ -76,7 +76,6 @@ const MachineForm: React.FC<MachineFormProps> = ({
   const [loadingReferenceData, setLoadingReferenceData] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Загрузка справочных данных при монтировании компонента
   useEffect(() => {
     const loadReferenceData = async () => {
       try {

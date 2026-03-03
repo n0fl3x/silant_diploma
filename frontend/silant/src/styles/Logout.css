@@ -1,0 +1,130 @@
+.logout-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg) var(--spacing-sm);
+  background: linear-gradient(135deg, #163E6C 0%, #2a5a8f 100%);
+  color: white;
+  text-align: center;
+}
+
+.logout-container p {
+  font-family: var(--font-family-main);
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-md);
+  line-height: 1.6;
+}
+
+.loading-spinner {
+  font-size: 3rem;
+  animation: spin 1s linear infinite;
+  color: #EBE6D6;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logout-container .error-message {
+  background-color: rgba(210, 10, 17, 0.9);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 400px;
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .logout-container {
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+
+  .logout-container p {
+    font-size: 1.1rem;
+  }
+
+  .loading-spinner {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .logout-container {
+    justify-content: flex-start;
+    padding: var(--spacing-lg) var(--spacing-sm);
+    min-height: 100vh;
+  }
+
+  .logout-container p {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-sm);
+    padding: 0 var(--spacing-xs);
+    line-height: 1.5;
+  }
+
+  .loading-spinner {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .logout-container {
+    padding: var(--spacing-md) var(--spacing-xs);
+  }
+
+  .logout-container p {
+    font-size: 0.9rem;
+    padding: 0;
+  }
+
+  .loading-spinner {
+    font-size: 1.8rem;
+  }
+
+  .logout-container .error-message {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.85rem;
+  }
+}
+
+.logout-container > * {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.logout-container .loading-spinner::before {
+  content: '';
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(235, 230, 214, 0.3);
+  border-top-color: #EBE6D6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: var(--spacing-sm);
+}
+
+.loading-spinner:empty::before {
+  margin-right: 0;
+}

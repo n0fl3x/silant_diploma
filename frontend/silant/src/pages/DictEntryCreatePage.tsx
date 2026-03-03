@@ -4,6 +4,7 @@ import { DictionaryEntryForm } from '../components/DictEntryForm';
 import type { FormData } from '../components/DictEntryForm';
 import '../styles/DictEntryForm.css';
 
+
 export default function CreateDictionaryEntryPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -43,4 +44,4 @@ export default function CreateDictionaryEntryPage() {
       />
     </div>
   );
-}
+};

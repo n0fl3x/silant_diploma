@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+
 interface ClaimData {
     id: number;
     failure_date: string;
@@ -44,7 +45,6 @@ export default function ClaimEditForm() {
                 setLoading(true);
                 setErrors({});
 
-                // Параллельная загрузка всех данных
                 const [claimResponse, nodesResponse, methodsResponse, machinesResponse] = await Promise.all([
                     fetch(`/api/v1/claims/${id}/`, {
                         headers: {
@@ -72,19 +72,16 @@ export default function ClaimEditForm() {
                     })
                 ]);
 
-                // Проверка статусов ответов
                 if (!claimResponse.ok) throw new Error('Ошибка загрузки рекламации');
                 if (!nodesResponse.ok) throw new Error('Ошибка загрузки узлов отказа');
                 if (!methodsResponse.ok) throw new Error('Ошибка загрузки методов восстановления');
                 if (!machinesResponse.ok) throw new Error('Ошибка загрузки машин');
 
-                // Парсинг данных
                 const claimData: ClaimData = await claimResponse.json();
                 const nodesData: DictionaryEntry[] = await nodesResponse.json();
                 const methodsData: DictionaryEntry[] = await methodsResponse.json();
                 const machinesData: Machine[] = await machinesResponse.json();
 
-                // Обновление состояния только после успешного получения ВСЕХ данных
                 setFormData(claimData);
                 setFailureNodes(nodesData || []);
                 setRecoveryMethods(methodsData || []);
@@ -106,41 +103,39 @@ export default function ClaimEditForm() {
         setErrors({});
 
         try {
-          // Отправляем только поля, которые можно записать
-          const submitData = {
-            id: formData?.id,
-            failure_date: formData?.failure_date,
-            operating_hours: formData?.operating_hours,
-            failure_description: formData?.failure_description,
-            spare_parts: formData?.spare_parts,
-            failure_node_id: formData?.failure_node_id,
-            recoverymethod_id: formData?.recovery_method_id,  // соответствует сериализатору
-            machine_id: formData?.machine_id
-          };
+            const submitData = {
+                id: formData?.id,
+                failure_date: formData?.failure_date,
+                operating_hours: formData?.operating_hours,
+                failure_description: formData?.failure_description,
+                spare_parts: formData?.spare_parts,
+                failure_node_id: formData?.failure_node_id,
+                recovery_method_id: formData?.recovery_method_id,
+                machine_id: formData?.machine_id
+            };
 
-          const response = await fetch(`/api/v1/claims/${id}/`, {
-            method: 'PUT',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(submitData)
-          });
+            const response = await fetch(`/api/v1/claims/${id}/`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(submitData)
+            });
 
-          if (response.ok) {
-            // После сохранения делаем GET‑запрос, чтобы получить актуальные read‑only‑данные
-            const updatedData = await response.json();
-            setFormData(updatedData);
-            navigate('/claims');
-          } else {
-            const errorData = await response.json();
-            setErrors(errorData.errors || {});
-          }
+            if (response.ok) {
+                const updatedData = await response.json();
+                setFormData(updatedData);
+                navigate('/claims');
+            } else {
+                const errorData = await response.json();
+                setErrors(errorData.errors || {});
+            }
         } catch (err) {
-          console.error('Ошибка при сохранении:', err);
-          setErrors({ general: 'Ошибка при сохранении данных' });
+            console.error('Ошибка при сохранении:', err);
+            setErrors({ general: 'Ошибка при сохранении данных' });
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
     };
 
@@ -151,7 +146,6 @@ export default function ClaimEditForm() {
             [name]: name === 'operating_hours' ? parseInt(value) : value
         } : null);
 
-        // Очищаем ошибку при изменении поля
         if (errors[name]) {
             setErrors(prev => {
                 const newErrors = { ...prev };
@@ -162,10 +156,9 @@ export default function ClaimEditForm() {
     };
 
     const handleCancel = () => {
-        navigate(-1); // Возврат на предыдущую страницу
+        navigate(-1);
     };
 
-    // Пока загружаются данные — показываем индикатор
     if (loading) {
         return (
             <div className="claim-edit-form">
@@ -177,7 +170,6 @@ export default function ClaimEditForm() {
         );
     }
 
-    // Если произошла ошибка загрузки
     if (errors.general) {
         return (
             <div className="claim-edit-form">
@@ -189,7 +181,6 @@ export default function ClaimEditForm() {
         );
     }
 
-    // Если данные не загружены (не должно происходить при корректной работе)
     if (!formData) {
         return (
             <div className="claim-edit-form">

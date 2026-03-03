@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { ClaimItem } from '../types/Claim';
 import "../styles/ClaimList.css";
 
+
 interface ClaimTableProps {
   claims: ClaimItem[];
 }

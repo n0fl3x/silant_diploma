@@ -42,7 +42,7 @@ export function AuthProvider({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch user data.")
+        throw new Error("Ошибка получения данных о пользователе")
       }
 
       const userData = await response.json();
@@ -57,7 +57,7 @@ export function AuthProvider({
       setUser(user);
       setUserGroup(userData.group_name);
     } catch (error) {
-      console.error('Failed to fetch user data:', error)
+      console.error('Ошибка загрузки данных о пользователе: ', error)
     };
   };
 
@@ -78,7 +78,7 @@ export function AuthProvider({
       localStorage.setItem('access_token', access);
       return true;
     } catch (error) {
-      console.error('Token refresh failed:', error);
+      console.error('Ошибка обновения токена: ', error);
       return false;
     }
   };
@@ -127,7 +127,7 @@ export function AuthProvider({
         setUser(null);
       }
     } catch (error) {
-      console.error("Auth check failed:", error);
+      console.error("Ошибка авторизации: ", error);
       setIsAuthenticated(false);
       setUser(null);
     } finally {
@@ -163,7 +163,7 @@ export function AuthProvider({
 
       return true;
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Ошибка входа: ', error);
       throw error;
     }
   };

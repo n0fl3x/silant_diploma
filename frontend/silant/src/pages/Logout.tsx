@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+
 export default function Logout() {
   const navigate = useNavigate();
   const { logout: clearAuth } = useAuth();
@@ -23,7 +24,7 @@ export default function Logout() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        await clearAuth();
+        clearAuth();
 
         navigate('/login', { replace: true });
       } catch (err) {
@@ -60,4 +61,4 @@ export default function Logout() {
   }
 
   return null;
-}
+};

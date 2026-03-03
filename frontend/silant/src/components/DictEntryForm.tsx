@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
 export interface FormData {
   entity: string;
   name: string;
@@ -68,7 +69,7 @@ export const DictionaryEntryForm: React.FC<DictionaryEntryFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
 
     if (validateForm()) {
@@ -93,7 +94,7 @@ export const DictionaryEntryForm: React.FC<DictionaryEntryFormProps> = ({
   };
 
   const handleCancel = () => {
-    navigate(-1); // Возвращаемся на предыдущую страницу
+    navigate(-1);
   };
 
   return (

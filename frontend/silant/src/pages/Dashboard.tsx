@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 
+
 export default function Dashboard() {
   const { isAuthenticated, user, loading: authLoading } = useAuth();
   const { userGroup } = useAuth();
@@ -111,4 +112,4 @@ export default function Dashboard() {
       </main>
     </div>
   );
-}
+};

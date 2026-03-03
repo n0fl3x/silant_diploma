@@ -1,195 +1,198 @@
 .create-claim-page {
-  max-width: 900px;
-  margin: 30px auto;
-  padding: 25px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
+  font-family: var(--font-family-main);
+  color: var(--color-primary, #333);
+  background-color: var(--color-background, #ffffff);
 }
 
 .create-claim-page h1 {
   text-align: center;
-  color: #2c3e50;
-  margin-bottom: 30px;
   font-size: 2rem;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--brand-primary, #163E6C);
+  margin-bottom: var(--spacing-xl);
 }
 
 .claim-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  background: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: var(--spacing-xl);
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .form-group label {
-  font-weight: 500;
-  color: #495057;
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: var(--brand-primary, #163E6C);
   font-size: 0.95rem;
 }
 
-/* Стили для всех полей ввода */
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 12px 15px;
-  border: 2px solid #e9ecef;
-  border-radius: 6px;
-  font-size: 1rem;
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-family-main);
+  font-size: 0.95rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  background-color: #f8f9fa;
+  box-sizing: border-box;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  border-color: var(--brand-primary, #163E6C);
+  box-shadow: 0 0 0 2px rgba(22, 62, 108, 0.2);
 }
 
-/* Поле даты */
-.form-group input[type="date"] {
-  padding-left: 5px;
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #999;
 }
 
-/* Числовое поле */
+.form-group input[type="date"],
 .form-group input[type="number"] {
-  -moz-appearance: textfield;
+  padding-left: var(--spacing-md);
 }
 
-.form-group input[type="number"]::-webkit-outer-spin-button,
-.form-group input[type="number"]::-webkit-inner-spin-button {
-  appearance: none;
-  margin: 0;
-}
-
-/* Выпадающий список */
 .form-group select {
   cursor: pointer;
+  background: white;
 }
 
-/* Текстовые поля */
 .form-group textarea {
   resize: vertical;
   min-height: 80px;
 }
 
-/* Кнопка отправки */
 .submit-btn {
-  align-self: flex-start;
-  background-color: #27ae60;
+  display: block;
+  width: 100%;
+  padding: 0.8rem 1.5rem;
+  background: var(--brand-primary, #163E6C);
   color: white;
   border: none;
-  padding: 14px 28px;
-  font-size: 1.1rem;
+  border-radius: var(--border-radius-lg);
+  font-family: var(--font-family-main);
   font-weight: 600;
-  border-radius: 6px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  margin-top: 10px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .submit-btn:hover {
-  background-color: #219955;
+  background: #0f2d4a;
   transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(22, 62, 108, 0.3);
 }
 
 .submit-btn:active {
   transform: translateY(0);
 }
 
-/* Сообщение об ошибке */
 .error-message {
-  color: #e74c3c;
-  background-color: #fdf2f2;
-  padding: 15px;
-  border-radius: 6px;
-  border-left: 4px solid #e74c3c;
-  margin-bottom: 20px;
-}
-
-/* Состояние загрузки */
-.loading-state {
   text-align: center;
-  color: #7f8c8d;
-  font-style: italic;
-  padding: 20px;
+  padding: var(--spacing-xl);
+  font-size: 1.1rem;
+  color: var(--brand-accent, #D20A11);
+  background: rgba(210, 10, 17, 0.05);
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(210, 10, 17, 0.2);
+  margin-bottom: var(--spacing-lg);
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
+.create-claim-page p {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--brand-primary, #163E6C);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 767px) {
   .create-claim-page {
-    margin: 15px;
-    padding: 20px;
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+
+  .claim-form {
+    padding: var(--spacing-lg);
   }
 
   .create-claim-page h1 {
     font-size: 1.8rem;
-    margin-bottom: 20px;
-  }
-
-  .claim-form {
-    gap: 15px;
+    margin-bottom: var(--spacing-lg);
   }
 
   .form-group {
-    gap: 6px;
+    margin-bottom: var(--spacing-md);
   }
 
-  .submit-btn {
-    width: 100%;
-    align-self: stretch;
-  }
-}
-
-@media (max-width: 480px) {
-  .create-claim-page {
-    margin: 10px;
-    padding: 15px;
+  .form-group label {
+    font-size: 0.9rem;
   }
 
   .form-group input,
   .form-group select,
   .form-group textarea {
-    padding: 10px 12px;
-    font-size: 0.95rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
   }
 
   .submit-btn {
-    padding: 12px 20px;
-    font-size: 1rem;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.95rem;
   }
 }
 
-/* Дополнительные стили для улучшения UX */
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-  color: #adb5bd;
-  opacity: 1;
-}
+@media (max-width: 480px) {
+  .create-claim-page {
+    padding: var(--spacing-md) var(--spacing-xs);
+  }
 
-/* Подсветка обязательных полей */
-.form-group label:after {
-  content: " *";
-  color: #e74c3c;
-  margin-left: 4px;
-}
+  .claim-form {
+    padding: var(--spacing-md);
+  }
 
-/* Исключение для необязательных полей */
-.form-group.optional label:after {
-  content: "";
-  margin-left: 0;
-}
+  .create-claim-page h1 {
+    font-size: 1.6rem;
+  }
 
-/* Стили для опций в выпадающих списках */
-.form-group select option:disabled {
-  color: #6c757d;
-  font-style: italic;
+  .form-group label {
+    font-size: 0.85rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.85rem;
+  }
+
+  .submit-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
 }

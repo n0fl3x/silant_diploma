@@ -42,15 +42,8 @@ from .serializers import (
     MaintenanceDetailSerializer,
     MaintenanceUpdateSerializer,
 )
-from .filters import (
-    MachineFilter,
-    MaintenanceFilter,
-    ClaimFilter,
-)
-from .permissions import (
-    IsManagerOrSuperadmin,
-    CanEditMachines,
-)
+from .filters import MachineFilter, MaintenanceFilter
+from .permissions import IsManagerOrSuperadmin, CanEditMachines
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -432,7 +425,6 @@ def machine_create(request):
 
 @api_view(['GET'])
 def machine_form_options(request):
-    """Возвращает опции для формы создания машины"""
     options = MachineCreateSerializer.get_reference_options()
     return Response(options)
 
@@ -595,7 +587,10 @@ class MaintenanceListView(APIView):
                 'service_company'
             )
 
-            serializer = MaintenanceSerializer(queryset.order_by('-work_order_date'), many=True)
+            serializer = MaintenanceSerializer(
+                queryset.order_by('-work_order_date'),
+                many=True,
+            )
 
             return Response({
                 'success': True,
@@ -624,9 +619,7 @@ class MaintenanceDetailView(generics.RetrieveAPIView):
             'maintenance_type',
             'machine',
             'service_company',
-        ).prefetch_related(
-            'machine__model_tech',
-        )
+        ).prefetch_related('machine__model_tech')
 
         group_name = user.user_type if user.group else None
 
@@ -738,9 +731,7 @@ class ClaimListViewSet(viewsets.ReadOnlyModelViewSet):
         'failure_node',
         'recovery_method',
         'machine'
-    ).\
-        all().\
-        order_by('-failure_date')
+    ).all().order_by('-failure_date')
     serializer_class = ClaimListSerializer
     pagination_class = None
 

@@ -1,137 +1,232 @@
 .dictionary-list-page {
-  padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
+  font-family: var(--font-family-main);
+  color: var(--color-primary, #333);
+  background-color: var(--color-background, #ffffff);
 }
 
 .dictionary-list-page h1 {
-  color: #333;
-  margin-bottom: 20px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--brand-primary, #163E6C);
+  margin-bottom: var(--spacing-lg);
   text-align: center;
 }
 
-.loading,
-.error {
+.loading {
   text-align: center;
-  padding: 40px;
-  font-size: 18px;
+  padding: var(--spacing-xl);
+  font-size: 1.1rem;
+  color: var(--brand-primary, #163E6C);
+  animation: pulse 1.5s infinite;
 }
 
 .error {
-  color: #d32f2f;
+  text-align: center;
+  padding: var(--spacing-xl);
+  font-size: 1.1rem;
+  color: var(--brand-accent, #D20A11);
+  background: rgba(210, 10, 17, 0.05);
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(210, 10, 17, 0.2);
 }
 
 .empty-state {
   text-align: center;
-  padding: 40px;
-  color: #6c757d;
-  font-style: italic;
+  padding: var(--spacing-xl);
+  font-size: 1.1rem;
+  color: #666;
+  background: var(--brand-light, #EBE6D6);
+  border-radius: var(--border-radius-lg);
+  border: 1px dashed var(--brand-primary, #163E6C);
+}
+
+.empty-state p {
+  margin: 0;
 }
 
 .dictionary-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius-lg);
   overflow: hidden;
+  background: white;
 }
 
-.dictionary-table th,
-.dictionary-table td {
-  padding: 12px 16px;
+.dictionary-table thead {
+  background: var(--brand-primary, #163E6C);
+  color: white;
+}
+
+.dictionary-table th {
+  padding: var(--spacing-md) var(--spacing-sm);
   text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.dictionary-table thead th {
-  background-color: #f8f9fa;
   font-weight: 600;
-  color: #495057;
+  font-size: 0.95rem;
   text-transform: uppercase;
-  font-size: 0.8rem;
   letter-spacing: 0.5px;
 }
 
+.dictionary-table tbody tr {
+  border-bottom: 1px solid var(--brand-light, #EBE6D6);
+  transition: background-color 0.2s ease;
+}
+
 .dictionary-table tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: rgba(235, 230, 214, 0.3);
 }
 
-.entity-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-/* Цвета для разных типов справочников */
-.entity-machine_model {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
-.entity-engine_model {
-  background-color: #e8f5e8;
-  color: #2e7d32;
-}
-.entity-transmission_model {
-  background-color: #fff3e0;
-  color: #ef6c00;
-}
-.entity-steering_axle_model {
-  background-color: #fce4ec;
-  color: #c2185b;
-}
-.entity-drive_axle_model {
-  background-color: #e1f5fe;
-  color: #0288d1;
-}
-.entity-maintenance_type {
-  background-color: #f3e5f5;
-  color: #7b1fa2;
-}
-.entity-failure_node {
-  background-color: #ffebee;
-  color: #d32f2f;
-}
-.entity-recovery_method {
-  background-color: #e8f5e9;
-  color: #388e3c;
+.dictionary-table td {
+  padding: var(--spacing-md) var(--spacing-sm);
+  font-size: 1rem;
 }
 
 .description-cell {
   max-width: 300px;
   white-space: normal;
+  word-wrap: break-word;
+}
+
+.description-cell em {
+  color: #888;
+  font-style: italic;
 }
 
 .actions-cell {
+  text-align: right;
+}
+
+.entity-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 100px;
   text-align: center;
-  padding: 8px 12px;
+}
+
+.entity-machine {
+  background: rgba(22, 62, 108, 0.1);
+  color: var(--brand-primary, #163E6C);
+  border: 1px solid rgba(22, 62, 108, 0.3);
+}
+
+.entity-maintenance {
+  background: rgba(210, 10, 17, 0.1);
+  color: var(--brand-accent, #D20A11);
+  border: 1px solid rgba(210, 10, 17, 0.3);
+}
+
+.entity-claim {
+  background: rgba(235, 230, 214, 0.6);
+  color: var(--brand-primary, #163E6C);
+  border: 1px solid rgba(235, 230, 214, 0.8);
 }
 
 .btn {
-  display: inline-block;
-  padding: 6px 12px;
-  text-decoration: none;
-  border-radius: 4px;
-  font-size: 0.9em;
-  font-weight: 500;
-  text-align: center;
-  transition: background-color 0.2s, transform 0.1s;
+  padding: 0.5rem 1rem;
   border: none;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-family-main);
+  font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .btn-details {
-  background: #2196f3;
-  color: white;
+  background: var(--brand-light, #EBE6D6);
+  color: var(--brand-primary, #163E6C);
+  border: 1px solid #ccc;
 }
 
 .btn-details:hover {
-  background: #1976d2;
+  background: var(--brand-light-hover, #D8D1C4);
   transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
-.btn-details:active {
-  transform: translateY(0);
+@media (max-width: 767px) {
+  .dictionary-list-page {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+
+  .dictionary-list-page h1 {
+    font-size: 1.8rem;
+    text-align: left;
+  }
+
+  .dictionary-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .dictionary-table th,
+  .dictionary-table td {
+    padding: var(--spacing-sm) var(--spacing-xs);
+    font-size: 0.9rem;
+  }
+
+  .description-cell {
+    max-width: 200px;
+  }
+
+  .actions-cell {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .dictionary-list-page {
+    padding: var(--spacing-md) var(--spacing-xs);
+  }
+
+  .dictionary-list-page h1 {
+    font-size: 1.6rem;
+  }
+
+  .dictionary-table th,
+  .dictionary-table td {
+    padding: var(--spacing-xs) var(--spacing-xxs);
+    font-size: 0.85rem;
+  }
+
+  .entity-badge {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .empty-state,
+  .loading,
+  .error {
+    padding: var(--spacing-md);
+    font-size: 0.9rem;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }

@@ -4,6 +4,7 @@ import type { ClaimItem } from '../types/Claim';
 import ClaimTable from '../components/ClaimTable';
 import "../styles/ClaimList.css";
 
+
 const ClaimListPage: React.FC = () => {
   const [claims, setClaims] = useState<ClaimItem[]>([]);
   const [loading, setLoading] = useState(true);

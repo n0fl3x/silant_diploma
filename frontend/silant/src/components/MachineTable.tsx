@@ -7,6 +7,7 @@ import "../styles/MachineTable.css";
 import "../styles/Pagination.css";
 import { DictionaryLink } from '../components/DictionaryLink';
 
+
 const FilterPanel: React.FC<{
   filters: {
     modelTech: string | null;

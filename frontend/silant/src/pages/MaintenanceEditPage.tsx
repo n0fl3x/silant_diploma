@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/MaintenanceEdit.css';
 
+
 interface MaintenanceData {
   id: number;
   maintenance_date: string;
@@ -22,7 +23,6 @@ const MaintenanceEdit: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Загрузка данных ТО при монтировании компонента
   useEffect(() => {
     const fetchMaintenance = async () => {
       try {
@@ -35,7 +35,6 @@ const MaintenanceEdit: React.FC = () => {
 
         if (response.data.success) {
           const apiData = response.data.data;
-          // Преобразуем данные для формы
           const formData: MaintenanceData = {
             id: apiData.id,
             maintenance_date: apiData.maintenance_date,
@@ -60,7 +59,6 @@ const MaintenanceEdit: React.FC = () => {
     if (id) fetchMaintenance();
   }, [id]);
 
-  // Обработка отправки формы
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!maintenance) return;
@@ -71,7 +69,6 @@ const MaintenanceEdit: React.FC = () => {
 
       const token = localStorage.getItem('access_token');
 
-      // Формируем данные для отправки
       const submitData = {
         maintenance_date: maintenance.maintenance_date,
         operating_hours: maintenance.operating_hours,
@@ -98,14 +95,13 @@ const MaintenanceEdit: React.FC = () => {
     }
   };
 
-  // Обновление состояния при изменении полей формы
   const handleChange = (field: keyof MaintenanceData, value: any) => {
     setMaintenance(prev => prev ? { ...prev, [field]: value } : null);
   };
 
   if (loading) return (
     <div className="maintenance-edit-loading">
-      <div className="spinner"></div>
+      <div className="spinner">⌛</div>
       Загрузка данных ТО...
     </div>
   );
@@ -144,7 +140,6 @@ const MaintenanceEdit: React.FC = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="maintenance-edit__form">
-        {/* Основная информация */}
         <div className="maintenance-edit__section">
           <h2 className="maintenance-edit__section-title">Основная информация</h2>
 
@@ -178,7 +173,6 @@ const MaintenanceEdit: React.FC = () => {
           </div>
         </div>
 
-        {/* Информация о заказ-наряде */}
         <div className="maintenance-edit__section">
           <h2 className="maintenance-edit__section-title">Заказ-наряд</h2>
 
@@ -209,7 +203,6 @@ const MaintenanceEdit: React.FC = () => {
           </div>
         </div>
 
-        {/* Справочная информация */}
         <div className="maintenance-edit__section">
           <h2 className="maintenance-edit__section-title">Справочные данные</h2>
 
@@ -259,7 +252,6 @@ const MaintenanceEdit: React.FC = () => {
           </div>
         </div>
 
-        {/* Кнопки действий */}
         <div className="maintenance-edit__actions">
           <button type="submit" className="maintenance-edit__save-btn">
             Сохранить изменения

@@ -1,5 +1,3 @@
-from django.core.exceptions import ValidationError
-
 from rest_framework import serializers
 
 from core.models import (
@@ -256,15 +254,6 @@ class MaintenanceTypeSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-# есть дубль
-class ServiceCompanySerializer(serializers.ModelSerializer):
-    description = serializers.CharField(source='user_description', read_only=True)
-
-    class Meta:
-        model = CustomUser
-        fields = ['description']
-
-
 class MaintenanceSerializer(serializers.ModelSerializer):
     machine = serializers.SerializerMethodField()
     maintenance_type = MaintenanceTypeSerializer()
@@ -317,7 +306,14 @@ class MachineShortSerializer(serializers.ModelSerializer):
         fields = ['id', 'factory_number', 'model_tech']
 
 
-# есть дубль
+class ServiceCompanySerializer(serializers.ModelSerializer):
+    description = serializers.CharField(source='user_description', read_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ['description']
+
+
 class ServiceCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -366,7 +362,6 @@ class MaintenanceCreateSerializer(serializers.ModelSerializer):
         ]
 
     def validate_maintenance_type_id(self, value):
-        """Проверка существования типа ТО по ID"""
         if not DictionaryEntry.objects.filter(
             id=value,
             entity='maintenance_type'
@@ -377,7 +372,6 @@ class MaintenanceCreateSerializer(serializers.ModelSerializer):
         return value
 
     def validate_machine_factory_number(self, value):
-        """Проверка существования машины по заводскому номеру"""
         if not Machine.objects.filter(factory_number=value).exists():
             raise serializers.ValidationError(
                 f"Машина с заводским номером '{value}' не найдена"
@@ -385,7 +379,6 @@ class MaintenanceCreateSerializer(serializers.ModelSerializer):
         return value
 
     def validate_service_company_name(self, value):
-        """Проверка существования компании по названию"""
         if not CustomUser.objects.filter(user_description=value).exists():
             raise serializers.ValidationError(
                 f"Компания с названием '{value}' не найдена"
@@ -691,7 +684,6 @@ class ClaimUpdateSerializer(serializers.ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
-        # Обновляем связанные объекты по ID
         failure_node_id = validated_data.pop('failure_node_id', None)
         recovery_method_id = validated_data.pop('recovery_method_id', None)
         machine_id = validated_data.pop('machine_id')
@@ -705,7 +697,6 @@ class ClaimUpdateSerializer(serializers.ModelSerializer):
             instance.recovery_method = DictionaryEntry.objects.get(id=recovery_method_id)
         instance.machine = Machine.objects.get(id=machine_id)
 
-        # Обновляем остальные поля
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
 
@@ -714,7 +705,6 @@ class ClaimUpdateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        # Добавляем читаемые названия вместо ID
         data['failure_node_name'] = instance.failure_node.name if instance.failure_node else None
         data['recovery_method_name'] = instance.recovery_method.name if instance.recovery_method else None
         data['machine_factory_number'] = instance.machine.factory_number
@@ -778,7 +768,6 @@ class MachineEditSerializer(MachineListSerializer):
 
 
 class MachineUpdateSerializer(serializers.ModelSerializer):
-    # Поля для ID моделей
     model_tech_id = serializers.IntegerField(
         write_only=True,
         required=True
@@ -800,7 +789,6 @@ class MachineUpdateSerializer(serializers.ModelSerializer):
         required=True
     )
 
-    # Текстовые поля для поиска пользователей
     client_input = serializers.CharField(
         write_only=True,
         required=False,
@@ -882,7 +870,6 @@ class MachineUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Сервисная компания с таким описанием не найдена")
 
     def update(self, instance, validated_data):
-        # Обрабатываем связи с DictionaryEntry
         model_tech = validated_data.pop('model_tech_id', None)
         if model_tech:
             instance.model_tech = model_tech
@@ -903,7 +890,6 @@ class MachineUpdateSerializer(serializers.ModelSerializer):
         if steering_axle_model:
             instance.steering_axle_model = steering_axle_model
 
-        # Обрабатываем связи с User
         client = validated_data.pop('client_input', None)
         if client is not None:
             instance.client = client
@@ -912,7 +898,6 @@ class MachineUpdateSerializer(serializers.ModelSerializer):
         if service_company is not None:
             instance.service_company = service_company
 
-        # Обновляем остальные поля
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
 
@@ -921,7 +906,6 @@ class MachineUpdateSerializer(serializers.ModelSerializer):
 
 
 class MachineCreateSerializer(serializers.ModelSerializer):
-    # Поля для ID моделей из справочника
     model_tech_id = serializers.IntegerField(
         write_only=True,
         required=True
@@ -943,7 +927,6 @@ class MachineCreateSerializer(serializers.ModelSerializer):
         required=True
     )
 
-    # Текстовые поля для поиска пользователей
     client_input = serializers.CharField(
         write_only=True,
         required=False,
@@ -980,7 +963,6 @@ class MachineCreateSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_reference_options():
-        """Возвращает справочные данные для выпадающих списков"""
         return {
             'model_tech_options': list(
                 DictionaryEntry.objects
@@ -1010,7 +992,6 @@ class MachineCreateSerializer(serializers.ModelSerializer):
         }
 
     def validate_model_tech_id(self, value):
-        """Проверяем существование модели техники."""
         try:
             return DictionaryEntry.objects.get(id=value, entity='machine_model')
         except DictionaryEntry.DoesNotExist:
@@ -1041,7 +1022,6 @@ class MachineCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Модель управляемого моста с таким ID не найдена")
 
     def validate_client_input(self, value):
-        """Ищем клиента по описанию."""
         if not value:
             return None
         try:
@@ -1050,7 +1030,6 @@ class MachineCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Клиент с таким описанием не найден")
 
     def validate_service_company_input(self, value):
-        """Ищем сервисную компанию по описанию."""
         if not value:
             return None
         try:
@@ -1059,18 +1038,15 @@ class MachineCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Сервисная компания с таким описанием не найдена")
 
     def create(self, validated_data):
-        # Извлекаем ID-поля моделей
         model_tech = validated_data.pop('model_tech_id')
         engine_model = validated_data.pop('engine_model_id')
         transmission_model = validated_data.pop('transmission_model_id')
         drive_axle_model = validated_data.pop('drive_axle_model_id')
         steering_axle_model = validated_data.pop('steering_axle_model_id')
 
-        # Извлекаем текстовые поля для пользователей
         client = validated_data.pop('client_input', None)
         service_company = validated_data.pop('service_company_input', None)
 
-        # Создаём экземпляр машины
         machine = Machine(
             factory_number=validated_data['factory_number'],
             model_tech=model_tech,

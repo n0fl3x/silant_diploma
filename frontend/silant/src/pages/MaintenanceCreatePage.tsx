@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import "../styles/MaintenanceCreate.css";
+
 
 interface MaintenanceType {
   id: number;
@@ -23,7 +25,6 @@ const MaintenanceCreateForm: React.FC = () => {
   const [typesLoading, setTypesLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Загрузка типов ТО при монтировании компонента
   useEffect(() => {
     const fetchMaintenanceTypes = async () => {
       try {
@@ -53,7 +54,6 @@ const MaintenanceCreateForm: React.FC = () => {
     fetchMaintenanceTypes();
   }, []);
 
-  // Обработчик изменения полей формы
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -62,8 +62,7 @@ const MaintenanceCreateForm: React.FC = () => {
     }));
   };
 
-  // Обработчик отправки формы
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);

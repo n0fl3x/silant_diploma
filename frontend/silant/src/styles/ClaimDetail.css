@@ -1,253 +1,250 @@
 .claim-detail-page {
-  max-width: 800px;
-  margin: 30px auto;
-  padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
+  font-family: var(--font-family-main);
+  color: var(--color-primary, #333);
+  background-color: var(--color-background, #ffffff);
 }
 
-.claim-detail-card {
+.claim-card {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
-.claim-detail-header {
-  background: linear-gradient(135deg, #007bff, #0d47a1);
+.claim-card-header {
+  background: linear-gradient(135deg, var(--brand-primary, #163E6C) 0%, #0f2d4a 100%);
   color: white;
-  padding: 30px 25px;
-  text-align: center;
-}
-
-.claim-detail-title {
-  font-size: 28px;
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: 0.5px;
-}
-
-.claim-detail-subtitle {
-  font-size: 16px;
-  opacity: 0.9;
-  margin-top: 8px;
-  font-weight: 300;
-}
-
-.claim-detail-back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  font-size: 14px;
-  margin-top: 20px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
-}
-
-.claim-detail-back-link:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  text-decoration: none;
-}
-
-.claim-detail-content {
-  padding: 30px;
-}
-
-.claim-detail-section {
-  margin-bottom: 25px;
-}
-
-.claim-detail-section-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #007bff;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.claim-detail-section-title::before {
-  content: '';
-  width: 4px;
-  height: 16px;
-  background: #007bff;
-  border-radius: 2px;
-}
-
-.claim-detail-field {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid #e9ecef;
-  font-size: 14px;
-}
-
-.claim-detail-label {
-  font-weight: 500;
-  color: #495057;
-  flex: 0 0 200px;
-}
-
-.claim-detail-value {
-  color: #6c757d;
-  flex: 1;
-  text-align: right;
-}
-
-.claim-detail-links {
+  padding: var(--spacing-lg) var(--spacing-xl);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
+  gap: var(--spacing-md);
 }
 
-.claim-detail-link {
+.claim-card-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.claim-card-actions {
   display: flex;
-  align-items: center;
-  padding: 14px 18px;
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: flex-start;
+}
+
+.claim-card-back-link {
+  color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
-  color: #007bff;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  transition: color 0.2s ease;
+}
+
+.claim-card-back-link:hover {
+  color: white;
+}
+
+.claim-card-edit-btn,
+.claim-card-delete-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-family-main);
   font-weight: 500;
-  transition: all 0.3s ease;
-  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  font-size: 0.85rem;
 }
 
-.claim-detail-link:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
-  border-color: #007bff;
-  background: #e3f2fd;
+.claim-card-edit-btn {
+  background: #28a745;
+  color: white;
 }
 
-.claim-detail-link::before {
-  content: '→';
-  font-weight: bold;
+.claim-card-edit-btn:hover {
+  background: #218837;
+  transform: translateY(-1px);
 }
 
-.claim-detail-description {
+.claim-card-delete-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.claim-card-delete-btn:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+.claim-card-body {
+  padding: var(--spacing-xl);
   line-height: 1.6;
-  color: #495057;
-  padding: 16px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border-left: 4px solid #007bff;
+}
+
+.claim-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  align-items: flex-start;
+}
+
+.claim-label {
+  font-weight: 600;
+  color: var(--brand-primary, #163E6C);
+  min-width: 200px;
+  font-size: 0.95rem;
+}
+
+.claim-value {
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.claim-field--linked .claim-label {
+  min-width: auto;
+}
+
+.claim-link {
+  color: var(--brand-primary, #163E6C);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.claim-link:hover {
+  color: #0f2d4a;
+  text-decoration: none;
+}
+
+.claim-link--machine {
+  font-weight: 600;
+}
+
+.claim-field--description {
+  flex-direction: column;
+}
+
+.claim-description {
+  font-size: 0.9rem;
+  line-height: 1.5;
   white-space: pre-wrap;
-  font-size: 14px;
+  background: #f8f9fa;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid var(--brand-primary, #163E6C);
+}
+
+.claim-detail-loading,
+.claim-detail-error {
+  text-align: center;
+  padding: var(--spacing-xl);
+  font-size: 1.1rem;
 }
 
 .claim-detail-loading {
-  text-align: center;
-  padding: 60px;
-  font-size: 18px;
-  color: #6c757d;
+  color: var(--brand-primary, #163E6C);
+  animation: pulse 1.5s infinite;
 }
 
 .claim-detail-error {
-  text-align: center;
-  padding: 40px;
-  font-size: 16px;
-  color: #dc3545;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 8px;
-  font-weight: 500;
+  color: var(--brand-accent, #D20A11);
+  background: rgba(210, 10, 17, 0.05);
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(210, 10, 17, 0.2);
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 767px) {
   .claim-detail-page {
-    padding: 15px;
-    margin: 20px auto;
+    padding: var(--spacing-lg) var(--spacing-sm);
   }
-  
-  .claim-detail-card {
-    border-radius: 10px;
+
+  .claim-card-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+    gap: var(--spacing-sm);
   }
-  
-  .claim-detail-header {
-    padding: 25px 20px;
+
+  .claim-card-title {
+    font-size: 1.5rem;
   }
-  
-  .claim-detail-title {
-    font-size: 24px;
+
+  .claim-card-body {
+    padding: var(--spacing-lg);
   }
-  
-  .claim-detail-content {
-    padding: 25px 20px;
-  }
-  
-  .claim-detail-field {
+
+  .claim-field {
     flex-direction: column;
-    text-align: left;
-    gap: 8px;
+    gap: var(--spacing-xs) 0;
   }
-  
-  .claim-detail-label {
-    text-align: left;
-    font-weight: 600;
-    margin-bottom: 4px;
+
+  .claim-label {
+    min-width: auto;
+    font-size: 0.9rem;
   }
-  
-  .claim-detail-value {
-    text-align: left;
+
+  .claim-value,
+  .claim-description {
+    font-size: 0.85rem;
+  }
+
+  .claim-card-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .claim-card-edit-btn,
+  .claim-card-delete-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
 @media (max-width: 480px) {
   .claim-detail-page {
-    padding: 10px;
-    margin: 15px auto;
+    padding: var(--spacing-md) var(--spacing-xs);
   }
-  
-  .claim-detail-header {
-    padding: 20px 15px;
-  }
-  
-  .claim-detail-title {
-    font-size: 22px;
-  }
-  
-  .claim-detail-content {
-    padding: 20px 15px;
-  }
-  
-  .claim-detail-link {
-    padding: 12px 15px;
-    font-size: 13px;
-  }
-}
 
-.claim-card-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
+  .claim-card-header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
 
-.claim-card-delete-btn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-}
+  .claim-card-title {
+    font-size: 1.3rem;
+  }
 
-.claim-card-delete-btn:hover {
-  background-color: #c82333;
-}
+  .claim-card-body {
+    padding: var(--spacing-md);
+  }
 
-.claim-card-delete-btn:active {
-  transform: translateY(1px);
+  .claim-label {
+    font-size: 0.85rem;
+    margin-bottom: var(--spacing-xxs);
+  }
+
+  .claim-value,
+  .claim-description {
+    font-size: 0.8rem;
+  }
 }

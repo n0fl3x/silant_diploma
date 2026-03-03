@@ -6,6 +6,7 @@ import MachineForm from '../components/MachineForm';
 import type { MachineSubmitData } from '../components/MachineForm';
 import '../styles/MachineEdit.css';
 
+
 export default function MachineEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -77,7 +78,7 @@ export default function MachineEditPage() {
 
       const saveData = {
         ...formData,
-        id: machine.id // добавляем ID для обновления
+        id: machine.id
       };
 
       const response = await fetch(`/api/v1/machine-update/${machine.id}`, {
@@ -132,4 +133,4 @@ export default function MachineEditPage() {
       />
     </div>
   );
-}
+};

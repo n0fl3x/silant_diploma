@@ -1,198 +1,374 @@
-/* Контейнер таблицы */
 .machine-table-container {
-  padding: 20px;
   max-width: 100%;
   margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-sm);
+  font-family: var(--font-family-main);
+  color: var(--color-primary);
 }
 
-/* Заголовок страницы */
 .machine-table-container h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 20px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-xl);
+  color: var(--color-primary);
   text-align: center;
 }
 
-/* Панель фильтров */
 .filter-panel {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-  padding: 16px 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background-color: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-lg);
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--spacing-xs);
+  flex: 1;
+  min-width: 200px;
 }
 
 .filter-group label {
-  font-size: 14px;
   font-weight: 500;
-  color: #495057;
+  font-size: 0.95rem;
 }
 
 .filter-group input {
-  padding: 10px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: border-color 0.2s;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-family-main);
+  transition: all 0.2s ease;
+  outline: none;
 }
 
 .filter-group input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(22, 62, 108, 0.1);
 }
 
-/* Кнопка сброса фильтров */
 .btn-reset {
-  background: #6c757d;
+  align-self: flex-start;
+  padding: 0.75rem 1.5rem;
+  background: rgba(210, 10, 17, 0.3);
   color: white;
   border: none;
-  padding: 10px 16px;
-  border-radius: 4px;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-family-main);
+  font-weight: 500;
   cursor: pointer;
-  font-size: 14px;
-  align-self: flex-start;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .btn-reset:hover {
-  background: #5a6268;
+  background: #D20A11;
 }
 
-/* Информация о пагинации */
 .table-info {
-  font-size: 14px;
-  color: #6c757d;
-  margin-bottom: 12px;
   text-align: right;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: var(--spacing-md);
 }
 
-/* Стили таблицы */
 .machine-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  border-radius: 8px;
+  background-color: white;
+  border-radius: var(--border-radius-lg);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
 }
 
 .machine-table thead {
-  background: #007bff;
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.machine-table th,
+.machine-table td {
+  padding: var(--spacing-sm) 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.9rem;
 }
 
 .machine-table th {
-  color: white;
   font-weight: 600;
-  padding: 12px 8px;
-  text-align: left;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.machine-table tbody tr {
-  border-bottom: 1px solid #dee2e6;
-  transition: background-color 0.2s;
+  white-space: nowrap;
 }
 
 .machine-table tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: rgba(235, 230, 214, 0.3);
 }
 
-.machine-table td {
-  padding: 12px 8px;
-  font-size: 14px;
-  color: #495057;
-  vertical-align: middle;
-}
-
-/* Стили кнопок действий */
 .action-btn {
-  background: #28a745;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(to right, var(--color-primary), #2a5a8f);
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family-main);
+  font-weight: 500;
   cursor: pointer;
-  font-size: 12px;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
 }
 
 .action-btn:hover {
-  background: #218838;
+  background: linear-gradient(to right, #0f335a, #1a4672);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(22, 62, 108, 0.3);
 }
 
-/* Текст "Не указан" */
 .text-muted {
-  color: #adb5bd;
+  color: #999;
   font-style: italic;
 }
 
-/* Состояния загрузки и ошибок */
 .loading,
 .error,
 .no-data {
   text-align: center;
-  padding: 40px 20px;
-  font-size: 16px;
-  color: #6c757d;
+  padding: var(--spacing-xl) 0;
+  font-size: 1rem;
 }
 
 .loading {
-  color: #007bff;
+  color: var(--color-primary);
 }
 
 .error {
-  color: #dc3545;
+  color: #D20A11;
+  background-color: rgba(210, 10, 17, 0.1);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-md);
 }
 
 .no-data {
-  color: #6c757d;
+  color: #666;
   font-style: italic;
 }
 
-/* Адаптивность для мобильных устройств */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .machine-table-container {
-    padding: 10px;
+    padding: var(--spacing-md) var(--spacing-sm);
   }
   
   .filter-panel {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 12px;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  
+  .filter-group {
+    min-width: 180px;
   }
   
   .machine-table th,
   .machine-table td {
-    padding: 8px 4px;
-    font-size: 12px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .machine-table-container {
+    padding: var(--spacing-md) var(--spacing-xs);
+  }
+  
+  .machine-table-container h2 {
+    font-size: 1.4rem;
+    text-align: left;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .filter-panel {
+    flex-direction: column;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  
+  .filter-group {
+    min-width: 100%;
+  }
+  
+  .btn-reset {
+    align-self: center;
+    width: 100%;
   }
   
   .table-info {
     text-align: center;
-    margin-bottom: 16px;
+    font-size: 0.85rem;
   }
-}
-
-/* Для очень маленьких экранов — горизонтальная прокрутка таблицы */
-@media (max-width: 480px) {
+  
   .machine-table-container {
     overflow-x: auto;
   }
   
   .machine-table {
     min-width: 800px;
+  }
+  
+  .machine-table th,
+  .machine-table td {
+    padding: var(--spacing-xxs) var(--spacing-xs);
+    font-size: 0.8rem;
+  }
+  
+  .action-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .machine-table-container {
+    padding: var(--spacing-sm) var(--spacing-xs);
+  }
+
+  .filter-panel {
+    padding: var(--spacing-sm);
+  }
+
+  .filter-group input {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .btn-reset {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .table-info {
+    font-size: 0.75rem;
+    padding: var(--spacing-xs) 0;
+  }
+
+  .machine-table {
+    min-width: 950px;
+  }
+
+  .machine-table th,
+  .machine-table td {
+    padding: var(--spacing-xxs) var(--spacing-xxs);
+    font-size: 0.75rem;
+  }
+
+  .machine-table th {
+    white-space: normal;
+    line-height: 1.2;
+  }
+
+  .action-btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .machine-table-container > *:not(.machine-table) {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .loading,
+  .error,
+  .no-data {
+    padding: var(--spacing-md) 0;
+    font-size: 0.85rem;
+  }
+
+  .filter-group {
+    gap: var(--spacing-xxs);
+  }
+
+  .filter-group label {
+    font-size: 0.8rem;
+  }
+}
+
+.machine-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.action-btn,
+.btn-reset {
+  transition: all 0.2s ease;
+}
+
+.filter-group input:focus,
+.action-btn:focus,
+.btn-reset:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.dictionary-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.dictionary-link:hover {
+  text-decoration: underline;
+  color: #0f335a;
+}
+
+.machine-table--empty {
+  opacity: 0.6;
+}
+
+.machine-table--loading {
+  position: relative;
+}
+
+.machine-table--loading::after {
+  content: 'Загрузка...';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  color: var(--color-primary);
+  font-weight: 500;
+  z-index: 10;
+  border: 1px solid var(--color-primary);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.pagination .current-page {
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 600;
+}
+
+@media (max-width: 375px) {
+  .pagination {
+    gap: var(--spacing-xxs);
+  }
+  
+  .pagination button {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
   }
 }

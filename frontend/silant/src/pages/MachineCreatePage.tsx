@@ -5,6 +5,7 @@ import MachineForm from '../components/MachineForm';
 import type { MachineSubmitData } from '../components/MachineForm';
 import '../styles/MachineCreate.css';
 
+
 export default function MachineCreatePage() {
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -91,4 +92,4 @@ export default function MachineCreatePage() {
       />
     </div>
   );
-}
+};

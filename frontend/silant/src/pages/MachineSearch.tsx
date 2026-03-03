@@ -47,18 +47,18 @@ export default function MachineSearch() {
         try {
             const accessToken = document.cookie
                 .split(";")
-                .map( cookie => cookie.trim() )
-                .find( cookie => cookie.startsWith("access_token=") )
+                .map(cookie => cookie.trim())
+                .find(cookie => cookie.startsWith("access_token="))
                 ?.split("=")[1];
-        
+
             const headers: HeadersInit = {
                 "Content-Type": "application/json",
             };
-        
-            if ( accessToken ) {
+
+            if (accessToken) {
                 headers["Authorization"] = `Bearer ${accessToken}`;
             };
-        
+
             const response = await fetch(
                 "/api/v1/machines/search",
                 {
@@ -70,10 +70,10 @@ export default function MachineSearch() {
                     ),
                 }
             );
-        
+
             const data: ApiResponse = await response.json();
-        
-            if ( data.success && data.data ) {
+
+            if (data.success && data.data) {
                 setMachine(data.data);
                 setUserStatus(data.user_status || "unauthorized")
             }
@@ -94,7 +94,7 @@ export default function MachineSearch() {
         value: string | null | undefined,
         isVisible: boolean
     ) => {
-        if ( !isVisible || value === null || value === undefined || value.trim() === "" ) {
+        if (!isVisible || value === null || value === undefined || value.trim() === "") {
             return null
         };
 
@@ -131,7 +131,7 @@ export default function MachineSearch() {
                         type="text"
                         id="factoryNumber"
                         value={factoryNumber}
-                        onChange={ (e) => setFactoryNumber(e.target.value) }
+                        onChange={(e) => setFactoryNumber(e.target.value)}
                         placeholder="Введите заводской номер"
                         required
                         disabled={loading}
@@ -141,9 +141,9 @@ export default function MachineSearch() {
                     {loading ? "Поиск..." : "Найти"}
                 </button>
             </form>
-          
+
             {error && <div className="error-message">{error}</div>}
-          
+
             {machine && (
                 <div className="machine-result">
                     <h3>
@@ -154,7 +154,7 @@ export default function MachineSearch() {
                         <h4>
                             Основная информация
                         </h4>
-                        
+
                         <table className="machine-table">
                             <tbody>
                                 {renderField("Заводской номер", machine.factory_number, true)}
@@ -176,7 +176,7 @@ export default function MachineSearch() {
                             <h4>
                                 Дополнительная информация (только для авторизованных)
                             </h4>
-                            
+
                             <table className="machine-table">
                                 <tbody>
                                     {renderField("Договор поставки", machine.delivery_contract, true)}

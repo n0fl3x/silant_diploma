@@ -1,510 +1,394 @@
+:root {
+  --brand-primary: #163E6C;
+  --brand-accent: #D20A11;
+  --brand-light: #EBE6D6;
+  --brand-light-hover: #D8D1C4;
+}
+
 .dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
+  font-family: var(--font-family-main);
+  color: var(--color-primary, var(--brand-primary));
+  background-color: var(--color-background, #ffffff);
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #2a5280 100%);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .dashboard-header {
-  background: white;
-  padding: 1.5rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--brand-light);
 }
 
 .dashboard-header h1 {
-  color: #2c3e50;
-  margin: 0;
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+  margin-bottom: var(--spacing-sm);
 }
 
 .dashboard-header p {
-  color: #7f8c8d;
-  margin: 0 1rem;
-  font-size: 1rem;
-}
-
-.dashboard-actions {
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.create-machine-btn {
-  display: inline-block;
-  padding: 12px 24px;
-  background-color: #007bff;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-  border: none;
-  cursor: pointer;
-}
-
-.create-machine-btn:hover {
-  background-color: #0056b3;
-}
-
-.dashboard-info {
-  text-align: center;
-  color: #6c757d;
+  font-size: 1.1rem;
+  color: var(--color-text-secondary, #666);
+  margin: 0;
 }
 
 .dashboard-content {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
 }
 
-.dashboard-content p {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
+@media (min-width: 992px) {
+  .dashboard-content {
+    grid-template-columns: 1fr 300px;
+  }
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.dashboard-actions button {
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius-lg);
+  font-family: var(--font-family-main);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   text-align: center;
-  color: #34495e;
-  font-size: 1.1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.create-maintenance-btn {
+  background: var(--brand-primary);
+  color: white;
+}
+
+.create-maintenance-btn:hover:not(:disabled) {
+  background: #0f2d4a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(22, 62, 108, 0.3);
+}
+
+.create-machine-btn {
+  background: var(--brand-accent);
+  color: white;
+}
+
+.create-machine-btn:hover:not(:disabled) {
+  background: #a5080e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(210, 10, 17, 0.3);
+}
+
+.create-dict-btn {
+  background: var(--brand-light);
+  color: var(--brand-primary);
+  border: 1px solid #ccc;
+}
+
+.create-dict-btn:hover:not(:disabled) {
+  background: var(--brand-light-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(235, 230, 214, 0.4);
+}
+
+.create-claim-btn {
+  background: var(--brand-primary);
+  color: white;
+}
+
+.create-claim-btn:hover:not(:disabled) {
+  background: #0f2d4a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(22, 62, 108, 0.3);
+}
+
+.dashboard-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .user-profile {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-top: 1rem;
-  border: 1px solid #e9ecef;
+  background: white;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--brand-light);
 }
 
 .user-profile h2 {
-  color: #343a40;
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-lg);
+  color: var(--brand-primary);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--brand-light);
 }
 
 .user-info {
-  display: grid;
-  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
 }
 
 .info-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  background: white;
-  border-radius: 6px;
-  border-left: 4px solid #007bff;
+  align-items: flex-start;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px dashed var(--brand-light);
+}
+
+.info-item:last-child {
+  border-bottom: none;
 }
 
 .label {
-  font-weight: 500;
-  color: #495057;
-  min-width: 150px;
+  font-weight: 600;
+  color: var(--brand-primary);
+  min-width: 140px;
+  flex-shrink: 0;
 }
 
 .value {
-  color: #6c757d;
+  color: var(--color-primary);
   text-align: right;
-  flex-grow: 1;
-  margin-left: 1rem;
+  flex: 1;
+  word-break: break-word;
+}
+
+.value em {
+  color: #888;
+  font-style: italic;
 }
 
 .no-user-data {
   text-align: center;
-  color: #6c757d;
+  color: var(--brand-accent);
   font-style: italic;
+  padding: var(--spacing-lg);
+  background: rgba(210, 10, 17, 0.05);
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(210, 10, 17, 0.2);
 }
 
-/* Адаптивность для планшетов (768px — 1023px) */
-@media (max-width: 1023px) {
-  .dashboard-header {
-    padding: 1.25rem 1.5rem;
+.loading-message {
+  text-align: center;
+  padding: var(--spacing-xl);
+  font-size: 1.1rem;
+  color: var(--brand-primary);
+}
+
+@media (max-width: 767px) {
+  .dashboard-container {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .dashboard-actions {
+    gap: var(--spacing-sm);
+  }
+
+  .dashboard-actions button {
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .user-profile {
+    padding: var(--spacing-lg);
+  }
+
+  .info-item {
     flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .label {
+    min-width: auto;
+    text-align: left;
+  }
+
+  .value {
+    text-align: left;
+    margin-top: var(--spacing-xxs);
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: var(--spacing-md) var(--spacing-xs);
   }
 
   .dashboard-header h1 {
     font-size: 1.6rem;
   }
 
-  .dashboard-header p {
-    margin: 0;
+  .dashboard-actions button {
+    padding: 0.7rem 0.9rem;
     font-size: 0.9rem;
-  }
-
-  .dashboard-content {
-    max-width: 90%;
-    margin: 1.5rem auto;
-    padding: 0 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .user-profile {
-    padding: 1.25rem;
+    padding: var(--spacing-md);
+  }
+
+  .user-info {
+    gap: var(--spacing-sm);
   }
 
   .info-item {
     flex-direction: column;
-    text-align: left;
-    align-items: flex-start;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xs) 0;
   }
 
   .label {
     min-width: auto;
-    margin-bottom: 0.25rem;
+    text-align: left;
+    font-size: 0.95rem;
+    margin-bottom: var(--spacing-xxs);
   }
 
   .value {
     text-align: left;
-    margin-left: 0;
+    font-size: 0.95rem;
   }
-}
 
-/* Адаптивность для мобильных устройств (до 767px) */
-@media (max-width: 767px) {
-  .dashboard-container {
-    min-height: 100vh;
+  .user-profile h2 {
+    font-size: 1.4rem;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .dashboard-header p {
+    font-size: 1rem;
+    line-height: 1.4;
   }
 
   .dashboard-header {
-    padding: 1rem 1.25rem;
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: stretch;
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+  }
+
+  .no-user-data {
+    padding: var(--spacing-md);
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .user-profile {
+    box-shadow: none;
+    border: 1px solid var(--brand-light);
+  }
+
+  .create-maintenance-btn,
+  .create-machine-btn,
+  .create-dict-btn,
+  .create-claim-btn {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  .create-maintenance-btn:hover:not(:disabled),
+  .create-machine-btn:hover:not(:disabled),
+  .create-dict-btn:hover:not(:disabled),
+  .create-claim-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard-container {
+    padding: var(--spacing-sm) var(--spacing-xxs);
   }
 
   .dashboard-header h1 {
     font-size: 1.4rem;
-    text-align: center;
   }
 
-  .dashboard-header p {
-    text-align: center;
+  .dashboard-actions button {
+    padding: 0.6rem 0.8rem;
     font-size: 0.85rem;
   }
 
-  .dashboard-actions {
-    margin-bottom: 1.5rem;
-  }
-
-  .create-machine-btn {
-    width: 100%;
-    padding: 14px 20px;
-    font-size: 0.95rem;
-  }
-
-  .dashboard-content {
-    margin: 1rem auto;
-    padding: 0 0.5rem;
-  }
-
-  .dashboard-content p {
-    padding: 1.5rem 1rem;
-    font-size: 1rem;
-  }
-
   .user-profile {
-    padding: 1rem;
-    border-radius: 6px;
+    padding: var(--spacing-sm);
   }
 
   .user-profile h2 {
-    font-size: 1.3rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .user-info {
-    gap: 0.75rem;
-  }
-
-  .info-item {
-    padding: 0.65rem 0.8rem;
-    border-radius: 4px;
-  }
-
-  .label {
-    font-weight: 600;
-    color: #34495e;
-    font-size: 0.9rem;
-  }
-
-  .value {
-    font-size: 0.9rem;
-    color: #555;
-  }
-
-  .no-user-data {
-    font-size: 0.9rem;
-  }
-}
-
-/* Очень маленькие экраны (до 480px) */
-@media (max-width: 480px) {
-  .dashboard-header {
-    padding: 0.75rem 1rem;
-  }
-
-  .dashboard-header h1 {
     font-size: 1.2rem;
-    text-align: center;
-  }
-
-  .dashboard-header p {
-    text-align: center;
-    font-size: 0.85rem;
-  }
-
-  .dashboard-actions {
-    margin-bottom: 1.5rem;
-  }
-
-  .create-machine-btn {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 0.85rem;
-    box-sizing: border-box;
-  }
-
-  .dashboard-content {
-    margin: 1rem auto;
-    padding: 0 0.5rem;
-  }
-
-  .dashboard-content p {
-    padding: 1.25rem 0.75rem;
-    font-size: 0.95rem;
-    line-height: 1.4;
-  }
-
-  .user-profile {
-    padding: 0.75rem;
-    border-radius: 6px;
-  }
-
-  .user-profile h2 {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-
-  .user-info {
-    gap: 0.6rem;
   }
 
   .info-item {
-    padding: 0.4rem 0.5rem;
-    flex-direction: column;
-    align-items: flex-start;
-    border-radius: 4px;
-  }
-
-  .label {
-    font-weight: 600;
-    color: #34495e;
-    font-size: 0.85rem;
-    width: 100%;
-    margin-bottom: 0.2rem;
-  }
-
-  .value {
-    font-size: 0.85rem;
-    color: #555;
-    text-align: left;
-    width: 100%;
-  }
-
-  .no-user-data {
-    font-size: 0.85rem;
-    line-height: 1.4;
-  }
-}
-
-/* Сверхмаленькие экраны (до 360px) — смартфоны в портретном режиме */
-@media (max-width: 360px) {
-  .dashboard-header {
-    padding: 0.5rem 0.75rem;
-  }
-
-  .dashboard-header h1 {
-    font-size: 1.1rem;
-  }
-
-  .dashboard-header p {
-    font-size: 0.8rem;
-  }
-
-  .create-machine-btn {
-    padding: 10px 12px;
-    font-size: 0.8rem;
-  }
-
-  .dashboard-content {
-    margin: 0.75rem auto;
-    padding: 0 0.25rem;
-  }
-
-  .dashboard-content p {
-    padding: 1rem 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  .user-profile {
-    padding: 0.5rem;
-  }
-
-  .user-profile h2 {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .user-info {
-    gap: 0.5rem;
-  }
-
-  .info-item {
-    padding: 0.3rem 0.4rem;
+    padding: var(--spacing-xxs) 0;
   }
 
   .label,
   .value {
-    font-size: 0.8rem;
-  }
-
-  /* Уменьшаем отступы у всех элементов */
-  * {
-    margin: 0;
-    padding: 0;
-  }
-
-  body {
-    font-size: 0.875rem;
-  }
-}
-
-/* Для альбомной ориентации на мобильных устройствах */
-@media (max-width: 767px) and (orientation: landscape) {
-  .dashboard-header {
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .dashboard-header h1 {
-    font-size: 1.3rem;
-    text-align: left;
-  }
-
-  .dashboard-header p {
-    text-align: left;
     font-size: 0.85rem;
   }
 
   .user-info {
-    grid-template-columns: 1fr;
+    gap: var(--spacing-xxs);
   }
 
-  .info-item {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+  .dashboard-header p {
+    font-size: 0.9rem;
   }
 
-  .label {
-    min-width: 120px;
-    margin-bottom: 0;
-  }
-
-  .value {
-    text-align: right;
-    margin-left: 0.5rem;
+  .no-user-data {
+    font-size: 0.85rem;
+    padding: var(--spacing-sm);
   }
 }
 
-/* Улучшение читаемости на высоких DPI экранах */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  body {
-    font-smooth: always;
-    -webkit-font-smoothing: antialiased;
+.dashboard-container.dark-mode .dashboard-header h1,
+.dashboard-container.dark-mode .user-profile h2,
+.dashboard-container.dark-mode .label {
+  color: #ffffff;
+}
+
+.dashboard-container.dark-mode .user-profile {
+  background-color: #1e1e1e;
+  border-color: #333;
+}
+
+.dashboard-container.dark-mode .no-user-data {
+  background: rgba(210, 10, 17, 0.15);
+  border-color: rgba(210, 10, 17, 0.4);
+  color: #ff8a8a;
+}
+
+.dashboard-content {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-}
-
-.dashboard-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 30px;
-}
-
-.create-maintenance-btn {
-  padding: 12px 24px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.create-maintenance-btn:hover:not(:disabled) {
-  background-color: #0056b3;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
-}
-
-.create-maintenance-btn:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* Стили для существующих кнопок */
-.create-machine-btn,
-.create-dict-btn {
-  padding: 12px 24px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.create-machine-btn:hover,
-.create-dict-btn:hover {
-  background-color: #1e7e34;
-  transform: translateY(-1px);
-}
-
-.create-claim-btn {
-  background-color: #2196F3;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  margin: 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s;
-}
-
-.create-claim-btn:hover {
-  background-color: #1976D2;
-}
-
-.create-claim-btn:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

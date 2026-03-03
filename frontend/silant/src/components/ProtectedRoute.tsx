@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredGroups?: ('client' | 'service_company' | 'manager' | 'superadmin')[];
@@ -25,5 +26,5 @@ export default function ProtectedRoute({ children, requiredGroups }: ProtectedRo
     return <Navigate to="/dashboard" replace />;
   }
 
-  return <>{children}</>;
-}
+  return <>{children}</>
+};

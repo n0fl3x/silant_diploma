@@ -1,234 +1,253 @@
-/* Основной контейнер страницы */
 .maintenance-detail {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: var(--spacing-xl) var(--spacing-md);
+  font-family: var(--font-family-main);
+  color: var(--color-primary, #333);
+  background-color: var(--color-background, #ffffff);
 }
 
-/* Шапка с заголовком и действиями */
 .maintenance-detail__header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #e9ecef;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
 }
 
 .maintenance-detail__title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #212529;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--brand-primary, #163E6C);
   margin: 0;
+  flex: 1;
 }
 
 .maintenance-detail__actions {
   display: flex;
-  gap: 12px;
-  align-items: center;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-self: flex-start;
 }
 
-/* Стили для кнопки удаления */
-.maintenance-detail__delete-btn {
-  padding: 10px 20px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.maintenance-detail__delete-btn:hover {
-  background-color: #c82333;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
-}
-
-.maintenance-detail__delete-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
-}
-
-.maintenance-detail__delete-btn:focus {
-  outline: 2px solid #dc3545;
-  outline-offset: 2px;
-}
-
-/* Стили для ссылки «Назад» */
 .maintenance-detail__back-link {
-  padding: 10px 20px;
-  background-color: #6c757d;
-  color: white;
+  color: var(--brand-primary, #163E6C);
   text-decoration: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--spacing-xs);
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .maintenance-detail__back-link:hover {
-  background-color: #5a6268;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
+  color: #0f2d4a;
 }
 
-.maintenance-detail__back-link:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+.maintenance-detail__edit-btn,
+.maintenance-detail__delete-btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-family-main);
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
 }
 
-/* Контент с разделами */
+.maintenance-detail__edit-btn {
+  background: #28a745;
+  color: white;
+}
+
+.maintenance-detail__edit-btn:hover {
+  background: #218837;
+  transform: translateY(-1px);
+}
+
+.maintenance-detail__delete-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.maintenance-detail__delete-btn:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
 .maintenance-detail__content {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: var(--spacing-xl);
 }
 
-/* Секции информации */
 .maintenance-detail__section {
   background: white;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.2s ease;
-}
-
-.maintenance-detail__section:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
 }
 
 .maintenance-detail__section-title {
-  font-size: 18px;
+  font-size: 1.3rem;
   font-weight: 600;
-  color: #343a40;
+  color: var(--brand-primary, #163E6C);
   margin-top: 0;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #007bff;
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: var(--spacing-sm);
 }
 
-/* Сетка для информации */
 .maintenance-detail__info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md) var(--spacing-lg);
 }
 
-/* Элементы информации */
 .maintenance-detail__info-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--spacing-xs);
 }
 
 .maintenance-detail__label {
   font-weight: 600;
-  color: #495057;
-  font-size: 14px;
+  color: var(--brand-primary, #163E6C);
+  font-size: 0.9rem;
 }
 
 .maintenance-detail__value {
-  color: #212529;
-  font-size: 14px;
+  font-size: 0.95rem;
   line-height: 1.4;
+  word-break: break-word;
 }
 
-/* Стили для ссылок внутри значений */
 .maintenance-detail__value a {
-  color: #007bff;
-  text-decoration: none;
+  color: var(--brand-primary, #163E6C);
+  text-decoration: underline;
   font-weight: 500;
-  transition: color 0.2s ease;
-  position: relative;
 }
 
 .maintenance-detail__value a:hover {
-  color: #0056b3;
-  text-decoration: underline;
+  color: #0f2d4a;
+  text-decoration: none;
 }
 
-.maintenance-detail__value a::after {
-  content: "→";
-  margin-left: 4px;
-  opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  transform: translateX(-4px);
-}
-
-.maintenance-detail__value a:hover::after {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* Состояния загрузки и ошибок */
-.maintenance-detail-loading {
+.maintenance-detail-loading,
+.maintenance-detail-error {
   text-align: center;
-  font-style: italic;
-  color: #6c757d;
-  padding: 40px 0;
-  font-size: 16px;
+  padding: var(--spacing-xl);
+  font-size: 1.1rem;
+}
+
+.maintenance-detail-loading {
+  color: var(--brand-primary, #163E6C);
+  animation: pulse 1.5s infinite;
 }
 
 .maintenance-detail-error {
-  text-align: center;
-  color: #721c24;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 6px;
-  padding: 20px;
-  margin: 20px 0;
-  font-size: 14px;
+  color: var(--brand-accent, #D20A11);
+  background: rgba(210, 10, 17, 0.05);
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(210, 10, 17, 0.2);
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-  .maintenance-detail {
-    padding: 15px;
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
   }
-  
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 767px) {
+  .maintenance-detail {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+
   .maintenance-detail__header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
+    align-items: stretch;
+    gap: var(--spacing-md);
   }
-  
+
+  .maintenance-detail__title {
+    font-size: 1.6rem;
+  }
+
   .maintenance-detail__actions {
-    width: 100%;
-    justify-content: space-between;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--spacing-sm);
   }
-  
+
+  .maintenance-detail__content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .maintenance-detail__section {
+    padding: var(--spacing-lg);
+  }
+
+  .maintenance-detail__section-title {
+    font-size: 1.2rem;
+  }
+
   .maintenance-detail__info-grid {
     grid-template-columns: 1fr;
+    gap: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .maintenance-detail__info-item {
+    gap: var(--spacing-xxs);
+  }
+
+  .maintenance-detail__label {
+    font-size: 0.85rem;
+  }
+
+  .maintenance-detail__value {
+    font-size: 0.9rem;
   }
 }
 
-@media (prefers-color-scheme: dark) {
+@media (max-width: 480px) {
   .maintenance-detail {
-    color: #e9ecef;
+    padding: var(--spacing-md) var(--spacing-xs);
   }
-  
-  .maintenance-detail__title,
-  .maintenance-detail__section-title {
-    color: #ffffff;
+
+  .maintenance-detail__actions {
+    flex-direction: column;
+    gap: var(--spacing-sm);
   }
-  
+
+  .maintenance-detail__edit-btn,
+  .maintenance-detail__delete-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
   .maintenance-detail__section {
-    background: #2d3748;
-    border-color: #4a5568;
+    padding: var(--spacing-md);
   }
-  
-  .maintenance-detail__label,
-  .maintenance-detail__value {
-    color: #e2e8f0;
+
+  .maintenance-detail__info-grid {
+    gap: var(--spacing-xs) var(--spacing-sm);
   }
 }

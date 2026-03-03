@@ -1,207 +1,271 @@
-.claim-table-container {
-  padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.claim-list-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
+  font-family: var(--font-family-main);
+  color: var(--color-primary, #333);
+  background-color: var(--color-background, #ffffff);
 }
 
-/* Стили для контейнера фильтров */
+.claim-list-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--brand-primary, #163E6C);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: var(--spacing-xl);
+  font-size: 1.1rem;
+}
+
+.loading {
+  color: var(--brand-primary, #163E6C);
+  animation: pulse 1.5s infinite;
+}
+
+.error {
+  color: var(--brand-accent, #D20A11);
+  background: rgba(210, 10, 17, 0.05);
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(210, 10, 17, 0.2);
+}
+
+.claim-table-container {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .filters-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-  padding: 16px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--brand-light, #EBE6D6);
+  border-bottom: 1px solid var(--brand-primary, #163E6C);
 }
 
 .filter-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--spacing-xs);
 }
 
 .filter-field label {
   font-weight: 600;
-  color: #495057;
-  font-size: 14px;
+  color: var(--brand-primary, #163E6C);
+  font-size: 0.9rem;
 }
 
 .filter-input {
-  padding: 10px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-family-main);
+  font-size: 0.95rem;
   transition: border-color 0.2s ease;
-  background-color: white;
 }
 
 .filter-input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+  border-color: var(--brand-primary, #163E6C);
+  box-shadow: 0 0 0 2px rgba(22, 62, 108, 0.2);
 }
 
-/* Стили для таблицы */
 .claims-table {
   width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
-  background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background: white;
+  table-layout: fixed;
 }
 
-.claims-table-header {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+.claims-table-header th {
+  background: var(--brand-primary, #163E6C);
   color: white;
-}
-
-.claims-table th {
-  padding: 14px 12px;
-  text-align: left;
   font-weight: 600;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.6rem;
 }
 
-.claims-table td {
-  padding: 12px 12px;
-  border-bottom: 1px solid #dee2e6;
-  font-size: 14px;
-  color: #495057;
+.claims-table-row:nth-child(even) {
+  background: #f8f9fa;
 }
 
 .claims-table-row:hover {
-  background-color: #f8f9fa;
+  background: rgba(235, 230, 214, 0.3);
+  transition: background-color 0.2s ease;
 }
 
-/* Стили для ячеек таблицы */
-.no-data-cell {
-  text-align: center;
-  padding: 40px 20px;
-  color: #6c757d;
-  font-style: italic;
-  background-color: #fff;
+.claims-table-cell {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-bottom: 1px solid #eee;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.claims-table th:first-child,
+.claims-table td:first-child {
+  width: 8%;
+  max-width: 60px;
+}
+
+.claims-table th:nth-child(2),
+.claims-table td:nth-child(2) {
+  width: 12%;
+  max-width: 90px;
+}
+
+.claims-table th:nth-child(3),
+.claims-table td:nth-child(3) {
+  width: 15%;
+  max-width: 110px;
+}
+
+.claims-table th:nth-child(4),
+.claims-table td:nth-child(4) {
+  width: 10%;
+  max-width: 70px;
+}
+
+.claims-table th:nth-child(5),
+.claims-table td:nth-child(5) {
+  width: 20%;
+  max-width: 140px;
+}
+
+.claims-table th:nth-child(6),
+.claims-table td:nth-child(6) {
+  width: 20%;
+  max-width: 140px;
+}
+
+.claims-table th:nth-child(7),
+.claims-table td:nth-child(7) {
+  width: 15%;
+  max-width: 100px;
+}
+
+.claims-table th:last-child,
+.claims-table td:last-child {
+  width: 10%;
+  max-width: 80px;
 }
 
 .table-link {
-  color: #007bff;
-  text-decoration: none;
-  transition: color 0.2s ease;
+  color: var(--brand-primary, #163E6C);
+  text-decoration: underline;
+  font-weight: 500;
 }
 
 .table-link:hover {
-  color: #0056b3;
-  text-decoration: underline;
+  color: #0f2d4a;
+  text-decoration: none;
 }
 
-/* Стили для действий (кнопок) */
 .action-btn {
-  padding: 6px 12px;
+  padding: 0.4rem 0.8rem;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-family-main);
   font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
   transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
 }
 
 .view-btn {
-  background-color: #28a745;
+  background: var(--brand-primary, #163E6C);
   color: white;
 }
 
 .view-btn:hover {
-  background-color: #218837;
+  background: #0f2d4a;
   transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(22, 62, 108, 0.3);
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-  .claim-table-container {
-    padding: 10px;
+.no-data-cell {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: #666;
+  font-style: italic;
+  background: #f8f9fa;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 1024px) {
+  .claim-list-page {
+    padding: var(--spacing-lg) var(--spacing-sm);
   }
 
   .filters-container {
     grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 12px;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
   }
 
-  .claims-table th,
-  .claims-table td {
-    padding: 8px 6px;
-    font-size: 13px;
+  .claims-table {
+    min-width: 700px;
   }
 
-  .action-btn {
-    padding: 4px 8px;
-    font-size: 12px;
+  .claims-table-cell,
+  .claims-table-header th {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 767px) {
+  .claim-list-title {
+    font-size: 1.8rem;
+    text-align: left;
+  }
+
+  .claim-table-container {
+    border-radius: var(--border-radius-md);
+  }
+
   .filters-container {
-    padding: 8px;
+    padding: var(--spacing-md);
   }
 
-  .filter-field label {
-    font-size: 13px;
+  .claims-table {
+    min-width: 600px;
   }
 
-  .claims-table th {
-    font-size: 12px;
+  .claims-table th:nth-child(4),
+  .claims-table td:nth-child(4),
+  .claims-table th:nth-child(7),
+  .claims-table td:nth-child(7) {
+    display: none;
   }
-
-  .claims-table td {
-    font-size: 12px;
-    padding: 6px 4px;
-  }
-}
-
-/* Дополнительные стили для улучшения UX */
-.claims-table-cell {
-  vertical-align: middle;
-}
-
-/* Стили для колонтитулов */
-.claims-table tfoot td {
-  font-weight: bold;
-  background-color: #e9ecef;
-}
-
-/* Анимация появления таблицы */
-.claims-table {
-  animation: fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Стили для состояния загрузки (если понадобится) */
-.loading {
-  text-align: center;
-  padding: 20px;
-  color: #6c757d;
-  font-style: italic;
-}
-
-.error {
-  text-align: center;
-  padding: 20px;
-  color: #dc3545;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-  margin-bottom: 16px;
 }

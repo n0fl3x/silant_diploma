@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import MachineTable from '../components/MachineTable';
 import { useAuth } from '../contexts/AuthContext';
 
+
 const MachineListPage: React.FC = () => {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();

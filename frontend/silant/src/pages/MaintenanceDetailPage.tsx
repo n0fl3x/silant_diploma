@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/MaintenanceDetail.css';
 
+
 interface MaintenanceData {
   id: number;
   maintenance_date: string;

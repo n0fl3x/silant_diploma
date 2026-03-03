@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import "../styles/ClaimDetail.css";
 import axios from 'axios';
 
+
 const ClaimDetailPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -127,12 +128,12 @@ const ClaimDetailPage: React.FC = () => {
           </div>
 
           <div className="claim-field">
-            <span className="claim-label">Наработка, м/час: </span>
+            <span className="claim-label">Наработка (моточасы): </span>
             <span className="claim-value">{claim.operating_hours}</span>
           </div>
 
           <div className="claim-field">
-            <span className="claim-label">Время простоя, дней: </span>
+            <span className="claim-label">Время простоя (дней): </span>
             <span className="claim-value">{claim.downtime_days}</span>
           </div>
 

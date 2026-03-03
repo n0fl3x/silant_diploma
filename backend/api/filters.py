@@ -17,8 +17,14 @@ class MachineFilter(django_filters.FilterSet):
 
     class Meta:
         model = Machine
-        fields = ['model', 'engine_model', 'transmission_model',
-                  'steering_axle_model', 'drive_axle_model', 'serial_number']
+        fields = [
+            'model',
+            'engine_model',
+            'transmission_model',
+            'steering_axle_model',
+            'drive_axle_model',
+            'serial_number',
+        ]
 
 
 class MaintenanceFilter(django_filters.FilterSet):
@@ -27,7 +33,10 @@ class MaintenanceFilter(django_filters.FilterSet):
 
     class Meta:
         model = Maintenance
-        fields = ['maintenance_type', 'service_company']
+        fields = [
+            'maintenance_type',
+            'service_company',
+        ]
 
 
 class ClaimFilter(django_filters.FilterSet):
@@ -37,4 +46,8 @@ class ClaimFilter(django_filters.FilterSet):
 
     class Meta:
         model = Claim
-        fields = ['failure_node', 'repair_method', 'service_company']
+        fields = [
+            'failure_node',
+            'repair_method',
+            'service_company',
+        ]

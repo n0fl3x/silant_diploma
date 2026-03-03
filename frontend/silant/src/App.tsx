@@ -16,12 +16,13 @@ import EditDictionaryEntryPage from './pages/DictEntryEditPage';
 import { AuthProvider } from './contexts/AuthContext';
 import MaintenancePage from './pages/MaintenanceListPage';
 import MaintenanceDetail from './pages/MaintenanceDetailPage';
-import MaintenanceCreateForm from './components/MaintenanceCreate';
-import MaintenanceEdit from './components/MaintenanceEdit';
+import MaintenanceCreateForm from './pages/MaintenanceCreatePage';
+import MaintenanceEdit from './pages/MaintenanceEditPage';
 import ClaimListPage from './pages/ClaimListPage';
 import ClaimDetailPage from './pages/ClaimDetailPage';
 import CreateClaimPage from './pages/ClaimCreatePage';
 import ClaimEditForm from './pages/ClaimUpdatePage';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -193,6 +194,7 @@ function App() {
               />
             </Routes>
           </main>
+          <Footer />
         </div>
       </Router>
     </AuthProvider>

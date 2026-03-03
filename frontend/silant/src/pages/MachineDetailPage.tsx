@@ -6,6 +6,7 @@ import '../styles/MachineDetail.css';
 import '../styles/DictionaryLink.css';
 import { DictionaryLink } from '../components/DictionaryLink';
 
+
 export default function MachineDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -74,7 +75,6 @@ export default function MachineDetailPage() {
   const handleDelete = async () => {
     if (!machine?.id) return;
 
-    // Показываем браузерное окно подтверждения
     const isConfirmed = window.confirm(
       'Вы уверены, что хотите удалить эту машину?\n\n' +
       `ID машины: ${machine.id}\n` +
@@ -82,7 +82,6 @@ export default function MachineDetailPage() {
       'Это действие нельзя отменить.'
     );
 
-    // Если пользователь нажал "Отмена", прерываем выполнение
     if (!isConfirmed) {
       return;
     }
@@ -114,7 +113,6 @@ export default function MachineDetailPage() {
         }
       }
 
-      // Успешное удаление — перенаправляем на список машин
       navigate('/machine-list');
     } catch (err) {
       console.error('Ошибка при удалении машины:', err);
@@ -238,7 +236,7 @@ export default function MachineDetailPage() {
         </div>
 
         <div className="detail-section">
-          <h3>Ведущие оси</h3>
+          <h3>Ведущий мост</h3>
           <div className="detail-item">
             <span className="label">Модель:</span>
             <DictionaryLink
@@ -253,7 +251,7 @@ export default function MachineDetailPage() {
         </div>
 
         <div className="detail-section">
-          <h3>Управляемые оси</h3>
+          <h3>Управляемый мост</h3>
           <div className="detail-item">
             <span className="label">Модель:</span>
             <DictionaryLink
@@ -313,4 +311,4 @@ export default function MachineDetailPage() {
       </div>
     </div>
   );
-}
+};

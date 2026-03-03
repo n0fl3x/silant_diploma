@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
@@ -19,6 +20,9 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
     startPage = Math.max(1, endPage - maxVisiblePages + 1);
   }
 
+  const shouldShowFirstEllipsis = startPage > 1;
+  const shouldShowLastEllipsis = endPage < totalPages;
+
   for (let i = startPage; i <= endPage; i++) {
     pages.push(i);
   }
@@ -29,6 +33,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         onClick={() => onPageChange(1)}
         disabled={currentPage === 1}
         className="pagination-btn"
+        aria-label="Первая страница"
       >
         « Первая
       </button>
@@ -36,24 +41,40 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className="pagination-btn"
+        aria-label="Предыдущая страница"
       >
         ‹ Назад
       </button>
+
+      {shouldShowFirstEllipsis && (
+        <span className="pagination-ellipsis" aria-hidden="true">
+          …
+        </span>
+      )}
 
       {pages.map(page => (
         <button
           key={page}
           onClick={() => onPageChange(page)}
           className={`pagination-btn ${page === currentPage ? 'active' : ''}`}
+          aria-current={page === currentPage ? 'page' : undefined}
+          aria-label={`Страница ${page}`}
         >
           {page}
         </button>
       ))}
 
+      {shouldShowLastEllipsis && (
+        <span className="pagination-ellipsis" aria-hidden="true">
+          …
+        </span>
+      )}
+
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         className="pagination-btn"
+        aria-label="Следующая страница"
       >
         Вперёд ›
       </button>
@@ -61,6 +82,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage === totalPages}
         className="pagination-btn"
+        aria-label="Последняя страница"
       >
         Последняя »
       </button>

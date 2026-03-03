@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import "../styles/DictionaryList.css";
 
+
 interface DictionaryEntry {
   id: number;
   entity: string;
@@ -17,13 +18,13 @@ export default function DictionaryListPage() {
 
   useEffect(() => {
     fetch(
-        'api/v1/dict-entries',
-        {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                'Content-Type': 'application/json',
-            }
+      'api/v1/dict-entries',
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          'Content-Type': 'application/json',
         }
+      }
     )
       .then(response => {
         if (!response.ok) {
@@ -100,4 +101,4 @@ export default function DictionaryListPage() {
       )}
     </div>
   );
-}
+};

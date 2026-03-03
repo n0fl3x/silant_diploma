@@ -1,4 +1,3 @@
-from django import forms
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.contrib.auth.admin import UserAdmin
@@ -50,7 +49,7 @@ class CustomUserAdmin(UserAdmin):
             {
                 "fields": (
                     "username",
-                    "password"
+                    "password",
                 ),
             },
         ),
@@ -61,7 +60,7 @@ class CustomUserAdmin(UserAdmin):
                     "first_name",
                     "last_name",
                     "email",
-                    "user_description"
+                    "user_description",
                 ),
             },
         ),
@@ -71,7 +70,7 @@ class CustomUserAdmin(UserAdmin):
                 "fields": (
                     "user_type",
                     "group",
-                    "user_permissions"
+                    "user_permissions",
                 ),
             },
         ),
@@ -81,7 +80,7 @@ class CustomUserAdmin(UserAdmin):
                 "fields": (
                     "is_active",
                     "is_staff",
-                    "is_superuser"
+                    "is_superuser",
                 ),
             },
         ),
@@ -91,7 +90,7 @@ class CustomUserAdmin(UserAdmin):
                 "classes": ("collapse", ),
                 "fields": (
                     "last_login",
-                    "date_joined"
+                    "date_joined",
                 ),
             },
         ),
@@ -114,9 +113,9 @@ class CustomUserAdmin(UserAdmin):
                     "user_type",
                     "group",
                     "user_description",
-                )
-            }
-        )
+                ),
+            },
+        ),
     ]
 
     readonly_fields = [
@@ -307,9 +306,7 @@ class MaintenanceAdmin(admin.ModelAdmin):
 
             if object_id:
                 try:
-                    current_obj = Maintenance.objects.select_related(
-                'machine__client'
-            ).get(pk=object_id)
+                    current_obj = Maintenance.objects.select_related('machine__client').get(pk=object_id)
                 except Maintenance.DoesNotExist:
                     pass
 
@@ -322,7 +319,6 @@ class MaintenanceAdmin(admin.ModelAdmin):
             kwargs["queryset"] = base_qs.distinct().order_by('user_description')
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
 
     def save_model(self, request, obj, form, change):
         try:

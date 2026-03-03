@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "../styles/ClaimCreate.css";
 
+
 interface DictionaryEntry {
   id: number;
   name: string;
@@ -132,7 +133,7 @@ const CreateClaimPage: React.FC = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="operating_hours">Наработка, м/час:</label>
+          <label htmlFor="operating_hours">Наработка (моточасы):</label>
           <input
             type="number"
             id="operating_hours"

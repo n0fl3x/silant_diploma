@@ -4,6 +4,7 @@ import { DictionaryEntryForm } from '../components/DictEntryForm';
 import type { FormData } from '../components/DictEntryForm';
 import '../styles/DictEntryForm.css';
 
+
 export default function EditDictionaryEntryPage() {
   const { id } = useParams<{ id: string }>();
   const numericId = parseInt(id || '0', 10);
@@ -99,4 +100,4 @@ export default function EditDictionaryEntryPage() {
       />
     </div>
   );
-}
+};

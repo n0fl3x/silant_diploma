@@ -4,6 +4,7 @@ import type { DictionaryEntry } from '../types/DictionaryEntry';
 import '../styles/DictEntryDetail.css';
 import { useAuth } from '../contexts/AuthContext';
 
+
 const DictEntryDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const numericId = parseInt(id || '0', 10);
