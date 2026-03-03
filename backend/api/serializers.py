@@ -622,9 +622,31 @@ class ClaimCreateSerializer(serializers.ModelSerializer):
 
 
 class ClaimUpdateSerializer(serializers.ModelSerializer):
-    failure_node_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
-    recovery_method_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    failure_node_id = serializers.IntegerField(
+        write_only=True,
+        required=False,
+        allow_null=True
+    )
+    recovery_method_id = serializers.IntegerField(
+        write_only=True,
+        required=False,
+        allow_null=True
+    )
     machine_id = serializers.IntegerField(write_only=True)
+
+    failure_node_name = serializers.CharField(
+        source='failure_node.name',
+        read_only=True
+    )
+    recovery_method_name = serializers.CharField(
+        source='recovery_method.name',
+        read_only=True
+    )
+    machine_factory_number = serializers.CharField(
+        source='machine.factory_number',
+        read_only=True
+    )
+    downtime_days = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Claim
@@ -633,11 +655,14 @@ class ClaimUpdateSerializer(serializers.ModelSerializer):
             'failure_date',
             'operating_hours',
             'failure_description',
-            # 'recovery_description',
-            'spare_parts_used',
+            'spare_parts',
+            'downtime_days',
             'failure_node_id',
             'recovery_method_id',
-            'machine_id'
+            'machine_id',
+            'failure_node_name',
+            'recovery_method_name', 
+            'machine_factory_number',
         ]
 
     def validate_machine_id(self, value):

@@ -96,6 +96,7 @@ const ClaimTable: React.FC<ClaimTableProps> = ({ claims }) => {
         <thead>
           <tr className="claims-table-header">
             <th>ID</th>
+            <th>Действия</th>
             <th>Дата отказа</th>
             <th>Наработка, м/час</th>
             <th>Узел отказа</th>
@@ -103,7 +104,6 @@ const ClaimTable: React.FC<ClaimTableProps> = ({ claims }) => {
             <th>Сервисная компания</th>
             <th>Машина</th>
             <th>Время простоя, дней</th>
-            <th>Действия</th>
           </tr>
         </thead>
         <tbody>
@@ -117,6 +117,14 @@ const ClaimTable: React.FC<ClaimTableProps> = ({ claims }) => {
             filteredClaims.map(item => (
               <tr key={item.id} className="claims-table-row">
                 <td className="claims-table-cell">{item.id}</td>
+                <td className="claims-table-cell">
+                  <button
+                    className="action-btn view-btn"
+                    onClick={() => window.location.href = `/claim-detail/${item.id}`}
+                  >
+                    Подробнее
+                  </button>
+                </td>
                 <td className="claims-table-cell">
                   {new Date(item.failure_date).toLocaleDateString()}
                 </td>
@@ -144,14 +152,6 @@ const ClaimTable: React.FC<ClaimTableProps> = ({ claims }) => {
                   </a>
                 </td>
                 <td className="claims-table-cell">{item.downtime_days}</td>
-                <td className="claims-table-cell">
-                  <button
-                    className="action-btn view-btn"
-                    onClick={() => window.location.href = `/claim-detail/${item.id}`}
-                  >
-                    Подробнее
-                  </button>
-                </td>
               </tr>
             ))
           )}

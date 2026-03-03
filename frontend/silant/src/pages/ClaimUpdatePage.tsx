@@ -7,7 +7,7 @@ interface ClaimData {
     operating_hours: number;
     failure_description: string;
     recovery_description: string;
-    spare_parts_used: string;
+    spare_parts: string;
     failure_node_id: number | null;
     recovery_method_id: number | null;
     machine_id: number;
@@ -106,26 +106,41 @@ export default function ClaimEditForm() {
         setErrors({});
 
         try {
-            const response = await fetch(`/api/v1/claims/${id}/`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            });
+          // Отправляем только поля, которые можно записать
+          const submitData = {
+            id: formData?.id,
+            failure_date: formData?.failure_date,
+            operating_hours: formData?.operating_hours,
+            failure_description: formData?.failure_description,
+            spare_parts: formData?.spare_parts,
+            failure_node_id: formData?.failure_node_id,
+            recoverymethod_id: formData?.recovery_method_id,  // соответствует сериализатору
+            machine_id: formData?.machine_id
+          };
 
-            if (response.ok) {
-                navigate('/claims-list');
-            } else {
-                const errorData = await response.json();
-                setErrors(errorData.errors || {});
-            }
+          const response = await fetch(`/api/v1/claims/${id}/`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(submitData)
+          });
+
+          if (response.ok) {
+            // После сохранения делаем GET‑запрос, чтобы получить актуальные read‑only‑данные
+            const updatedData = await response.json();
+            setFormData(updatedData);
+            navigate('/claims');
+          } else {
+            const errorData = await response.json();
+            setErrors(errorData.errors || {});
+          }
         } catch (err) {
-            console.error('Ошибка при сохранении:', err);
-            setErrors({ general: 'Ошибка при сохранении данных' });
+          console.error('Ошибка при сохранении:', err);
+          setErrors({ general: 'Ошибка при сохранении данных' });
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
     };
 
@@ -306,16 +321,16 @@ export default function ClaimEditForm() {
 
                 <div className="form-row">
                     <div className="form-group full-width">
-                        <label htmlFor="spare_parts_used">Использованные запчасти</label>
+                        <label htmlFor="spare_parts">Использованные запчасти</label>
                         <textarea
-                            id="spare_parts_used"
-                            name="spare_parts_used"
-                            value={formData.spare_parts_used}
+                            id="spare_parts"
+                            name="spare_parts"
+                            value={formData.spare_parts}
                             onChange={handleChange}
                             rows={2}
-                            className={errors.spare_parts_used ? 'input-error' : ''}
+                            className={errors.spare_parts ? 'input-error' : ''}
                         />
-                        {errors.spare_parts_used && <span className="error-message">{errors.spare_parts_used}</span>}
+                        {errors.spare_parts && <span className="error-message">{errors.spare_parts}</span>}
                     </div>
                 </div>
 

@@ -38,6 +38,7 @@ router.register(
     viewset=ClaimViewSet,
     basename="claim",
 )
+# вспомогалки для дёрганья инфы для выпадашек
 router.register(r'dictionary-entries', DictionaryEntryViewSet, basename='dictionary-entry')
 router.register(r'machines', MachineViewSet, basename='machine')
 
