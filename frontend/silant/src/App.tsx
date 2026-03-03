@@ -21,6 +21,7 @@ import MaintenanceEdit from './components/MaintenanceEdit';
 import ClaimListPage from './pages/ClaimListPage';
 import ClaimDetailPage from './pages/ClaimDetailPage';
 import CreateClaimPage from './pages/ClaimCreatePage';
+import ClaimEditForm from './pages/ClaimUpdatePage';
 
 function App() {
   return (
@@ -171,6 +172,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <CreateClaimPage />
+                  </ProtectedRoute>
+                }
+              />
+              < Route
+                path='/claim-update/:id'
+                element={
+                  <ProtectedRoute requiredGroups={['manager', 'service_company', 'superadmin']}>
+                    <ClaimEditForm />
                   </ProtectedRoute>
                 }
               />

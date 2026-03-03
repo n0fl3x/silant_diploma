@@ -65,6 +65,10 @@ const ClaimDetailPage: React.FC = () => {
     }
   };
 
+  const handleEdit = () => {
+    navigate(`/claim-update/${id}`)
+  };
+
   if (loading) {
     return (
       <div className="claim-detail-page">
@@ -91,12 +95,20 @@ const ClaimDetailPage: React.FC = () => {
               ← Вернуться к списку
             </Link>
             {userGroup !== 'client' && (
+              <>
+              <button
+                onClick={handleEdit}
+                className="claim-card-edit-btn"
+              >
+                Редактировать
+              </button>
               <button
                 onClick={handleDelete}
                 className="claim-card-delete-btn"
               >
                 Удалить рекламацию
               </button>
+              </>
             )}
           </div>
         </div>

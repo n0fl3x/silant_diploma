@@ -621,6 +621,82 @@ class ClaimCreateSerializer(serializers.ModelSerializer):
         }
 
 
+class ClaimUpdateSerializer(serializers.ModelSerializer):
+    failure_node_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    recovery_method_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    machine_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = Claim
+        fields = [
+            'id',
+            'failure_date',
+            'operating_hours',
+            'failure_description',
+            # 'recovery_description',
+            'spare_parts_used',
+            'failure_node_id',
+            'recovery_method_id',
+            'machine_id'
+        ]
+
+    def validate_machine_id(self, value):
+        if not Machine.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Машина не найдена")
+        return value
+
+    def validate_failure_node_id(self, value):
+        if value is None:
+            return value
+        if not DictionaryEntry.objects.filter(
+            id=value,
+            entity='failure_node'
+        ).exists():
+            raise serializers.ValidationError("Узел отказа не найден в справочнике")
+        return value
+
+    def validate_recovery_method_id(self, value):
+        if value is None:
+            return value
+        if not DictionaryEntry.objects.filter(
+            id=value,
+            entity='recovery_method'
+        ).exists():
+            raise serializers.ValidationError("Способ восстановления не найден в справочнике")
+        return value
+
+    def update(self, instance, validated_data):
+        # Обновляем связанные объекты по ID
+        failure_node_id = validated_data.pop('failure_node_id', None)
+        recovery_method_id = validated_data.pop('recovery_method_id', None)
+        machine_id = validated_data.pop('machine_id')
+
+        if failure_node_id is not None:
+            instance.failure_node = DictionaryEntry.objects.get(id=failure_node_id)
+        else:
+            instance.failure_node = None
+
+        if recovery_method_id is not None:
+            instance.recovery_method = DictionaryEntry.objects.get(id=recovery_method_id)
+        instance.machine = Machine.objects.get(id=machine_id)
+
+        # Обновляем остальные поля
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Добавляем читаемые названия вместо ID
+        data['failure_node_name'] = instance.failure_node.name if instance.failure_node else None
+        data['recovery_method_name'] = instance.recovery_method.name if instance.recovery_method else None
+        data['machine_factory_number'] = instance.machine.factory_number
+        return data
+
+
+
 class MachineSerializer(serializers.ModelSerializer):
     model_tech_name = serializers.CharField(source='model_tech.name', read_only=True)
 

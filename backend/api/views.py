@@ -26,6 +26,7 @@ from .serializers import (
     ClaimCreateSerializer,
     ClaimListSerializer,
     ClaimDetailSerializer,
+    ClaimUpdateSerializer,
     MachineCreateSerializer,
     MachineEditSerializer,
     MachinePublicSerializer,
@@ -161,14 +162,7 @@ class CurrentUserView(APIView):
 
     def get(self, request):
         user = request.user
-        group_name = user.group.name if user.group else None
-        user_type_mapping = {
-            "Клиент": "client",
-            "Сервисная организация": "service_company",
-            "Менеджер": "manager",
-            "Суперадмин": "superadmin"
-        }
-        user_type = user_type_mapping.get(group_name, "unknown")
+        user_type = user.user_type if user.group else None
 
         return Response({
             'id': user.id,
@@ -790,6 +784,8 @@ class ClaimViewSet(viewsets.ModelViewSet):
             return ClaimCreateSerializer
         elif self.action == 'list':
             return ClaimListSerializer
+        elif self.action in ['update', 'partial_update']:
+            return ClaimUpdateSerializer
         return ClaimDetailSerializer
 
     @transaction.atomic
