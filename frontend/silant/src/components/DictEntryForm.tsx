@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// Тип для данных формы
 export interface FormData {
   entity: string;
   name: string;
@@ -34,6 +34,7 @@ export const DictionaryEntryForm: React.FC<DictionaryEntryFormProps> = ({
   onSubmit,
   isLoading = false
 }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     entity: initialData?.entity || '',
     name: initialData?.name || '',
@@ -82,7 +83,6 @@ export const DictionaryEntryForm: React.FC<DictionaryEntryFormProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Очищаем ошибку при изменении поля
     if (errors[name]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -90,6 +90,10 @@ export const DictionaryEntryForm: React.FC<DictionaryEntryFormProps> = ({
         return newErrors;
       });
     }
+  };
+
+  const handleCancel = () => {
+    navigate(-1); // Возвращаемся на предыдущую страницу
   };
 
   return (
@@ -149,6 +153,14 @@ export const DictionaryEntryForm: React.FC<DictionaryEntryFormProps> = ({
           className="btn btn-primary"
         >
           {isLoading ? 'Сохранение...' : (initialData?.id ? 'Обновить' : 'Создать')}
+        </button>
+        <button
+          type="button"
+          onClick={handleCancel}
+          disabled={isLoading}
+          className="btn btn-secondary"
+        >
+          Отмена
         </button>
       </div>
     </form>

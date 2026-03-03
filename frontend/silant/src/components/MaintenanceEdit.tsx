@@ -93,7 +93,8 @@ const MaintenanceEdit: React.FC = () => {
         navigate(`/maintenance/${id}`);
       }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.errors || err.response?.data?.message || 'Ошибка при сохранении ТО');
+      console.log(err);
+      setError(err.errors || err.response?.data?.message || 'Ошибка при сохранении ТО');
     }
   };
 

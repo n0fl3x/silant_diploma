@@ -731,6 +731,8 @@ class MaintenanceUpdateView(APIView):
                 'success': True,
                 'data': serializer.data
             }, status=status.HTTP_200_OK)
+        print(serializer.errors)
+        print(serializer.data)
         return Response({
             'success': False,
             'errors': serializer.errors
@@ -793,7 +795,6 @@ class ClaimViewSet(viewsets.ModelViewSet):
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        print(serializer)
 
         if serializer.is_valid():
             try:

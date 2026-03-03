@@ -41,13 +41,6 @@ export default function CreateDictionaryEntryPage() {
         onSubmit={handleSubmit}
         isLoading={isLoading}
       />
-      <button
-        type="button"
-        onClick={() => navigate('/dashboard')}
-        className="btn btn-secondary"
-      >
-        Отмена
-      </button>
     </div>
   );
 }

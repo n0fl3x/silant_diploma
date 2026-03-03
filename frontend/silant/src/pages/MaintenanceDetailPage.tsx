@@ -73,12 +73,11 @@ const MaintenanceDetail: React.FC = () => {
   const handleDelete = async () => {
     if (!id) return;
 
-    // Показываем стандартное браузерное окно подтверждения
     const shouldDelete = window.confirm(
       `Вы уверены, что хотите удалить ТО №${maintenance?.id} от ${maintenance?.maintenance_date}?`
     );
 
-    if (!shouldDelete) return; // Пользователь нажал «Отмена»
+    if (!shouldDelete) return;
 
     try {
       const token = localStorage.getItem('access_token');
@@ -93,7 +92,6 @@ const MaintenanceDetail: React.FC = () => {
         }
       });
 
-      // После успешного удаления перенаправляем на список ТО
       navigate('/maintenance');
     } catch (err: any) {
       setError(

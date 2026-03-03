@@ -394,18 +394,15 @@ class MaintenanceCreateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        # Удаляем write‑only поля из ответа
         for field in ['maintenance_type_id', 'machine_factory_number', 'service_company_name']:
             data.pop(field, None)
 
-        # Добавляем читаемые названия вместо ID
         data['maintenance_type_name'] = instance.maintenance_type.name
         data['machine_factory_number'] = instance.machine.factory_number
         data['service_company_name'] = instance.service_company.user_description
         return data
 
     def create(self, validated_data):
-        # Получаем объекты по ID и строковым значениям
         maintenance_type_id = validated_data.pop('maintenance_type_id')
         machine_factory_number = validated_data.pop('machine_factory_number')
         service_company_name = validated_data.pop('service_company_name')
@@ -417,12 +414,11 @@ class MaintenanceCreateSerializer(serializers.ModelSerializer):
             )
             machine = Machine.objects.get(factory_number=machine_factory_number)
             service_company = CustomUser.objects.get(user_description=service_company_name)
-        except (DictionaryEntry.DoesNotExist, Machine.DoesNotExist, CustomUser.DoesNotExist) as e:
+        except (DictionaryEntry.DoesNotExist, Machine.DoesNotExist, CustomUser.DoesNotExist):
             raise serializers.ValidationError({
                 'non_field_errors': 'Ошибка при создании ТО: один из связанных объектов не найден.'
             })
 
-        # Создаём запись ТО с связанными объектами
         maintenance = Maintenance.objects.create(
             maintenance_type=maintenance_type,
             machine=machine,
@@ -430,7 +426,6 @@ class MaintenanceCreateSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return maintenance
-
 
 
 class MaintenanceUpdateSerializer(serializers.ModelSerializer):
@@ -599,6 +594,8 @@ class ClaimDetailSerializer(serializers.ModelSerializer):
             'recovery_method',
             'recovery_method_name',
             'service_company_description',
+            'spare_parts',
+            'failure_description',
         ]
         read_only_fields = fields
 

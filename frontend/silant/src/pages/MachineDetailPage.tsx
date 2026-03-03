@@ -131,7 +131,7 @@ export default function MachineDetailPage() {
   if (authLoading || loading) {
     return (
       <div className="machine-detail-container">
-        <div className="loading-spinner">⏳ Загрузка данных машины...</div>
+        <div className="loading-spinner">⏳</div>
       </div>
     );
   }

@@ -97,16 +97,6 @@ export default function EditDictionaryEntryPage() {
         onSubmit={handleSubmit}
         isLoading={isSubmitting}
       />
-
-      <div className="form-actions">
-        <button
-          type="button"
-          onClick={() => navigate(`/dictionary/${numericId}`)}
-          className="btn btn-secondary"
-        >
-          Отмена
-        </button>
-      </div>
     </div>
   );
 }

@@ -61,7 +61,7 @@ const ClaimDetailPage: React.FC = () => {
       alert('Рекламация успешно удалена');
       navigate('/claims');
     } catch (error) {
-      alert('Ошибка при удалении рекламации');
+      alert('Ркламации хранятся пока есть машина, для которой она относится.');
     }
   };
 
@@ -156,10 +156,16 @@ const ClaimDetailPage: React.FC = () => {
             </div>
           )}
 
-          {claim.description && (
+          {claim.spare_parts && (
+            <div className="claim-field claim-field--description">
+              <span className="claim-label">Запасные детали: </span>
+              <div className="claim-description">{claim.spare_parts}</div>
+            </div>
+          )}
+          {claim.failure_description && (
             <div className="claim-field claim-field--description">
               <span className="claim-label">Описание проблемы: </span>
-              <div className="claim-description">{claim.description}</div>
+              <div className="claim-description">{claim.failure_description}</div>
             </div>
           )}
         </div>

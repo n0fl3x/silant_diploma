@@ -56,7 +56,7 @@ const DictEntryDetailPage: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Ошибка при удалении элемента справочника');
+        throw new Error('К этому элементу относится машина, ТО или рекламация. Пока что Вы не можете его удалить.');
       }
 
       navigate('/dictionary');

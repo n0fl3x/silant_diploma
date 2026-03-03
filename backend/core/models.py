@@ -149,9 +149,7 @@ class Machine(models.Model):
     # 2. Модель техники (справочник)
     model_tech = models.ForeignKey(
         to=DictionaryEntry,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.PROTECT,
         limit_choices_to={
             "entity": "machine_model",
         },
@@ -162,9 +160,7 @@ class Machine(models.Model):
     # 3. Модель двигателя (справочник)
     engine_model = models.ForeignKey(
         to=DictionaryEntry,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.PROTECT,
         limit_choices_to={
             "entity": "engine_model",
         },
@@ -183,9 +179,7 @@ class Machine(models.Model):
     # 5. Модель трансмиссии (справочник)
     transmission_model = models.ForeignKey(
         to=DictionaryEntry,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.PROTECT,
         limit_choices_to={
             "entity": "transmission_model",
         },
@@ -204,9 +198,7 @@ class Machine(models.Model):
     # 7. Модель ведущего моста (справочник)
     drive_axle_model = models.ForeignKey(
         to=DictionaryEntry,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.PROTECT,
         limit_choices_to={
             "entity": "drive_axle_model",
         },
@@ -225,9 +217,7 @@ class Machine(models.Model):
     # 9. Модель управляемого моста (справочник)
     steering_axle_model = models.ForeignKey(
         to=DictionaryEntry,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.PROTECT,
         limit_choices_to={
             "entity": "steering_axle_model",
         },
@@ -361,7 +351,7 @@ class Maintenance(models.Model):
     # 7. Машина (связь с базой данных машин)
     machine = models.ForeignKey(
         to=Machine,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="Машина",
         related_name="maintenance_events",
     )
@@ -369,7 +359,7 @@ class Maintenance(models.Model):
     # 8. Сервисная компания (справочник пользователей с правами)
     service_company = models.ForeignKey(
         to=CustomUser,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="Сервисная компания",
         related_name="company_maintenance_records",
     )
@@ -469,7 +459,7 @@ class Claim(models.Model):
     # 9. Машина (связь с базой данных машин)
     machine = models.ForeignKey(
         to=Machine,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="Машина",
         related_name="claims",
     )
