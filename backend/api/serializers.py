@@ -280,17 +280,39 @@ class ServiceCompanySerializer(serializers.ModelSerializer):
 
 
 class MaintenanceSerializer(serializers.ModelSerializer):
-    machine = MachineForMaintenanceSerializer(read_only=True)
-    maintenance_type = MaintenanceTypeSerializer(read_only=True)
-    service_company = ServiceCompanySerializer(read_only=True)
+    machine = serializers.SerializerMethodField()
+    maintenance_type = MaintenanceTypeSerializer()  # используем новый сериализатор
+    service_company = serializers.SerializerMethodField()
 
     class Meta:
         model = Maintenance
         fields = [
-            'id', 'maintenance_date', 'operating_hours',
-            'work_order_number', 'work_order_date',
-            'machine', 'maintenance_type', 'service_company'
+            'id',
+            'maintenance_date',
+            'operating_hours',
+            'work_order_number',
+            'work_order_date',
+            'machine',
+            'maintenance_type',
+            'service_company'
         ]
+
+    def get_machine(self, obj):
+        if obj.machine:
+            return {
+                'id': obj.machine.id,
+                'factory_number': obj.machine.factory_number,
+                'model_tech_name': obj.machine.model_tech.name if obj.machine.model_tech else None,
+                'model_tech_id': obj.machine.model_tech.id if obj.machine.model_tech else None
+            }
+        return None
+
+    def get_service_company(self, obj):
+        if obj.service_company:
+            return {
+                'description': obj.service_company.user_description
+            }
+        return None
 
 
 class MachineShortSerializer(serializers.ModelSerializer):

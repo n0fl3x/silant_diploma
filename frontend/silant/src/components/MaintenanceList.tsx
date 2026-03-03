@@ -155,7 +155,7 @@ const MaintenanceTable: React.FC = () => {
                 <td>{item.operating_hours}</td>
                 <td>
                   <Link
-                    to={`/maintenance/${item.maintenance_type?.id}`}
+                    to={`/dictionary/${item.maintenance_type?.id}`}
                     className="table-link"
                   >
                     {item.maintenance_type?.name || 'Не указано'}

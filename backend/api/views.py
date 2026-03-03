@@ -634,7 +634,7 @@ class MaintenanceDetailView(generics.RetrieveAPIView):
             'machine__model_tech',
         )
 
-        group_name = user.group.name if user.group else None
+        group_name = user.user_type if user.group else None
 
         if group_name == 'Клиент':
             queryset = queryset.filter(machine__client=user)
