@@ -39,7 +39,6 @@ export default function MachineDetailPage() {
       setError(null);
 
       const token = localStorage.getItem('access_token');
-      console.log(localStorage);
       if (!token) {
         throw new Error('Токен авторизации отсутствует');
       }
@@ -66,10 +65,8 @@ export default function MachineDetailPage() {
       const data: Machine = await response.json();
       setMachine(data);
     } catch (err) {
-      console.error(err);
       setError('Не удалось загрузить данные машины. Попробуйте позже.');
     } finally {
-      console.log("fetchMachineDetail: Завершение загрузки (setLoading(false))");
       setLoading(false);
     }
   };
@@ -100,7 +97,7 @@ export default function MachineDetailPage() {
         } else if (response.status === 401) {
           throw new Error('Требуется повторная авторизация');
         } else {
-          throw new Error(`Ошибка сервера: ${response.status}`);
+          throw new Error(`Ошибка сервера: ${response.body}`);
         }
       }
 

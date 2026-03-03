@@ -149,17 +149,22 @@ class Machine(models.Model):
     # 2. Модель техники (справочник)
     model_tech = models.ForeignKey(
         to=DictionaryEntry,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         limit_choices_to={
             "entity": "machine_model",
         },
+        
         verbose_name="Модель техники",
     )
 
     # 3. Модель двигателя (справочник)
     engine_model = models.ForeignKey(
         to=DictionaryEntry,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         limit_choices_to={
             "entity": "engine_model",
         },
@@ -178,7 +183,9 @@ class Machine(models.Model):
     # 5. Модель трансмиссии (справочник)
     transmission_model = models.ForeignKey(
         to=DictionaryEntry,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         limit_choices_to={
             "entity": "transmission_model",
         },
@@ -197,7 +204,9 @@ class Machine(models.Model):
     # 7. Модель ведущего моста (справочник)
     drive_axle_model = models.ForeignKey(
         to=DictionaryEntry,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         limit_choices_to={
             "entity": "drive_axle_model",
         },
@@ -216,7 +225,9 @@ class Machine(models.Model):
     # 9. Модель управляемого моста (справочник)
     steering_axle_model = models.ForeignKey(
         to=DictionaryEntry,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         limit_choices_to={
             "entity": "steering_axle_model",
         },

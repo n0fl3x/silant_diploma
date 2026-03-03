@@ -55,4 +55,9 @@ export interface Machine {
   configuration: string | null;
   client_name: string;
   service_company_name: string;
+  model_tech_options: Array<{ id: number; name: string }>;
+  engine_model_options: Array<{ id: number; name: string }>;
+  transmission_model_options: Array<{ id: number; name: string }>;
+  drive_axle_model_options: Array<{ id: number; name: string }>;
+  steering_axle_model_options: Array<{ id: number; name: string }>;
 }

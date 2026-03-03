@@ -9,14 +9,14 @@ interface MachineFormProps {
 
 export interface MachineSubmitData {
   factory_number: string;
-  model_tech_input: string | null;
-  engine_model_input: string | null;
+  model_tech_id: number | null;
+  engine_model_id: number | null;
   engine_factory_number: string;
-  transmission_model_input: string | null;
+  transmission_model_id: number | null;
   transmission_factory_number: string;
-  drive_axle_model_input: string | null;
+  drive_axle_model_id: number | null;
   drive_axle_factory_number: string;
-  steering_axle_model_input: string | null;
+  steering_axle_model_id: number | null;
   steering_axle_factory_number: string;
   delivery_contract: string;
   shipment_date: string;
@@ -34,14 +34,14 @@ const MachineForm: React.FC<MachineFormProps> = ({
 }) => {
   const [formData, setFormData] = React.useState<MachineSubmitData>({
     factory_number: initialData.factory_number || '',
-    model_tech_input: initialData.model_tech_name || null,
-    engine_model_input: initialData.engine_model_name || null,
+    model_tech_id: initialData.model_tech?.id || null,
+    engine_model_id: initialData.engine_model?.id || null,
     engine_factory_number: initialData.engine_factory_number || '',
-    transmission_model_input: initialData.transmission_model_name || null,
+    transmission_model_id: initialData.transmission_model?.id || null,
     transmission_factory_number: initialData.transmission_factory_number || '',
-    drive_axle_model_input: initialData.drive_axle_model_name || null,
+    drive_axle_model_id: initialData.drive_axle_model?.id || null,
     drive_axle_factory_number: initialData.drive_axle_factory_number || '',
-    steering_axle_model_input: initialData.steering_axle_model_name || null,
+    steering_axle_model_id: initialData.steering_axle_model?.id || null,
     steering_axle_factory_number: initialData.steering_axle_factory_number || '',
     delivery_contract: initialData.delivery_contract || '',
     shipment_date: initialData.shipment_date || '',
@@ -52,9 +52,11 @@ const MachineForm: React.FC<MachineFormProps> = ({
     service_company_input: initialData.service_company_name || null
   });
 
-  const handleChange = (field: keyof MachineSubmitData, value: string | null) => {
+
+  const handleChange = (field: keyof MachineSubmitData, value: string | number | null) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,15 +80,20 @@ const MachineForm: React.FC<MachineFormProps> = ({
           />
         </div>
         <div className="form-group">
-          <label htmlFor="model_tech_input">Модель техники:</label>
-          <input
-            type="text"
-            id="model_tech_input"
-            value={formData.model_tech_input || ''}
-            onChange={(e) => handleChange('model_tech_input', e.target.value)}
-            placeholder="Начните вводить название модели..."
+          <label htmlFor="model_tech">Модель техники:</label>
+          <select
+            id="model_tech"
+            value={formData.model_tech_id || ''}
+            onChange={(e) => handleChange('model_tech_id', e.target.value ? parseInt(e.target.value) : null)}
             disabled={isLoading}
-          />
+          >
+            <option value="">Выберите модель техники</option>
+            {initialData.model_tech_options?.map(option => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
           <small className="hint">Будет выполнен поиск в справочнике моделей техники</small>
         </div>
       </div>
@@ -94,15 +101,20 @@ const MachineForm: React.FC<MachineFormProps> = ({
       <div className="form-section">
         <h3>Компоненты машины</h3>
         <div className="form-group">
-          <label htmlFor="engine_model_input">Модель двигателя:</label>
-          <input
-            type="text"
-            id="engine_model_input"
-            value={formData.engine_model_input || ''}
-            onChange={(e) => handleChange('engine_model_input', e.target.value)}
-            placeholder="Начните вводить название модели двигателя..."
+          <label htmlFor="engine_model">Модель двигателя:</label>
+          <select
+            id="engine_model"
+            value={formData.engine_model_id || ''}
+            onChange={(e) => handleChange('engine_model_id', e.target.value ? parseInt(e.target.value) : null)}
             disabled={isLoading}
-          />
+          >
+            <option value="">Выберите модель двигателя</option>
+            {initialData.engine_model_options?.map(option => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
           <small className="hint">Поиск в справочнике моделей двигателей</small>
         </div>
         <div className="form-group">
@@ -117,38 +129,48 @@ const MachineForm: React.FC<MachineFormProps> = ({
           />
         </div>
         <div className="form-group">
-          <label htmlFor="transmission_model_input">Модель трансмиссии:</label>
-          <input
-            type="text"
-            id="transmission_model_input"
-            value={formData.transmission_model_input || ''}
-            onChange={(e) => handleChange('transmission_model_input', e.target.value)}
-            placeholder="Начните вводить название модели трансмиссии..."
+          <label htmlFor="transmission_model">Модель трансмиссии:</label>
+          <select
+            id="transmission_model"
+            value={formData.transmission_model_id || ''}
+            onChange={(e) => handleChange('transmission_model_id', e.target.value ? parseInt(e.target.value) : null)}
             disabled={isLoading}
-          />
+          >
+            <option value="">Выберите модель трансмиссии</option>
+            {initialData.transmission_model_options?.map(option => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
           <small className="hint">Поиск в справочнике моделей трансмиссий</small>
         </div>
         <div className="form-group">
-          <label htmlFor="transmission_factory_number">Зав. № трансмисии:</label>
+          <label htmlFor="transmission_factory_number">Зав. № трансмиссии:</label>
           <input
             type="text"
             id="transmission_factory_number"
             value={formData.transmission_factory_number}
             onChange={(e) => handleChange('transmission_factory_number', e.target.value)}
-            placeholder="Введите заводской номер трансмисии"
+            placeholder="Введите заводской номер трансмиссии"
             disabled={isLoading}
           />
         </div>
         <div className="form-group">
-          <label htmlFor="drive_axle_model_input">Модель ведущего моста:</label>
-          <input
-            type="text"
-            id="drive_axle_model_input"
-            value={formData.drive_axle_model_input || ''}
-            onChange={(e) => handleChange('drive_axle_model_input', e.target.value)}
-            placeholder="Начните вводить название модели ведущего моста..."
+          <label htmlFor="drive_axle_model">Модель ведущего моста:</label>
+          <select
+            id="drive_axle_model"
+            value={formData.drive_axle_model_id || ''}
+            onChange={(e) => handleChange('drive_axle_model_id', e.target.value ? parseInt(e.target.value) : null)}
             disabled={isLoading}
-          />
+          >
+            <option value="">Выберите модель ведущего моста</option>
+            {initialData.drive_axle_model_options?.map(option => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
           <small className="hint">Поиск в справочнике моделей ведущих мостов</small>
         </div>
         <div className="form-group">
@@ -163,15 +185,20 @@ const MachineForm: React.FC<MachineFormProps> = ({
           />
         </div>
         <div className="form-group">
-          <label htmlFor="steering_axle_model_input">Модель управляемого моста:</label>
-          <input
-            type="text"
-            id="steering_axle_model_input"
-            value={formData.steering_axle_model_input || ''}
-            onChange={(e) => handleChange('steering_axle_model_input', e.target.value)}
-            placeholder="Начните вводить название модели управляемого моста..."
+          <label htmlFor="steering_axle_model">Модель управляемого моста:</label>
+          <select
+            id="steering_axle_model"
+            value={formData.steering_axle_model_id || ''}
+            onChange={(e) => handleChange('steering_axle_model_id', e.target.value ? parseInt(e.target.value) : null)}
             disabled={isLoading}
-          />
+          >
+            <option value="">Выберите модель управляемого моста</option>
+            {initialData.steering_axle_model_options?.map(option => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
           <small className="hint">Поиск в справочнике моделей управляемых мостов</small>
         </div>
         <div className="form-group">

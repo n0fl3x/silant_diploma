@@ -877,15 +877,380 @@ class ClaimCreateSerializer(serializers.ModelSerializer):
         }
 
 
-class DictionaryEntrySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DictionaryEntry
-        fields = ['id', 'name', 'entity']
-
-
 class MachineSerializer(serializers.ModelSerializer):
     model_tech_name = serializers.CharField(source='model_tech.name', read_only=True)
 
     class Meta:
         model = Machine
         fields = ['id', 'factory_number', 'model_tech', 'model_tech_name']
+
+
+class DictionaryEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DictionaryEntry
+        fields = ['id', 'name', 'entity']
+
+
+class MachineEditSerializer(MachineListSerializer):
+    model_tech_options = serializers.SerializerMethodField()
+    engine_model_options = serializers.SerializerMethodField()
+    transmission_model_options = serializers.SerializerMethodField()
+    drive_axle_model_options = serializers.SerializerMethodField()
+    steering_axle_model_options = serializers.SerializerMethodField()
+
+    def get_model_tech_options(self, obj):
+        return DictionaryEntrySerializer(
+            DictionaryEntry.objects.filter(entity='machine_model'),
+            many=True
+        ).data
+
+    def get_engine_model_options(self, obj):
+        return DictionaryEntrySerializer(
+            DictionaryEntry.objects.filter(entity='engine_model'),
+            many=True
+        ).data
+
+    def get_transmission_model_options(self, obj):
+        return DictionaryEntrySerializer(
+            DictionaryEntry.objects.filter(entity='transmission_model'),
+            many=True
+        ).data
+
+    def get_drive_axle_model_options(self, obj):
+        return DictionaryEntrySerializer(
+            DictionaryEntry.objects.filter(entity='drive_axle_model'),
+            many=True
+        ).data
+
+    def get_steering_axle_model_options(self, obj):
+        return DictionaryEntrySerializer(
+            DictionaryEntry.objects.filter(entity='steering_axle_model'),
+            many=True
+        ).data
+
+    class Meta(MachineListSerializer.Meta):
+        fields = MachineListSerializer.Meta.fields + [
+            'model_tech_options',
+            'engine_model_options',
+            'transmission_model_options',
+            'drive_axle_model_options',
+            'steering_axle_model_options'
+        ]
+
+
+class MachineUpdateSerializer(serializers.ModelSerializer):
+    # Поля для ID моделей
+    model_tech_id = serializers.IntegerField(
+        write_only=True,
+        required=True
+    )
+    engine_model_id = serializers.IntegerField(
+        write_only=True,
+        required=True
+    )
+    transmission_model_id = serializers.IntegerField(
+        write_only=True,
+        required=True
+    )
+    drive_axle_model_id = serializers.IntegerField(
+        write_only=True,
+        required=True
+    )
+    steering_axle_model_id = serializers.IntegerField(
+        write_only=True,
+        required=True
+    )
+
+    # Текстовые поля для поиска пользователей
+    client_input = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True
+    )
+    service_company_input = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True
+    )
+
+    class Meta:
+        model = Machine
+        fields = [
+            'id',
+            'factory_number',
+            'model_tech_id',
+            'engine_model_id',
+            'engine_factory_number',
+            'transmission_model_id',
+            'transmission_factory_number',
+            'drive_axle_model_id',
+            'drive_axle_factory_number',
+            'steering_axle_model_id',
+            'steering_axle_factory_number',
+            'delivery_contract',
+            'shipment_date',
+            'consignee',
+            'delivery_address',
+            'configuration',
+            'client_input',
+            'service_company_input'
+        ]
+
+    def validate_model_tech_id(self, value):
+        try:
+            return DictionaryEntry.objects.get(id=value, entity='machine_model')
+        except DictionaryEntry.DoesNotExist:
+            raise serializers.ValidationError("Модель техники с таким ID не найдена")
+
+    def validate_engine_model_id(self, value):
+        try:
+            return DictionaryEntry.objects.get(id=value, entity='engine_model')
+        except DictionaryEntry.DoesNotExist:
+            raise serializers.ValidationError("Модель двигателя с таким ID не найдена")
+
+    def validate_transmission_model_id(self, value):
+        try:
+            return DictionaryEntry.objects.get(id=value, entity='transmission_model')
+        except DictionaryEntry.DoesNotExist:
+            raise serializers.ValidationError("Модель трансмиссии с таким ID не найдена")
+
+    def validate_drive_axle_model_id(self, value):
+        try:
+            return DictionaryEntry.objects.get(id=value, entity='drive_axle_model')
+        except DictionaryEntry.DoesNotExist:
+            raise serializers.ValidationError("Модель ведущего моста с таким ID не найдена")
+
+    def validate_steering_axle_model_id(self, value):
+        try:
+            return DictionaryEntry.objects.get(id=value, entity='steering_axle_model')
+        except DictionaryEntry.DoesNotExist:
+            raise serializers.ValidationError("Модель управляемого моста с таким ID не найдена")
+
+    def validate_client_input(self, value):
+        if not value:
+            return None
+        try:
+            return CustomUser.objects.get(user_description=value, user_type='client')
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError("Клиент с таким описанием не найден")
+
+    def validate_service_company_input(self, value):
+        if not value:
+            return None
+        try:
+            return CustomUser.objects.get(user_description=value, user_type='service_company')
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError("Сервисная компания с таким описанием не найдена")
+
+    def update(self, instance, validated_data):
+        # Обрабатываем связи с DictionaryEntry
+        model_tech = validated_data.pop('model_tech_id', None)
+        if model_tech:
+            instance.model_tech = model_tech
+
+        engine_model = validated_data.pop('engine_model_id', None)
+        if engine_model:
+            instance.engine_model = engine_model
+
+        transmission_model = validated_data.pop('transmission_model_id', None)
+        if transmission_model:
+            instance.transmission_model = transmission_model
+
+        drive_axle_model = validated_data.pop('drive_axle_model_id', None)
+        if drive_axle_model:
+            instance.drive_axle_model = drive_axle_model
+
+        steering_axle_model = validated_data.pop('steering_axle_model_id', None)
+        if steering_axle_model:
+            instance.steering_axle_model = steering_axle_model
+
+        # Обрабатываем связи с User
+        client = validated_data.pop('client_input', None)
+        if client is not None:
+            instance.client = client
+
+        service_company = validated_data.pop('service_company_input', None)
+        if service_company is not None:
+            instance.service_company = service_company
+
+        # Обновляем остальные поля
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+
+
+class MachineCreateSerializer(serializers.ModelSerializer):
+    # Поля для ID моделей из справочника
+    model_tech_id = serializers.IntegerField(
+        write_only=True,
+        required=True
+    )
+    engine_model_id = serializers.IntegerField(
+        write_only=True,
+        required=True
+    )
+    transmission_model_id = serializers.IntegerField(
+        write_only=True,
+        required=True
+    )
+    drive_axle_model_id = serializers.IntegerField(
+        write_only=True,
+        required=True
+    )
+    steering_axle_model_id = serializers.IntegerField(
+        write_only=True,
+        required=True
+    )
+
+    # Текстовые поля для поиска пользователей
+    client_input = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True
+    )
+    service_company_input = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True
+    )
+
+    class Meta:
+        model = Machine
+        fields = [
+            'id',
+            'factory_number',
+            'model_tech_id',
+            'engine_model_id',
+            'engine_factory_number',
+            'transmission_model_id',
+            'transmission_factory_number',
+            'drive_axle_model_id',
+            'drive_axle_factory_number',
+            'steering_axle_model_id',
+            'steering_axle_factory_number',
+            'delivery_contract',
+            'shipment_date',
+            'consignee',
+            'delivery_address',
+            'configuration',
+            'client_input',
+            'service_company_input'
+        ]
+
+    @staticmethod
+    def get_reference_options():
+        """Возвращает справочные данные для выпадающих списков"""
+        return {
+            'model_tech_options': list(
+                DictionaryEntry.objects
+                .filter(entity='machine_model')
+                .values('id', 'name')
+            ),
+            'engine_model_options': list(
+                DictionaryEntry.objects
+                .filter(entity='engine_model')
+                .values('id', 'name')
+            ),
+            'transmission_model_options': list(
+                DictionaryEntry.objects
+                .filter(entity='transmission_model')
+                .values('id', 'name')
+            ),
+            'drive_axle_model_options': list(
+                DictionaryEntry.objects
+                .filter(entity='drive_axle_model')
+                .values('id', 'name')
+            ),
+            'steering_axle_model_options': list(
+                DictionaryEntry.objects
+                .filter(entity='steering_axle_model')
+                .values('id', 'name')
+            ),
+        }
+
+    def validate_model_tech_id(self, value):
+        """Проверяем существование модели техники."""
+        try:
+            return DictionaryEntry.objects.get(id=value, entity='machine_model')
+        except DictionaryEntry.DoesNotExist:
+            raise serializers.ValidationError("Модель техники с таким ID не найдена")
+
+    def validate_engine_model_id(self, value):
+        try:
+            return DictionaryEntry.objects.get(id=value, entity='engine_model')
+        except DictionaryEntry.DoesNotExist:
+            raise serializers.ValidationError("Модель двигателя с таким ID не найдена")
+
+    def validate_transmission_model_id(self, value):
+        try:
+            return DictionaryEntry.objects.get(id=value, entity='transmission_model')
+        except DictionaryEntry.DoesNotExist:
+            raise serializers.ValidationError("Модель трансмиссии с таким ID не найдена")
+
+    def validate_drive_axle_model_id(self, value):
+        try:
+            return DictionaryEntry.objects.get(id=value, entity='drive_axle_model')
+        except DictionaryEntry.DoesNotExist:
+            raise serializers.ValidationError("Модель ведущего моста с таким ID не найдена")
+
+    def validate_steering_axle_model_id(self, value):
+        try:
+            return DictionaryEntry.objects.get(id=value, entity='steering_axle_model')
+        except DictionaryEntry.DoesNotExist:
+            raise serializers.ValidationError("Модель управляемого моста с таким ID не найдена")
+
+    def validate_client_input(self, value):
+        """Ищем клиента по описанию."""
+        if not value:
+            return None
+        try:
+            return CustomUser.objects.get(user_description=value, user_type='client')
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError("Клиент с таким описанием не найден")
+
+    def validate_service_company_input(self, value):
+        """Ищем сервисную компанию по описанию."""
+        if not value:
+            return None
+        try:
+            return CustomUser.objects.get(user_description=value, user_type='service_company')
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError("Сервисная компания с таким описанием не найдена")
+
+    def create(self, validated_data):
+        # Извлекаем ID-поля моделей
+        model_tech = validated_data.pop('model_tech_id')
+        engine_model = validated_data.pop('engine_model_id')
+        transmission_model = validated_data.pop('transmission_model_id')
+        drive_axle_model = validated_data.pop('drive_axle_model_id')
+        steering_axle_model = validated_data.pop('steering_axle_model_id')
+
+        # Извлекаем текстовые поля для пользователей
+        client = validated_data.pop('client_input', None)
+        service_company = validated_data.pop('service_company_input', None)
+
+        # Создаём экземпляр машины
+        machine = Machine(
+            factory_number=validated_data['factory_number'],
+            model_tech=model_tech,
+            engine_model=engine_model,
+            engine_factory_number=validated_data['engine_factory_number'],
+            transmission_model=transmission_model,
+            transmission_factory_number=validated_data['transmission_factory_number'],
+            drive_axle_model=drive_axle_model,
+            drive_axle_factory_number=validated_data['drive_axle_factory_number'],
+            steering_axle_model=steering_axle_model,
+            steering_axle_factory_number=validated_data['steering_axle_factory_number'],
+            delivery_contract=validated_data['delivery_contract'],
+            shipment_date=validated_data['shipment_date'],
+            consignee=validated_data['consignee'],
+            delivery_address=validated_data['delivery_address'],
+            configuration=validated_data['configuration'],
+            client=client,
+            service_company=service_company
+        )
+
+        machine.save()
+        return machine

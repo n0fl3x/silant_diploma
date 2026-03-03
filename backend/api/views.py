@@ -26,6 +26,8 @@ from .serializers import (
     ClaimCreateSerializer,
     ClaimListSerializer,
     ClaimDetailSerializer,
+    MachineCreateSerializer,
+    MachineEditSerializer,
     MachinePublicSerializer,
     MachineFullSerializer,
     MachineListSerializer,
@@ -34,6 +36,7 @@ from .serializers import (
     DictionaryEntryListSerializer,
     DictionaryEntryDetailSerializer,
     DictionaryEntrySerializer,
+    MachineUpdateSerializer,
     MaintenanceCreateSerializer,
     MaintenanceSerializer,
     MaintenanceDetailSerializer,
@@ -339,7 +342,7 @@ class MachineListView(generics.ListAPIView):
 
 class MachineDetailView(generics.RetrieveAPIView):
     queryset = Machine.objects.all()
-    serializer_class = MachineDetailSerializer
+    serializer_class = MachineEditSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -393,7 +396,7 @@ def machine_update(request, pk):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        serializer = MachineSerializer(
+        serializer = MachineUpdateSerializer(
             machine,
             data=data,
             partial=False
@@ -413,7 +416,7 @@ def machine_update(request, pk):
         )
     except Exception as e:
         return Response(
-            {'error': 'Ошибка сервера'},
+            {'error': f'Ошибка сервера: {e}'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
     
@@ -421,7 +424,7 @@ def machine_update(request, pk):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated, IsManagerOrSuperadmin])
 def machine_create(request):
-    serializer = MachineSerializer(
+    serializer = MachineCreateSerializer(
         data=request.data,
         context={'request': request}
     )
@@ -432,6 +435,13 @@ def machine_create(request):
             status=status.HTTP_201_CREATED
         )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def machine_form_options(request):
+    """Возвращает опции для формы создания машины"""
+    options = MachineCreateSerializer.get_reference_options()
+    return Response(options)
 
 
 @api_view(["DELETE"])
