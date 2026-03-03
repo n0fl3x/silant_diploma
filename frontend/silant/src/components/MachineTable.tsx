@@ -207,18 +207,10 @@ const MachineTable: React.FC<MachineTableProps> = (props) => {
             <th>Действия</th>
             <th>Модель техники</th>
             <th>Двигатель</th>
-            <th>Зав. номер двигателя</th>
             <th>Трансмиссия</th>
-            <th>Номер трансмиссии</th>
             <th>Ведущий мост</th>
-            <th>Номер ведущего моста</th>
             <th>Управляемый мост</th>
-            <th>Номер управляемого моста</th>
-            <th>Договор поставки</th>
             <th>Дата отгрузки</th>
-            <th>Грузополучатель</th>
-            <th>Адрес доставки</th>
-            <th>Конфигурация</th>
             <th>Клиент</th>
             <th>Сервисная компания</th>
           </tr>
@@ -248,37 +240,29 @@ const MachineTable: React.FC<MachineTableProps> = (props) => {
                   name={machine.engine_model?.name}
                 />
               </td>
-              <td>{machine.engine_factory_number || <span className="text-muted">Не указан</span>}</td>
               <td>
                 <DictionaryLink
                   id={machine.transmission_model?.id}
                   name={machine.transmission_model?.name}
                 />
               </td>
-              <td>{machine.transmission_factory_number || <span className="text-muted">Не указан</span>}</td>
               <td>
                 <DictionaryLink
                   id={machine.drive_axle_model?.id}
                   name={machine.drive_axle_model?.name}
                 />
               </td>
-              <td>{machine.drive_axle_factory_number || <span className="text-muted">Не указан</span>}</td>
               <td>
                 <DictionaryLink
                   id={machine.steering_axle_model?.id}
                   name={machine.steering_axle_model?.name}
                 />
               </td>
-              <td>{machine.steering_axle_factory_number || <span className="text-muted">Не указан</span>}</td>
-              <td>{machine.delivery_contract || <span className="text-muted">Не указан</span>}</td>
               <td>
                 {machine.shipment_date
                   ? new Date(machine.shipment_date).toLocaleDateString()
                   : <span className="text-muted">Не указан</span>}
               </td>
-              <td>{machine.consignee || <span className="text-muted">Не указан</span>}</td>
-              <td>{machine.delivery_address || <span className="text-muted">Не указан</span>}</td>
-              <td>{machine.configuration || <span className="text-muted">Не указан</span>}</td>
               <td>{machine.client_name || <span className="text-muted">Не указан</span>}</td>
               <td>{machine.service_company_name || <span className="text-muted">Не указана</span>}</td>
             </tr>

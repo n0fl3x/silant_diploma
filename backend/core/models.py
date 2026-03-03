@@ -324,7 +324,9 @@ class Maintenance(models.Model):
     # 1. Вид ТО (справочник)
     maintenance_type = models.ForeignKey(
         to=DictionaryEntry,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
         limit_choices_to={
             "entity": "maintenance_type",
         },

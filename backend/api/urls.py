@@ -12,6 +12,7 @@ from .views import (
     MachineSearchAPIView,
     MachineListView,
     MachineDetailView,
+    machine_form_options,
     machine_update,
     machine_create,
     machine_delete,
@@ -75,6 +76,7 @@ urlpatterns = [
     #
     path('machines', MachineListView.as_view(), name='machine-list'),
     path('machines/<int:pk>', MachineDetailView.as_view(), name='machine-detail'),
+    path('machine-form-options/', machine_form_options, name='machine-form-options'),
     path('machine-update/<int:pk>', machine_update, name='machine-update'),
     path('machine-create', machine_create, name='machine-create'),
     path('machine-delete/<int:pk>', machine_delete, name='machine-delete'),

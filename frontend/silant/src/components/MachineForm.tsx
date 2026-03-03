@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Machine } from '../types/Machine';
 
 interface MachineFormProps {
@@ -27,6 +27,20 @@ export interface MachineSubmitData {
   service_company_input: string | null;
 }
 
+// Типы для справочных данных
+interface ReferenceOption {
+  id: number;
+  name: string;
+}
+
+interface ReferenceData {
+  model_tech_options: ReferenceOption[];
+  engine_model_options: ReferenceOption[];
+  transmission_model_options: ReferenceOption[];
+  drive_axle_model_options: ReferenceOption[];
+  steering_axle_model_options: ReferenceOption[];
+}
+
 const MachineForm: React.FC<MachineFormProps> = ({
   initialData = {},
   onSubmit,
@@ -52,16 +66,63 @@ const MachineForm: React.FC<MachineFormProps> = ({
     service_company_input: initialData.service_company_name || null
   });
 
+  const [referenceData, setReferenceData] = useState<ReferenceData>({
+    model_tech_options: [],
+    engine_model_options: [],
+    transmission_model_options: [],
+    drive_axle_model_options: [],
+    steering_axle_model_options: []
+  });
+  const [loadingReferenceData, setLoadingReferenceData] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Загрузка справочных данных при монтировании компонента
+  useEffect(() => {
+    const loadReferenceData = async () => {
+      try {
+        setLoadingReferenceData(true);
+        const response = await fetch('/api/v1/machine-form-options/');
+
+        if (!response.ok) {
+          throw new Error('Ошибка загрузки справочных данных');
+        }
+
+        const data: ReferenceData = await response.json();
+        setReferenceData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Неизвестная ошибка при загрузке справочных данных');
+      } finally {
+        setLoadingReferenceData(false);
+      }
+    };
+
+    loadReferenceData();
+  }, []);
 
   const handleChange = (field: keyof MachineSubmitData, value: string | number | null) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onSubmit(formData);
   };
+
+  if (loadingReferenceData) {
+    return (
+      <div className="form-loading">
+        Загрузка справочных данных...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="form-error">
+        Ошибка: {error}
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="machine-form">
@@ -85,10 +146,10 @@ const MachineForm: React.FC<MachineFormProps> = ({
             id="model_tech"
             value={formData.model_tech_id || ''}
             onChange={(e) => handleChange('model_tech_id', e.target.value ? parseInt(e.target.value) : null)}
-            disabled={isLoading}
+            disabled={isLoading || loadingReferenceData}
           >
             <option value="">Выберите модель техники</option>
-            {initialData.model_tech_options?.map(option => (
+            {referenceData.model_tech_options.map(option => (
               <option key={option.id} value={option.id}>
                 {option.name}
               </option>
@@ -106,10 +167,10 @@ const MachineForm: React.FC<MachineFormProps> = ({
             id="engine_model"
             value={formData.engine_model_id || ''}
             onChange={(e) => handleChange('engine_model_id', e.target.value ? parseInt(e.target.value) : null)}
-            disabled={isLoading}
+            disabled={isLoading || loadingReferenceData}
           >
             <option value="">Выберите модель двигателя</option>
-            {initialData.engine_model_options?.map(option => (
+            {referenceData.engine_model_options.map(option => (
               <option key={option.id} value={option.id}>
                 {option.name}
               </option>
@@ -134,10 +195,10 @@ const MachineForm: React.FC<MachineFormProps> = ({
             id="transmission_model"
             value={formData.transmission_model_id || ''}
             onChange={(e) => handleChange('transmission_model_id', e.target.value ? parseInt(e.target.value) : null)}
-            disabled={isLoading}
+            disabled={isLoading || loadingReferenceData}
           >
             <option value="">Выберите модель трансмиссии</option>
-            {initialData.transmission_model_options?.map(option => (
+            {referenceData.transmission_model_options.map(option => (
               <option key={option.id} value={option.id}>
                 {option.name}
               </option>
@@ -162,10 +223,10 @@ const MachineForm: React.FC<MachineFormProps> = ({
             id="drive_axle_model"
             value={formData.drive_axle_model_id || ''}
             onChange={(e) => handleChange('drive_axle_model_id', e.target.value ? parseInt(e.target.value) : null)}
-            disabled={isLoading}
+            disabled={isLoading || loadingReferenceData}
           >
             <option value="">Выберите модель ведущего моста</option>
-            {initialData.drive_axle_model_options?.map(option => (
+            {referenceData.drive_axle_model_options.map(option => (
               <option key={option.id} value={option.id}>
                 {option.name}
               </option>
@@ -190,10 +251,10 @@ const MachineForm: React.FC<MachineFormProps> = ({
             id="steering_axle_model"
             value={formData.steering_axle_model_id || ''}
             onChange={(e) => handleChange('steering_axle_model_id', e.target.value ? parseInt(e.target.value) : null)}
-            disabled={isLoading}
+            disabled={isLoading || loadingReferenceData}
           >
             <option value="">Выберите модель управляемого моста</option>
-            {initialData.steering_axle_model_options?.map(option => (
+            {referenceData.steering_axle_model_options.map(option => (
               <option key={option.id} value={option.id}>
                 {option.name}
               </option>

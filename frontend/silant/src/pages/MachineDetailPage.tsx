@@ -74,6 +74,19 @@ export default function MachineDetailPage() {
   const handleDelete = async () => {
     if (!machine?.id) return;
 
+    // Показываем браузерное окно подтверждения
+    const isConfirmed = window.confirm(
+      'Вы уверены, что хотите удалить эту машину?\n\n' +
+      `ID машины: ${machine.id}\n` +
+      `Заводской номер: ${machine.factory_number}\n\n` +
+      'Это действие нельзя отменить.'
+    );
+
+    // Если пользователь нажал "Отмена", прерываем выполнение
+    if (!isConfirmed) {
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -97,10 +110,11 @@ export default function MachineDetailPage() {
         } else if (response.status === 401) {
           throw new Error('Требуется повторная авторизация');
         } else {
-          throw new Error(`Ошибка сервера: ${response.body}`);
+          throw new Error(`Ошибка сервера: ${response.status}`);
         }
       }
 
+      // Успешное удаление — перенаправляем на список машин
       navigate('/machine-list');
     } catch (err) {
       console.error('Ошибка при удалении машины:', err);
@@ -112,6 +126,7 @@ export default function MachineDetailPage() {
       setLoading(false);
     }
   };
+
 
   if (authLoading || loading) {
     return (
@@ -272,12 +287,17 @@ export default function MachineDetailPage() {
               className="delete-button"
               onClick={handleDelete}
               disabled={loading}
+              style={{
+                backgroundColor: loading ? '#ccc' : '#dc3545',
+                cursor: loading ? 'not-allowed' : 'pointer'
+              }}
             >
               {loading ? 'Удаление...' : 'Удалить машину'}
             </button>
             <button
               className="edit-button"
               onClick={() => navigate(`/machine-edit/${machine.id}`)}
+              disabled={loading}
             >
               Редактировать
             </button>
@@ -286,6 +306,7 @@ export default function MachineDetailPage() {
         <button
           className="back-button"
           onClick={() => navigate(-1)}
+          disabled={loading}
         >
           Назад
         </button>

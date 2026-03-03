@@ -31,7 +31,6 @@ from .serializers import (
     MachinePublicSerializer,
     MachineFullSerializer,
     MachineListSerializer,
-    MachineDetailSerializer,
     MachineSerializer,
     DictionaryEntryListSerializer,
     DictionaryEntryDetailSerializer,
